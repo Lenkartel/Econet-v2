@@ -132,13 +132,33 @@ body{
   animation:hdrSweep 9s ease-in-out infinite;pointer-events:none;
 }
 @keyframes hdrSweep{0%,100%{left:-100%}55%,100%{left:150%}}
+/* ── HGLOW — opacity only, no transform to avoid scroll shake ── */
 .hglow{
   position:absolute;width:260px;height:260px;border-radius:50%;
-  background:rgba(26,111,255,.26);filter:blur(78px);
+  background:rgba(0,159,219,.22);filter:blur(78px);
   top:-128px;right:-76px;pointer-events:none;
   animation:glowPulse 4.2s ease-in-out infinite;
+  will-change:opacity;
 }
-@keyframes glowPulse{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes glowPulse{0%,100%{opacity:.55}50%{opacity:.9}}
+
+/* ── HEADER SIGNAL WAVE — pure SVG data-URI, zero load cost ── */
+.header::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='120'%3E%3Cpath d='M0 80 Q50 40 100 80 Q150 120 200 80 Q250 40 300 80 Q350 120 400 80' fill='none' stroke='rgba(0,201,224,.12)' stroke-width='2'/%3E%3Cpath d='M0 95 Q50 55 100 95 Q150 135 200 95 Q250 55 300 95 Q350 135 400 95' fill='none' stroke='rgba(0,159,219,.08)' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-position:center bottom;background-repeat:repeat-x;
+  background-size:400px 120px;opacity:.7;
+}
+
+/* ── PAGE DOT-GRID BACKGROUND ── */
+html,body{
+  background:
+    radial-gradient(ellipse 85% 55% at 12% -5%,rgba(0,159,219,.1),transparent 54%),
+    radial-gradient(ellipse 60% 48% at 94% 14%,rgba(0,53,95,.08),transparent 50%),
+    radial-gradient(ellipse 65% 48% at 50% 114%,rgba(5,150,105,.07),transparent 54%),
+    #EEF8FC;
+}
+
 .header.compact{padding-top:10px;padding-bottom:10px}
 .header.compact .hdr-amount{font-size:26px}
 .header.compact .hdr-price-block{margin-bottom:6px}
@@ -156,11 +176,11 @@ body{
   transition:transform .2s cubic-bezier(.34,1.56,.64,1);
 }
 .hdr-plan-tag.pop{transform:scale(1.08)}
-.hdr-price-block{position:relative;z-index:2;margin-bottom:12px;transition:margin .28s}
+.hdr-price-block{position:relative;z-index:2;margin-bottom:12px}
 .hdr-label{font-size:9px;font-weight:600;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:1.1px;margin-bottom:2px}
 .hdr-price-row{display:flex;align-items:flex-end;gap:5px}
 .hdr-cur{font-family:var(--mono);font-size:11px;font-weight:500;color:rgba(255,255,255,.38);margin-bottom:6px;font-feature-settings:"tnum";text-transform:uppercase;letter-spacing:.08em}
-/* #4 tight tracking on large number, #6 tnum */
+/* tight tracking on large number */
 .hdr-amount{
   font-family:var(--mono);font-size:40px;font-weight:900;color:#fff;line-height:1;
   letter-spacing:-.04em;font-feature-settings:"tnum","ss01";
@@ -208,12 +228,15 @@ body{
   background:var(--navy);border-color:transparent;
   box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 2px 14px rgba(0,53,95,.38),0 0 22px rgba(0,159,219,.18);
 }
+/* pulsing outer glow ring on active pill */
+@keyframes activePillPulse{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 2px 14px rgba(0,53,95,.38),0 0 0 0 rgba(0,159,219,.4)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 2px 14px rgba(0,53,95,.38),0 0 0 4px rgba(0,159,219,.15)}}
+.plan-pill.active{animation:activePillPulse 2.2s ease-in-out infinite}
+.plan-pill.active[data-key="monthly"]{animation:activePillPulse 2.2s ease-in-out infinite}
 .plan-pill.active::after{
   content:'';
   position:absolute;bottom:-1px;left:20%;right:20%;height:2.5px;
-  background:linear-gradient(90deg,rgba(100,180,255,.8),#fff,rgba(100,180,255,.8));
-  border-radius:999px;
-  box-shadow:0 0 6px rgba(255,255,255,.6);
+  background:linear-gradient(90deg,rgba(0,201,224,.8),#fff,rgba(0,201,224,.8));
+  border-radius:999px;box-shadow:0 0 6px rgba(255,255,255,.6);
 }
 .plan-pill.active .pp-name{color:#fff}
 .plan-pill.active .pp-price{color:var(--sky-deep);opacity:.85}
@@ -225,17 +248,22 @@ body{
   box-shadow:0 2px 7px rgba(245,158,11,.45);
 }
 .plan-pill[data-key="monthly"]{padding-left:18px;padding-right:18px}
-/* #7 monthly shimmer */
-@keyframes pillShimmer{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 2px 14px rgba(0,53,95,.38),0 0 22px rgba(0,159,219,.18)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.22) inset,0 2px 14px rgba(0,51,160,.5),0 0 32px rgba(26,111,255,.32)}}
-.plan-pill.active[data-key="monthly"]{animation:pillShimmer 2.4s ease-in-out infinite}
-/* ─── BODY ───────────────────────────────────── */
+
+/* ── CARD SHIMMER SWEEP on hover ── */
+@keyframes cardSweep{0%{left:-100%}100%{left:150%}}
+.slider-card::after{
+  content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  pointer-events:none;
+}
+.slider-card:hover::after{animation:cardSweep .6s ease}
+
+/* ─── BODY ── no transform:translateZ on scroll container ── */
 .body{
   flex:1;overflow-y:auto;overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  /* #8 8pt grid padding */
   padding:16px 16px max(96px,calc(80px + env(safe-area-inset-bottom)));
   overscroll-behavior:contain;min-height:0;
-  transform:translateZ(0);position:relative;z-index:1;
+  position:relative;z-index:1;
   scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;
 }
 .body::-webkit-scrollbar{width:3px}
@@ -370,15 +398,23 @@ input[type=range]:active::-webkit-slider-thumb{
 }
 .slider-tip.show{opacity:1;transform:translateX(-50%) scale(1)}
 
-/* ─── PRICE BOX ──────────────────────────────── */
+/* ─── PRICE BOX — gradient border ── */
 .price-box{
-  background:linear-gradient(135deg,rgba(232,241,255,.9),rgba(208,228,255,.8));
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border:1.5px solid rgba(184,211,255,.8);
+  background:linear-gradient(135deg,rgba(224,244,252,.95),rgba(184,229,248,.85));
   border-radius:var(--r-lg);padding:16px;
   margin-bottom:12px;
   display:flex;align-items:center;justify-content:space-between;
   box-shadow:var(--shadow);
+  position:relative;
+}
+/* gradient border via pseudo */
+.price-box::before{
+  content:'';position:absolute;inset:0;border-radius:var(--r-lg);
+  padding:1.5px;
+  background:linear-gradient(135deg,#009FDB,#00C9E0,#00355F);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;
 }
 .pb-label{font-size:12px;font-weight:700;color:var(--ink-mid);letter-spacing:-.1px}
 .pb-desc{font-size:10px;color:var(--ink-soft);margin-top:2px;letter-spacing:.02em}
@@ -1170,8 +1206,20 @@ setTimeout(()=>{
     'Data options?',
   ];
 
+  // Convert basic markdown to HTML safely
+  function parseMarkdown(txt){
+    return txt
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')  // escape HTML first
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')   // **bold**
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')               // *italic*
+      .replace(/`(.+?)`/g,'<code style="background:rgba(0,53,95,.1);padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px">$1</code>')  // `code`
+      .replace(/\n/g,'<br>');                             // newlines
+  }
+
   function addBubble(txt,who){
-    const b=document.createElement('div');b.className='ec-bubble '+who;b.textContent=txt;
+    const b=document.createElement('div');b.className='ec-bubble '+who;
+    if(who==='bot') b.innerHTML=parseMarkdown(txt);
+    else b.textContent=txt;
     msgsEl.appendChild(b);msgsEl.scrollTop=msgsEl.scrollHeight;return b;
   }
   function showTyping(){
