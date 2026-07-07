@@ -333,29 +333,41 @@ html,body{
 .sc-left{display:flex;align-items:center;gap:12px}
 /* #1 #7 icon — consistent padding, inner radius = outer - padding */
 .sc-icon{
-  width:38px;height:38px;border-radius:10px;
+  width:42px;height:42px;border-radius:12px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  padding:9px;
+  padding:10px;
 }
-.sc-icon svg{width:100%;height:100%}
-.voice-card .sc-icon{background:linear-gradient(135deg,#fef2f2,#ffe4e6);box-shadow:0 2px 8px rgba(239,68,68,.14);color:#ef4444}
-.sms-card   .sc-icon{background:linear-gradient(135deg,#eef2ff,#ede9fe);box-shadow:0 2px 8px rgba(99,102,241,.14);color:#6366f1}
-.data-card  .sc-icon{background:linear-gradient(135deg,#eff6ff,#e0f2fe);box-shadow:0 2px 8px rgba(0,159,219,.14);color:#009FDB}
-/* #3 currentColor SVG */
-.sc-icon svg{stroke:currentColor}
+.sc-icon svg{width:100%;height:100%;stroke:currentColor;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.voice-card .sc-icon{
+  background:linear-gradient(135deg,#fff0f0,#ffe4e6);
+  box-shadow:0 3px 10px rgba(239,68,68,.18),0 0 0 1px rgba(239,68,68,.1);
+  color:#ef4444;
+}
+.sms-card .sc-icon{
+  background:linear-gradient(135deg,#f0efff,#ede9fe);
+  box-shadow:0 3px 10px rgba(99,102,241,.18),0 0 0 1px rgba(99,102,241,.1);
+  color:#6366f1;
+}
+.data-card .sc-icon{
+  background:linear-gradient(135deg,#e8f7fd,#d0effa);
+  box-shadow:0 3px 10px rgba(0,159,219,.18),0 0 0 1px rgba(0,159,219,.1);
+  color:#009FDB;
+}
 /* #5 type scale */
-.sc-name{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.15px;line-height:1.2}
-.sc-hint{font-size:11px;color:var(--ink-soft);font-weight:500;margin-top:1px;letter-spacing:.02em}
+.sc-name{font-size:14px;font-weight:900;color:var(--ink);letter-spacing:-.2px;line-height:1.2}
+.sc-hint{font-size:11px;color:var(--ink-soft);font-weight:500;margin-top:2px;letter-spacing:.01em}
 .sc-val{
-  font-family:var(--mono);font-size:13px;font-weight:700;
-  color:var(--navy);background:var(--sky);
-  border:1px solid var(--sky-deep);
-  padding:5px 12px;border-radius:999px;
-  white-space:nowrap;min-width:76px;text-align:center;
+  font-family:var(--mono);font-size:13px;font-weight:800;
+  color:var(--navy);
+  background:linear-gradient(135deg,var(--sky),var(--sky-mid));
+  border:1.5px solid var(--sky-deep);
+  padding:5px 14px;border-radius:999px;
+  white-space:nowrap;min-width:80px;text-align:center;
   font-feature-settings:"tnum","ss01";
-  transition:transform .14s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 2px 6px rgba(0,53,95,.1);
+  transition:transform .14s cubic-bezier(.34,1.56,.64,1),box-shadow .14s;
 }
-.sc-val.bump{transform:scale(1.1)}
+.sc-val.bump{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,53,95,.18)}
 
 /* ─── RANGE SLIDER ───────────────────────────── */
 input[type=range]{
@@ -1234,18 +1246,38 @@ setTimeout(()=>{
       c.onclick=()=>{inputEl.value=s;send()};suggEl.appendChild(c);
     });
   }
-  function toggle(){
-    open=!open;panel.classList.toggle('open',open);badge.classList.remove('show');
-    if(open&&msgsEl.children.length===0){
+  function openChat(){
+    open=true;panel.classList.add('open');badge.classList.remove('show');
+    if(msgsEl.children.length===0){
       setTimeout(()=>{
         const t=showTyping();
         setTimeout(()=>{t.remove();addBubble('Hello! 👋 Mhoro! I am the EcoCash Assistant. How can I help you with your bundle today?','bot');renderSuggestions(SUGGESTIONS)},800);
       },200);
     }
-    if(open)setTimeout(()=>inputEl.focus(),300);
+    setTimeout(()=>inputEl.focus(),300);
+  }
+  function closeChat(){
+    open=false;panel.classList.remove('open');
+  }
+  function toggle(e){
+    if(e) e.stopPropagation();
+    if(open) closeChat(); else openChat();
   }
   fab.onclick=toggle;
-  document.getElementById('ecClose').onclick=toggle;
+  document.getElementById('ecClose').onclick=(e)=>{e.stopPropagation();closeChat()};
+
+  // Click anywhere outside panel + fab closes chat
+  document.addEventListener('click',(e)=>{
+    if(!open) return;
+    if(panel.contains(e.target)||fab.contains(e.target)) return;
+    closeChat();
+  },{passive:true});
+
+  // Scroll in body also closes chat
+  const bodyEl=document.getElementById('bodyScroll');
+  if(bodyEl){
+    bodyEl.addEventListener('scroll',()=>{if(open)closeChat()},{passive:true});
+  }
 
   async function send(){
     const txt=inputEl.value.trim();if(!txt)return;
