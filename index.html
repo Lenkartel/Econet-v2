@@ -1374,7 +1374,10 @@ function switchPlan(k){
   activeKey=k;
   document.getElementById('panel-'+k).classList.add('active');
   document.getElementById('bodyScroll').scrollTop=0;
-  document.querySelectorAll('.plan-pill').forEach(p=>p.classList.toggle('active',p.dataset.key===k));
+  document.querySelectorAll('.plan-pill').forEach(p=>{
+    p.classList.toggle('active',p.dataset.key===k);
+    p.setAttribute('aria-selected',p.dataset.key===k?'true':'false');
+  });
   updateHeader();
   haptic('light');
 }
@@ -1605,13 +1608,6 @@ document.querySelectorAll('.plan-pill').forEach(pill=>{
   pill.setAttribute('role','tab');
   pill.setAttribute('aria-selected',pill.classList.contains('active')?'true':'false');
 });
-const origSwitch=switchPlan;
-function switchPlan(k){
-  origSwitch(k);
-  document.querySelectorAll('.plan-pill').forEach(p=>{
-    p.setAttribute('aria-selected',p.dataset.key===k?'true':'false');
-  });
-}
 document.querySelectorAll('.pin-dot').forEach((d,i)=>{
   d.setAttribute('role','img');d.setAttribute('aria-label','PIN digit '+(i+1));
 });
