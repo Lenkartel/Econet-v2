@@ -1243,7 +1243,8 @@ setTimeout(()=>{
     suggEl.innerHTML='';
     (items||[]).slice(0,4).forEach(s=>{
       const c=document.createElement('button');c.className='ec-chip';c.textContent=s;
-      c.onclick=()=>{inputEl.value=s;send()};suggEl.appendChild(c);
+      c.onclick=(e)=>{e.stopPropagation();inputEl.value=s;send()};
+      suggEl.appendChild(c);
     });
   }
   function openChat(){
@@ -1294,7 +1295,8 @@ setTimeout(()=>{
       typing.remove();addBubble('Connection issue. Please check your internet.','bot');
     }
   }
-  document.getElementById('ecSend').onclick=send;
+  document.getElementById('ecSend').onclick=(e)=>{e.stopPropagation();send()};
+  inputEl.addEventListener('click',e=>e.stopPropagation());
   inputEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
   setTimeout(()=>{if(!open)badge.classList.add('show')},3000);
 })();
