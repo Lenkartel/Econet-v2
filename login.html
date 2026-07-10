@@ -29,8 +29,8 @@
   --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
 }
 
-html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(--sans);background:var(--surf);color:var(--txt)}
-.screen{display:flex;flex-direction:column;width:100%;height:100%;height:100dvh;overflow:hidden;position:relative}
+html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(--sans);background:var(--navy);color:var(--txt)}
+.screen{display:grid;grid-template-rows:auto 1fr auto;width:100%;height:100%;height:100dvh;overflow:hidden;position:relative}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0;transform:translateY(-8px)}}
 .screen{animation:fadeUp .3s cubic-bezier(.2,0,0,1) both}
@@ -65,8 +65,8 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .bchip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);padding:3px 10px;border-radius:var(--r-pill);font-size:11px;font-weight:500;color:rgba(255,255,255,.65);font-family:var(--mono)}
 
 /* ── LAYOUT: scroll area + fixed bottom bar ── */
-.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 16px max(32px,env(safe-area-inset-bottom));min-height:0;scrollbar-width:none;overscroll-behavior:contain}
-.body::-webkit-scrollbar{display:none}
+.body{overflow-y:auto;overflow-x:hidden;padding:16px 16px 16px;min-height:0;scrollbar-width:none;overscroll-behavior:contain;background:var(--surf);border-radius:0}
+
 
 .action-btn{
   width:100%;padding:16px;border-radius:var(--r-pill);border:none;
@@ -419,8 +419,28 @@ function showStep(id){
 }
 
 /* ── PHONE ── */
+function normalisePhone(raw){
+  // Strip everything non-numeric
+  let v=raw.replace(/\D/g,'');
+  // Remove country code: 00263 / +263 / 263 prefix
+  if(v.startsWith('00263'))v=v.slice(5);
+  else if(v.startsWith('263')&&v.length>9)v=v.slice(3);
+  // Remove leading 0 (07XXXXXXXX → 7XXXXXXXX)
+  if(v.startsWith('0'))v=v.slice(1);
+  return v.slice(0,9);
+}
 document.getElementById('phone').addEventListener('input',function(){
-  let v=this.value.replace(/\D/g,'').slice(0,9);
+  const v=normalisePhone(this.value);
+  this.value=v;phone=v;
+  if(v.length===9&&v.startsWith('7')){
+    document.getElementById('phoneOutline').classList.remove('err');
+    document.getElementById('phoneError').classList.remove('show');
+  }
+});
+document.getElementById('phone').addEventListener('paste',function(e){
+  e.preventDefault();
+  const pasted=(e.clipboardData||window.clipboardData).getData('text');
+  const v=normalisePhone(pasted);
   this.value=v;phone=v;
   if(v.length===9&&v.startsWith('7')){
     document.getElementById('phoneOutline').classList.remove('err');
