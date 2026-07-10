@@ -1253,18 +1253,15 @@ window.addEventListener('popstate',function(){},{passive:true});
 (function(){
   const body=document.getElementById('bodyScroll');
   const keys=['daily','3days','weekly','2weeks','monthly'];
-  let _sx=0,_sy=0,_sliderTouched=false;
-  // Mark when a slider is being interacted with
-  document.querySelectorAll('input[type=range]').forEach(sl=>{
-    sl.addEventListener('touchstart',()=>{_sliderTouched=true},{passive:true});
-    sl.addEventListener('touchend',()=>{setTimeout(()=>{_sliderTouched=false},50)},{passive:true});
-  });
+  let _sx=0,_sy=0,_ignore=false;
   body.addEventListener('touchstart',e=>{
-    _sliderTouched=false;
-    _sx=e.touches[0].clientX;_sy=e.touches[0].clientY;
+    // Check at event time if touch originated on a slider
+    _ignore=e.target.tagName==='INPUT'&&e.target.type==='range';
+    _sx=e.touches[0].clientX;
+    _sy=e.touches[0].clientY;
   },{passive:true});
   body.addEventListener('touchend',e=>{
-    if(_sliderTouched)return;
+    if(_ignore)return;
     const dx=e.changedTouches[0].clientX-_sx;
     const dy=e.changedTouches[0].clientY-_sy;
     if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*2){
