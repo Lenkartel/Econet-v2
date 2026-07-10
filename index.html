@@ -6,920 +6,432 @@
 <meta name="theme-color" content="#005F8E"/>
 <title>Mix Bundle Builder · Econet</title>
 <link rel="icon" href="assets/econet.png">
-<link rel="preload" href="assets/econet.png" as="image">
-<link rel="preload" href="assets/ecocash.png" as="image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@300;400;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════
-   ECONET MIX BUNDLE — SENIOR REDESIGN
-   Visual concept: Command Surface / Arc Gauge / Rail Sliders
-   ═══════════════════════════════════════════════════ */
-
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
 :root{
-  /* Brand */
-  --navy:#005F8E;
-  --navy-mid:#004A70;
-  --navy-rim:#003D5E;
-  --cyan:#00C2FF;
-  --cyan-dim:rgba(0,194,255,.18);
-  --cyan-glow:rgba(0,194,255,.35);
-
-  /* Light surface */
-  --surf:#F4F7FF;
-  --surf-card:#FFFFFF;
-  --surf-line:#E4E9F5;
-  --on-surf:#111827;
-  --on-surf-mid:#4B5563;
-  --on-surf-dim:#9CA3AF;
-
-  /* Service colours */
-  --voice:#FF6B6B;
-  --sms:#A78BFA;
-  --data:#34D399;
-
-  /* Type */
-  --sans:'Google Sans','Roboto',sans-serif;
-  --display:'Google Sans Display','Google Sans',sans-serif;
-  --mono:'Roboto Mono',monospace;
-
-  /* Radius */
-  --r-s:8px;--r-m:14px;--r-l:20px;--r-xl:28px;--r-pill:999px;
-
-  /* Elevation */
-  --sh-card:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
-  --sh-float:0 8px 32px rgba(0,0,0,.14),0 2px 8px rgba(0,0,0,.08);
+  --navy:#005F8E;--navy-d:#004A70;--navy-dd:#003D5E;
+  --cyan:#00C2FF;--cyan-dim:rgba(0,194,255,.15);
+  --surf:#F4F7FF;--card:#FFFFFF;--line:#E4E9F5;
+  --txt:#111827;--txt-m:#4B5563;--txt-d:#9CA3AF;
+  --voice:#FF6B6B;--sms:#A78BFA;--data:#34D399;
+  --sans:'Google Sans',sans-serif;--display:'Google Sans Display',sans-serif;--mono:'Roboto Mono',monospace;
+  --rs:8px;--rm:14px;--rl:20px;--rxl:28px;--rp:999px;
+  --sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+  --shf:0 8px 32px rgba(0,0,0,.13),0 2px 8px rgba(0,0,0,.07);
 }
+html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(--sans);background:var(--navy);color:var(--txt)}
 
-/* ── PAGE ────────────────────────────────────── */
-html,body{
-  width:100%;height:100%;height:100dvh;
-  overflow:hidden;font-family:var(--sans);
-  background:var(--surf);color:var(--on-surf);
-}
-.screen{
-  display:flex;flex-direction:column;
-  width:100%;height:100%;height:100dvh;
-  overflow:hidden;position:relative;
-}
-@keyframes pageEnter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@keyframes pageExit{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
-.screen{animation:pageEnter .32s cubic-bezier(.2,0,0,1) both}
-.screen.exit{animation:pageExit .22s cubic-bezier(.4,0,1,1) forwards}
-
-/* ── LOADING CURTAIN ─────────────────────────── */
-.curtain{
-  position:fixed;inset:0;z-index:9999;pointer-events:none;
-  background:var(--navy);opacity:0;transition:opacity .22s ease;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
-}
+/* ── CURTAIN ── */
+.curtain{position:fixed;inset:0;z-index:9999;pointer-events:none;background:var(--navy);opacity:0;transition:opacity .22s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
 .curtain.show{opacity:1;pointer-events:auto}
-.curtain-brand{display:flex;align-items:center;gap:10px;padding:8px 18px;border-radius:var(--r-pill);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
-.curtain-brand img{height:18px;object-fit:contain;filter:brightness(0) invert(1)}
-.curtain-brand-sep{width:1px;height:14px;background:rgba(255,255,255,.2)}
-.curtain-spinner svg{animation:spin 1s linear infinite}
+.c-brand{display:flex;align-items:center;gap:10px;padding:8px 18px;border-radius:var(--rp);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
+.c-brand img{height:17px;object-fit:contain;filter:brightness(0) invert(1)}
+.c-sep{width:1px;height:13px;background:rgba(255,255,255,.2)}
+.c-spin svg{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.curtain-label{font-size:15px;font-weight:500;color:#fff;text-align:center;margin-bottom:2px;transition:opacity .2s}
-.curtain-sub{font-size:13px;color:rgba(255,255,255,.48);text-align:center;transition:opacity .2s}
-.curtain-bar{width:180px;height:2px;background:rgba(255,255,255,.1);border-radius:var(--r-pill);overflow:hidden;margin-top:4px}
-.curtain-fill{height:100%;background:var(--cyan);animation:cFill 1.6s cubic-bezier(.4,0,.2,1) both}
+.c-lbl{font-size:15px;font-weight:500;color:#fff;text-align:center;margin-bottom:2px;transition:opacity .18s}
+.c-sub{font-size:13px;color:rgba(255,255,255,.48);text-align:center;transition:opacity .18s}
+.c-bar{width:180px;height:2px;background:rgba(255,255,255,.1);border-radius:var(--rp);overflow:hidden;margin-top:4px}
+.c-fill{height:100%;background:var(--cyan);animation:cFill 1.6s cubic-bezier(.4,0,.2,1) both}
 @keyframes cFill{from{width:0}to{width:100%}}
 
-/* ── COMMAND SURFACE (dark header zone) ──────── */
-.command{
-  flex-shrink:0;
-  background:var(--navy);
-  padding-top:max(14px,env(safe-area-inset-top));
-  position:relative;z-index:10;
+/* ── SCREEN: full viewport, no scroll ── */
+.screen{
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  width:100%;height:100%;height:100dvh;
+  overflow:hidden;
+  animation:fadeUp .3s cubic-bezier(.2,0,0,1) both;
 }
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.screen.exit{animation:fadeOut .2s forwards}
+@keyframes fadeOut{to{opacity:0;transform:translateY(-8px)}}
 
-/* Top bar */
-.cmd-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 20px 14px;
+/* ── ROW 1: HEADER ── */
+.hdr{
+  background:var(--navy);
+  padding:max(12px,env(safe-area-inset-top)) 18px 12px;
 }
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .brand{display:flex;align-items:center;gap:10px}
 .brand img{height:17px;object-fit:contain;filter:brightness(0) invert(1)}
 .brand-sep{width:1px;height:13px;background:rgba(255,255,255,.22)}
-.sp-badge{
-  display:flex;align-items:center;gap:6px;
-  padding:4px 12px;border-radius:var(--r-pill);
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
-  font-size:11px;font-weight:500;color:rgba(255,255,255,.55);
-}
+.sp-badge{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:var(--rp);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:500;color:rgba(255,255,255,.55)}
 .sp-dot{width:6px;height:6px;border-radius:50%;background:#34D399;animation:spBlink 2.4s ease-in-out infinite}
 @keyframes spBlink{0%,100%{opacity:.5}50%{opacity:1}}
 
-/* Price centrepiece */
-.cmd-stage{
-  display:flex;flex-direction:column;align-items:center;
-  padding:0 20px 20px;position:relative;
-}
-.cmd-label{font-size:11px;font-weight:500;color:rgba(255,255,255,.38);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px}
-.cmd-price-row{display:flex;align-items:flex-start;gap:4px;margin-bottom:20px}
-.cmd-cur{
-  font-family:var(--mono);font-size:16px;font-weight:500;
-  color:rgba(255,255,255,.45);margin-top:10px;
-}
-.cmd-amount{
-  font-family:var(--display);font-size:64px;font-weight:700;
-  color:#fff;line-height:1;letter-spacing:-.04em;
-  font-feature-settings:"tnum","ss01";
-  transition:transform .18s cubic-bezier(.34,1.56,.64,1);
-}
-.cmd-amount.bump{transform:scale(1.04)}
+/* Price display */
+.hdr-price{display:flex;align-items:flex-start;gap:4px;margin-bottom:14px}
+.hdr-cur{font-family:var(--mono);font-size:15px;color:rgba(255,255,255,.45);margin-top:8px}
+.hdr-amount{font-family:var(--display);font-size:56px;font-weight:700;color:#fff;line-height:1;letter-spacing:-.04em;transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
+.hdr-amount.bump{transform:scale(1.04)}
 
-/* Service bars (replaces SVG arc) */
-.svc-bars{
-  width:100%;max-width:300px;
-  display:flex;flex-direction:column;gap:10px;
-  margin-bottom:12px;
-}
+/* Service bars */
+.svc-bars{display:flex;flex-direction:column;gap:8px}
 .svc-bar-row{display:flex;align-items:center;gap:8px}
 .svc-bar-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .svc-bar-label{font-size:11px;font-weight:500;color:rgba(255,255,255,.5);width:32px}
-.svc-bar-track{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:var(--r-pill);overflow:hidden}
-.svc-bar-fill{height:100%;border-radius:var(--r-pill);transition:width .3s cubic-bezier(.4,0,.2,1);width:100%}
-.svc-bar-val{font-family:var(--mono);font-size:11px;font-weight:600;color:rgba(255,255,255,.8);width:52px;text-align:right;font-feature-settings:"tnum"}
+.svc-bar-track{flex:1;height:3px;background:rgba(255,255,255,.1);border-radius:var(--rp);overflow:hidden}
+.svc-bar-fill{height:100%;border-radius:var(--rp);transition:width .25s cubic-bezier(.4,0,.2,1)}
+.svc-bar-val{font-family:var(--mono);font-size:11px;font-weight:600;color:rgba(255,255,255,.75);width:52px;text-align:right;font-feature-settings:"tnum"}
 
-/* Plan switcher — sits on the seam between dark and light */
-.seam{
-  position:relative;
-  height:36px;
-  flex-shrink:0;
-  z-index:9;
-}
-.seam::before{
-  content:'';position:absolute;inset:0;
-  background:var(--navy);clip-path:ellipse(55% 100% at 50% 0%);
-}
-.seam::after{
-  content:'';position:absolute;inset:0;
-  background:var(--surf);clip-path:ellipse(55% 100% at 50% 100%);
-  /* light surface curves up from below */
-}
-
-.plan-rail-wrap{
-  flex-shrink:0;
-  background:var(--surf);
-  padding:0 16px 4px;
-  position:relative;z-index:8;
-}
-.plan-rail{
-  display:flex;gap:6px;overflow-x:auto;
-  justify-content:center;
-  flex-wrap:nowrap;
-  scrollbar-width:none;padding-bottom:2px;
-  /* pill strip */
-  background:rgba(0,0,0,.05);
-  border-radius:var(--r-pill);
-  padding:3px;
-}
-.plan-rail::-webkit-scrollbar{display:none}
-.plan-tab{
-  flex-shrink:0;display:flex;flex-direction:column;align-items:center;
-  padding:7px 16px;border-radius:var(--r-pill);
-  border:none;cursor:pointer;outline:none;
-  background:transparent;
-  transition:background .18s,color .18s,transform .12s;
-  position:relative;
-}
-.plan-tab:active{transform:scale(.95)}
-.plan-tab-name{
-  font-size:13px;font-weight:500;
-  color:var(--on-surf-mid);white-space:nowrap;transition:color .18s;
-}
-.plan-tab-price{
-  font-family:var(--mono);font-size:10px;font-weight:500;
-  color:var(--on-surf-dim);transition:color .18s;
-  font-feature-settings:"tnum";
-}
-.plan-tab.active{background:var(--navy)}
+/* ── ROW 2: PLAN RAIL ── */
+.plan-rail-wrap{background:var(--navy);padding:0 14px 12px}
+.plan-rail{display:flex;gap:5px;background:rgba(255,255,255,.07);border-radius:var(--rp);padding:3px}
+.plan-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 4px;border-radius:var(--rp);border:none;cursor:pointer;background:transparent;transition:background .16s}
+.plan-tab-name{font-size:12px;font-weight:500;color:rgba(255,255,255,.55);white-space:nowrap;transition:color .16s}
+.plan-tab-price{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.35);transition:color .16s;font-feature-settings:"tnum"}
+.plan-tab.active{background:rgba(255,255,255,.15)}
 .plan-tab.active .plan-tab-name{color:#fff;font-weight:700}
 .plan-tab.active .plan-tab-price{color:rgba(255,255,255,.6)}
-.plan-tab-star{
-  position:absolute;top:-4px;right:-3px;
-  width:14px;height:14px;border-radius:50%;
-  background:#F59E0B;border:2px solid var(--surf);
-  display:flex;align-items:center;justify-content:center;
-}
+.plan-tab-star{position:absolute;top:-3px;right:-2px;width:12px;height:12px;border-radius:50%;background:#F59E0B;border:2px solid var(--navy);display:flex;align-items:center;justify-content:center}
 .plan-tab-star svg{fill:#fff}
+.plan-tab{position:relative}
 
-/* Ripple */
-.ripple-el{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.22);transform:scale(0);animation:rippleAnim .5s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
-
-/* ── BODY ────────────────────────────────────── */
+/* ── ROW 3: BODY (no scroll) ── */
 .body{
-  flex:1;overflow-y:auto;overflow-x:hidden;
   background:var(--surf);
-  padding:12px 16px max(96px,calc(80px + env(safe-area-inset-bottom)));
-  overscroll-behavior:contain;min-height:0;
-  scrollbar-width:none;
-}
-.body::-webkit-scrollbar{display:none}
-
-/* ── PLAN PANEL ──────────────────────────────── */
-.plan-panel{display:none}
-.plan-panel.active{display:block;animation:panelIn .26s cubic-bezier(.2,0,0,1) both}
-@keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-.panel-head{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:12px;
-}
-.panel-title{font-size:18px;font-weight:700;color:var(--on-surf);letter-spacing:-.2px}
-.panel-cap{
-  background:var(--surf-card);border:1px solid var(--surf-line);
-  padding:4px 12px;border-radius:var(--r-pill);
-  font-family:var(--mono);font-size:11px;font-weight:500;color:var(--on-surf-mid);
-  font-feature-settings:"tnum";
-}
-
-/* Best-value banner */
-.best-banner{
-  display:flex;align-items:center;gap:8px;
-  background:#FEF3C7;border:1px solid #FCD34D;
-  border-radius:var(--r-m);padding:10px 14px;margin-bottom:12px;
-  font-size:12px;font-weight:500;color:#92400E;
-}
-.best-banner svg{stroke:#D97706;flex-shrink:0}
-
-/* ── SERVICE BUNDLE CARD ─────────────────────── */
-/* All three services in a single rounded card with dividers */
-.bundle-card{
-  background:var(--surf-card);
-  border-radius:var(--r-xl);
-  border:1px solid var(--surf-line);
-  box-shadow:var(--sh-card);
   overflow:hidden;
-  margin-bottom:12px;
-}
-
-.svc-row{
-  padding:16px 18px;
-  border-bottom:1px solid var(--surf-line);
+  display:flex;flex-direction:column;
+  border-radius:28px 28px 0 0;
   position:relative;
 }
-.svc-row:last-child{border-bottom:none}
 
-.svc-top{
+/* Plan heading inside body */
+.plan-heading{
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:14px;
+  padding:14px 16px 0;flex-shrink:0;
 }
-.svc-left{display:flex;align-items:center;gap:12px}
-.svc-pip{width:4px;height:36px;border-radius:var(--r-pill);flex-shrink:0}
-.svc-row.voice-row .svc-pip{background:var(--voice)}
-.svc-row.sms-row   .svc-pip{background:var(--sms)}
-.svc-row.data-row  .svc-pip{background:var(--data)}
+.plan-heading-name{
+  font-size:20px;font-weight:700;color:var(--txt);letter-spacing:-.3px;
+  display:flex;align-items:center;gap:8px;
+}
+.plan-heading-badge{
+  font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--rp);
+  background:var(--navy);color:#fff;letter-spacing:.2px;
+  font-family:var(--mono);font-feature-settings:"tnum";
+}
+.plan-heading-cap{
+  font-size:12px;font-weight:500;color:var(--txt-d);
+  font-family:var(--mono);font-feature-settings:"tnum";
+}
 
-.svc-info{}
-.svc-name{font-size:14px;font-weight:600;color:var(--on-surf);line-height:1.2}
-.svc-hint{font-size:12px;color:var(--on-surf-dim);margin-top:1px}
-.svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-.svc-val{
-  font-family:var(--mono);font-size:17px;font-weight:700;
-  letter-spacing:-.01em;font-feature-settings:"tnum";
-  transition:transform .15s cubic-bezier(.34,1.56,.64,1);
-}
-.svc-row.voice-row .svc-val{color:var(--voice)}
-.svc-row.sms-row   .svc-val{color:var(--sms)}
-.svc-row.data-row  .svc-val{color:var(--data)}
-.svc-val.bump{transform:scale(1.07)}
+/* Service tab switcher */
+.svc-tabs{display:flex;gap:0;padding:10px 16px 0;flex-shrink:0}
+.svc-tab{flex:1;padding:8px 4px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;border-bottom:2px solid transparent;transition:border-color .16s}
+.svc-tab-dot{width:8px;height:8px;border-radius:50%;opacity:.35;transition:opacity .16s,transform .16s}
+.svc-tab-label{font-size:11px;font-weight:500;color:var(--txt-d);transition:color .16s}
+.svc-tab.active .svc-tab-dot{opacity:1;transform:scale(1.2)}
+.svc-tab.active .svc-tab-label{color:var(--txt)}
+.svc-tab.active{border-bottom-color:currentColor}
+.svc-tab.voice-t{color:var(--voice)}
+.svc-tab.sms-t{color:var(--sms)}
+.svc-tab.data-t{color:var(--data)}
+
+/* Service panels */
+.svc-panel{display:none;flex:1;flex-direction:column;padding:12px 16px;gap:10px;overflow:hidden}
+.svc-panel.active{display:flex;animation:fadeUp .2s cubic-bezier(.2,0,0,1)}
+
+/* Service name row */
+.sp-head{display:flex;align-items:center;justify-content:space-between}
+.sp-name{font-size:18px;font-weight:700;color:var(--txt);letter-spacing:-.2px}
+.sp-val{font-family:var(--mono);font-size:22px;font-weight:700;font-feature-settings:"tnum";transition:transform .15s cubic-bezier(.34,1.56,.64,1)}
+.sp-val.bump{transform:scale(1.08)}
+.voice-panel .sp-val{color:var(--voice)}
+.sms-panel   .sp-val{color:var(--sms)}
+.data-panel  .sp-val{color:var(--data)}
 
 /* Quick chips */
-.quick-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
-.qchip{
-  padding:4px 11px;border-radius:var(--r-pill);
-  border:1px solid var(--surf-line);
-  background:var(--surf);
-  font-size:11px;font-weight:500;color:var(--on-surf-mid);
-  cursor:pointer;transition:all .13s;outline:none;
-}
-.svc-row.voice-row .qchip.active{background:#FEE2E2;border-color:var(--voice);color:#B91C1C}
-.svc-row.sms-row   .qchip.active{background:#EDE9FE;border-color:var(--sms);color:#6D28D9}
-.svc-row.data-row  .qchip.active{background:#D1FAE5;border-color:var(--data);color:#065F46}
+.qchips{display:flex;gap:6px;flex-wrap:wrap}
+.qchip{padding:6px 14px;border-radius:var(--rp);border:1.5px solid var(--line);background:var(--card);font-size:12px;font-weight:500;color:var(--txt-m);cursor:pointer;transition:all .13s;outline:none}
+.voice-panel .qchip.active{background:#FEE2E2;border-color:var(--voice);color:#B91C1C}
+.sms-panel   .qchip.active{background:#EDE9FE;border-color:var(--sms);color:#6D28D9}
+.data-panel  .qchip.active{background:#D1FAE5;border-color:var(--data);color:#065F46}
 
-/* M3-style slider */
-.slider-wrap{position:relative;margin-bottom:4px}
-.slider-tip{
-  position:absolute;top:-28px;
-  background:var(--on-surf);color:#fff;
-  padding:3px 8px;border-radius:var(--r-s);
-  font-family:var(--mono);font-size:11px;font-weight:700;
-  white-space:nowrap;pointer-events:none;opacity:0;
-  transition:opacity .14s;transform:translateX(-50%);
-  font-feature-settings:"tnum";
-}
-.slider-tip::after{
-  content:'';position:absolute;bottom:-4px;left:50%;
-  transform:translateX(-50%);
-  border:4px solid transparent;border-bottom:none;
-  border-top-color:var(--on-surf);
-}
+/* Slider */
+.slider-section{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.slider-track-wrap{position:relative}
+.slider-tip{position:absolute;top:-28px;background:var(--txt);color:#fff;padding:3px 8px;border-radius:var(--rs);font-family:var(--mono);font-size:11px;font-weight:700;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .14s;transform:translateX(-50%);font-feature-settings:"tnum"}
+.slider-tip::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-bottom:none;border-top-color:var(--txt)}
 .slider-tip.show{opacity:1}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--line);border-radius:var(--rp);outline:none;cursor:pointer;border:none;display:block}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;cursor:pointer;transition:box-shadow .14s,transform .12s}
+.voice-panel input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--voice),0 2px 8px rgba(0,0,0,.2)}
+.sms-panel   input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--sms),0 2px 8px rgba(0,0,0,.2)}
+.data-panel  input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--data),0 2px 8px rgba(0,0,0,.2)}
+.voice-panel input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);box-shadow:0 0 0 8px rgba(255,107,107,.15),0 0 0 3px var(--voice)}
+.sms-panel   input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);box-shadow:0 0 0 8px rgba(167,139,250,.15),0 0 0 3px var(--sms)}
+.data-panel  input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);box-shadow:0 0 0 8px rgba(52,211,153,.15),0 0 0 3px var(--data)}
+.sc-limits{display:flex;justify-content:space-between;font-size:10px;color:var(--txt-d);font-weight:500;font-feature-settings:"tnum"}
 
-input[type=range]{
-  -webkit-appearance:none;appearance:none;
-  width:100%;height:3px;background:var(--surf-line);
-  border-radius:var(--r-pill);outline:none;cursor:pointer;border:none;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;appearance:none;
-  width:22px;height:22px;border-radius:50%;
-  background:#fff;
-  cursor:pointer;
-  transition:box-shadow .14s,transform .12s;
-}
-.svc-row.voice-row input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--voice),0 2px 6px rgba(0,0,0,.2)}
-.svc-row.sms-row   input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--sms),0 2px 6px rgba(0,0,0,.2)}
-.svc-row.data-row  input[type=range]::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--data),0 2px 6px rgba(0,0,0,.2)}
-.svc-row.voice-row input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);box-shadow:0 0 0 6px rgba(255,107,107,.18),0 0 0 3px var(--voice),0 2px 6px rgba(0,0,0,.2)}
-.svc-row.sms-row   input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);box-shadow:0 0 0 6px rgba(167,139,250,.18),0 0 0 3px var(--sms),0 2px 6px rgba(0,0,0,.2)}
-.svc-row.data-row  input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2);box-shadow:0 0 0 6px rgba(52,211,153,.18),0 0 0 3px var(--data),0 2px 6px rgba(0,0,0,.2)}
-input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;border:3px solid currentColor;background:#fff;cursor:pointer}
-
-.sc-limits{
-  display:flex;justify-content:space-between;
-  font-size:10px;color:var(--on-surf-dim);font-weight:500;
-  font-feature-settings:"tnum";
-}
-
-/* Zero state */
-.svc-row.is-zero .svc-val{color:var(--on-surf-dim);opacity:.45}
-.svc-row.is-zero .svc-name{color:var(--on-surf-dim)}
-
-/* ── SECURITY STRIP ──────────────────────────── */
-.sec-strip{
-  display:flex;align-items:center;justify-content:center;gap:18px;
-  padding:12px 0 6px;
-  border-top:1px solid var(--surf-line);margin-top:4px;
-}
-.sec-item{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:500;color:var(--on-surf-dim);letter-spacing:.15px}
-.sec-item svg{width:12px;height:12px;stroke:var(--on-surf-dim);opacity:.65;stroke-width:2.5;stroke-linecap:round}
-.powered-by{text-align:center;padding:6px 0 4px;font-size:10px;color:var(--on-surf-dim);letter-spacing:.3px}
-
-/* ── STICKY PURCHASE RAIL ────────────────────── */
+/* ── ROW 4: PURCHASE BAR ── */
 .purchase-bar{
-  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);
+  border-top:1px solid var(--line);
   padding:10px 16px max(16px,env(safe-area-inset-bottom));
-  background:var(--surf-card);
-  border-top:1px solid var(--surf-line);
-  z-index:50;backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:12px;
+  flex-shrink:0;
 }
-.purchase-bar-inner{display:flex;align-items:center;gap:12px}
-.purchase-price-col{flex:none}
-.purchase-price-label{font-size:10px;color:var(--on-surf-dim);font-weight:500;letter-spacing:.2px;text-transform:uppercase}
-.purchase-price-val{
-  font-family:var(--mono);font-size:22px;font-weight:700;
-  color:var(--on-surf);letter-spacing:-.02em;font-feature-settings:"tnum";
-  transition:transform .15s cubic-bezier(.34,1.56,.64,1);
-}
-.purchase-price-val.bump{transform:scale(1.06)}
-.purchase-btn{
-  flex:1;padding:15px 20px;
-  border-radius:var(--r-pill);border:none;
-  background:var(--navy);color:#fff;
-  font-family:var(--sans);font-size:15px;font-weight:700;
-  cursor:pointer;letter-spacing:.01em;
-  box-shadow:0 4px 16px rgba(7,16,31,.3);
-  transition:box-shadow .2s,transform .12s,background .2s;
-  position:relative;overflow:hidden;
-  min-height:50px;
-}
-.purchase-btn:active{transform:scale(.97);box-shadow:0 2px 8px rgba(7,16,31,.2)}
+.pb-price-col{flex:none}
+.pb-label{font-size:10px;color:var(--txt-d);font-weight:500;letter-spacing:.2px;text-transform:uppercase}
+.pb-val{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--txt);letter-spacing:-.02em;font-feature-settings:"tnum";transition:transform .15s cubic-bezier(.34,1.56,.64,1)}
+.pb-val.bump{transform:scale(1.06)}
+.pb-btn{flex:1;padding:15px 20px;border-radius:var(--rp);border:none;background:var(--navy);color:#fff;font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,95,142,.3);transition:box-shadow .2s,transform .12s;position:relative;overflow:hidden;min-height:50px;letter-spacing:.01em}
+.pb-btn:active{transform:scale(.97);box-shadow:0 2px 8px rgba(0,95,142,.2)}
 
-/* Plan-colour accent on buy button */
-.purchase-btn[data-plan=daily]   {background:#1A3A5C}
-.purchase-btn[data-plan=3days]   {background:#4A1D6E}
-.purchase-btn[data-plan=weekly]  {background:#064E3B}
-.purchase-btn[data-plan=2weeks]  {background:#0C2B5E}
-.purchase-btn[data-plan=monthly] {background:#1C1C3D}
-
-/* ── BOTTOM SHEET ────────────────────────────── */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.56);
-  display:none;align-items:flex-end;z-index:200;
-}
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);display:none;align-items:flex-end;z-index:200}
 .modal-overlay.open{display:flex}
-.modal-sheet{
-  background:var(--surf-card);width:100%;
-  border-radius:28px 28px 0 0;
-  padding-bottom:max(24px,env(safe-area-inset-bottom));
-  animation:sheetUp .3s cubic-bezier(.2,0,0,1);
-  box-shadow:0 -4px 24px rgba(0,0,0,.18);
-  max-height:92vh;overflow-y:auto;
-}
+.modal-sheet{background:var(--card);width:100%;border-radius:28px 28px 0 0;padding-bottom:max(24px,env(safe-area-inset-bottom));animation:sheetUp .3s cubic-bezier(.2,0,0,1);box-shadow:0 -4px 24px rgba(0,0,0,.15);max-height:92vh;overflow-y:auto}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
-.sheet-handle{width:32px;height:4px;background:var(--surf-line);border-radius:var(--r-pill);margin:12px auto 0}
-.sheet-hdr{
-  padding:16px 24px 12px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.sheet-title{font-size:18px;font-weight:700;color:var(--on-surf);letter-spacing:-.2px}
-.sheet-close{
-  width:32px;height:32px;border-radius:50%;border:none;
-  background:var(--surf);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;color:var(--on-surf-mid);transition:background .14s;
-}
-.sheet-close:active{background:var(--surf-line)}
+.sheet-handle{width:32px;height:4px;background:var(--line);border-radius:var(--rp);margin:12px auto 0}
+.sheet-hdr{padding:16px 24px 10px;display:flex;align-items:center;justify-content:space-between}
+.sheet-title{font-size:18px;font-weight:700;color:var(--txt);letter-spacing:-.2px}
+.sheet-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--surf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--txt-m);transition:background .14s}
+.sheet-close:active{background:var(--line)}
 .sheet-body{padding:0 24px 8px}
-.sheet-ref{
-  background:var(--surf);border-radius:var(--r-m);
-  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:16px;border:1px solid var(--surf-line);
-}
-.sheet-ref-label{font-size:11px;font-weight:500;color:var(--on-surf-dim);letter-spacing:.3px;text-transform:uppercase}
-.sheet-ref-num{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.05em;font-feature-settings:"tnum"}
-.sheet-section-label{font-size:11px;font-weight:500;color:var(--on-surf-dim);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
-.sheet-rows{border:1px solid var(--surf-line);border-radius:var(--r-l);overflow:hidden;margin-bottom:16px}
-.srow{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--surf-line)}
+.sheet-ref{background:var(--surf);border-radius:var(--rm);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;border:1px solid var(--line)}
+.sheet-ref-label{font-size:11px;font-weight:500;color:var(--txt-d);letter-spacing:.3px;text-transform:uppercase}
+.sheet-ref-num{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.05em}
+.sheet-sec-label{font-size:11px;font-weight:500;color:var(--txt-d);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.sheet-rows{border:1px solid var(--line);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line)}
 .srow:last-child{border-bottom:none}
-.srow-k{font-size:13px;color:var(--on-surf-mid)}
-.srow-v{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--on-surf);font-feature-settings:"tnum"}
-.sheet-total{
-  background:var(--navy);border-radius:var(--r-l);
-  padding:16px;display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:16px;
-}
+.srow-k{font-size:13px;color:var(--txt-m)}
+.srow-v{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt);font-feature-settings:"tnum"}
+.sheet-total{background:var(--navy);border-radius:var(--rl);padding:16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .stotal-label{font-size:14px;font-weight:500;color:rgba(255,255,255,.6)}
-.stotal-val{font-family:var(--mono);font-size:26px;font-weight:700;color:#fff;letter-spacing:-.02em;font-feature-settings:"tnum","ss01"}
+.stotal-val{font-family:var(--mono);font-size:26px;font-weight:700;color:#fff;letter-spacing:-.02em;font-feature-settings:"tnum"}
 .sheet-btns{display:flex;gap:8px}
-.btn-cancel{
-  flex:1;padding:15px;border-radius:var(--r-pill);
-  border:1.5px solid var(--surf-line);background:transparent;
-  font-family:var(--sans);font-size:14px;font-weight:500;color:var(--on-surf-mid);cursor:pointer;
-  transition:background .14s;
-}
+.btn-cancel{flex:1;padding:15px;border-radius:var(--rp);border:1.5px solid var(--line);background:transparent;font-family:var(--sans);font-size:14px;font-weight:500;color:var(--txt-m);cursor:pointer;transition:background .14s}
 .btn-cancel:active{background:var(--surf)}
-.btn-pay{
-  flex:2;padding:15px;border-radius:var(--r-pill);border:none;
-  background:var(--navy);color:#fff;
-  font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 16px rgba(7,16,31,.3);
-  position:relative;overflow:hidden;
-  transition:box-shadow .2s,transform .12s;
-}
-.btn-pay:active{transform:scale(.97);box-shadow:0 2px 8px rgba(7,16,31,.18)}
+.btn-pay{flex:2;padding:15px;border-radius:var(--rp);border:none;background:var(--navy);color:#fff;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,95,142,.3);position:relative;overflow:hidden;transition:box-shadow .2s,transform .12s}
+.btn-pay:active{transform:scale(.97)}
 
-/* ── SNACKBAR ────────────────────────────────── */
-.snackbar{
-  position:fixed;bottom:max(88px,calc(78px + env(safe-area-inset-bottom)));
-  left:16px;right:16px;
-  background:#1A2035;color:#fff;
-  padding:13px 16px;border-radius:var(--r-m);
-  font-size:14px;display:flex;align-items:center;gap:10px;
-  box-shadow:var(--sh-float);
-  opacity:0;transform:translateY(6px);pointer-events:none;
-  transition:opacity .2s,transform .2s;z-index:300;
-}
+/* ── SNACKBAR ── */
+.snackbar{position:fixed;bottom:max(90px,calc(80px + env(safe-area-inset-bottom)));left:16px;right:16px;background:#1A2035;color:#fff;padding:13px 16px;border-radius:var(--rm);font-size:14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shf);opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .2s,transform .2s;z-index:300}
 .snackbar.show{opacity:1;transform:none;pointer-events:auto}
-.snackbar-icon{flex-shrink:0;width:18px;height:18px}
-.snackbar-icon svg{width:100%;height:100%}
 
-/* ── SESSION / NUDGE TOASTS ──────────────────── */
-.session-alert,.nudge-banner{
-  position:fixed;
-  bottom:max(88px,calc(78px + env(safe-area-inset-bottom)));
-  left:16px;right:16px;
-  padding:11px 16px;border-radius:var(--r-m);
-  font-size:13px;font-weight:500;
-  display:none;align-items:center;gap:8px;
-  z-index:290;box-shadow:var(--sh-card);
-  animation:toastIn .26s cubic-bezier(.2,0,0,1);
-}
-@keyframes toastIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* ── SESSION / NUDGE ── */
+.session-alert,.nudge-banner{position:fixed;bottom:max(90px,calc(80px + env(safe-area-inset-bottom)));left:16px;right:16px;padding:11px 16px;border-radius:var(--rm);font-size:13px;font-weight:500;display:none;align-items:center;gap:8px;z-index:290;box-shadow:var(--sh);animation:fadeUp .26s cubic-bezier(.2,0,0,1)}
 .session-alert{background:#FFF8E1;color:#78350F;border:1px solid #FDE68A}
-.session-alert svg{stroke:#D97706;flex-shrink:0}
-.nudge-banner{background:var(--navy-mid);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.08)}
+.session-alert svg{stroke:#D97706;flex-shrink:0;width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round}
+.nudge-banner{background:var(--navy);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.08)}
 .session-alert.show,.nudge-banner.show{display:flex}
 
-/* ── AI CHAT FAB ─────────────────────────────── */
-.ec-fab{
-  position:fixed;bottom:max(80px,calc(72px + env(safe-area-inset-bottom)));
-  right:16px;
-  width:52px;height:52px;border-radius:50%;
-  background:var(--cyan);border:none;cursor:pointer;z-index:8000;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 20px rgba(0,194,255,.35),0 2px 8px rgba(0,0,0,.15);
-  transition:transform .2s,box-shadow .2s;
-}
+/* ── AI FAB ── */
+.ec-fab{position:fixed;bottom:max(84px,calc(74px + env(safe-area-inset-bottom)));right:16px;width:52px;height:52px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;z-index:8000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,194,255,.35),0 2px 8px rgba(0,0,0,.15);transition:transform .2s}
 .ec-fab:active{transform:scale(.9)}
 .ec-fab svg{width:22px;height:22px;stroke:var(--navy);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.ec-badge{
-  position:absolute;top:-3px;right:-3px;
-  width:17px;height:17px;border-radius:50%;
-  background:#EF4444;border:2px solid var(--surf-card);
-  font-size:9px;font-weight:700;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity .2s;
-}
+.ec-badge{position:absolute;top:-3px;right:-3px;width:17px;height:17px;border-radius:50%;background:#EF4444;border:2px solid var(--card);font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
 .ec-badge.show{opacity:1}
 
-/* Chat Panel */
-.ec-panel{
-  position:fixed;
-  bottom:max(148px,calc(138px + env(safe-area-inset-bottom)));
-  right:16px;
-  width:calc(100vw - 32px);max-width:340px;
-  background:var(--surf-card);
-  border-radius:var(--r-xl);
-  border:1px solid var(--surf-line);
-  box-shadow:var(--sh-float);
-  z-index:8001;display:flex;flex-direction:column;overflow:hidden;
-  transform:scale(.88) translateY(16px);opacity:0;
-  transition:transform .24s cubic-bezier(.2,0,0,1),opacity .2s;
-  pointer-events:none;max-height:68vh;
-}
+/* Chat panel */
+.ec-panel{position:fixed;bottom:max(152px,calc(140px + env(safe-area-inset-bottom)));right:16px;width:calc(100vw - 32px);max-width:340px;background:var(--card);border-radius:var(--rxl);border:1px solid var(--line);box-shadow:var(--shf);z-index:8001;display:flex;flex-direction:column;overflow:hidden;transform:scale(.88) translateY(16px);opacity:0;transition:transform .24s cubic-bezier(.2,0,0,1),opacity .2s;pointer-events:none;max-height:60vh}
 .ec-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
-.ec-phead{background:var(--navy);padding:13px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.ec-avatar{width:34px;height:34px;border-radius:50%;background:var(--cyan-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ec-head{background:var(--navy);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ec-avatar{width:34px;height:34px;border-radius:50%;background:rgba(0,194,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ec-avatar img{width:22px;height:22px;object-fit:contain}
-.ec-phead-name{font-size:14px;font-weight:700;color:#fff}
-.ec-phead-status{font-size:11px;color:rgba(255,255,255,.48);display:flex;align-items:center;gap:4px;margin-top:1px}
-.ec-online-dot{width:6px;height:6px;border-radius:50%;background:#34D399}
+.ec-head-name{font-size:14px;font-weight:700;color:#fff}
+.ec-head-status{font-size:11px;color:rgba(255,255,255,.48);display:flex;align-items:center;gap:4px;margin-top:1px}
+.ec-online{width:6px;height:6px;border-radius:50%;background:#34D399}
 .ec-close{margin-left:auto;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:18px;padding:4px 8px}
-.ec-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:100px}
+.ec-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:80px}
 .ec-msgs::-webkit-scrollbar{display:none}
-.ec-bubble{max-width:82%;padding:10px 13px;border-radius:var(--r-l);font-size:13px;line-height:1.5;word-break:break-word}
-.ec-bubble.bot{background:var(--surf);color:var(--on-surf);border-bottom-left-radius:4px;align-self:flex-start}
+.ec-bubble{max-width:82%;padding:10px 13px;border-radius:var(--rl);font-size:13px;line-height:1.5;word-break:break-word}
+.ec-bubble.bot{background:var(--surf);color:var(--txt);border-bottom-left-radius:4px;align-self:flex-start}
 .ec-bubble.user{background:var(--navy);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
-.ec-typing{display:flex;gap:4px;align-items:center;padding:10px 13px;background:var(--surf);border-radius:var(--r-l);border-bottom-left-radius:4px;align-self:flex-start}
-.ec-typing span{width:7px;height:7px;border-radius:50%;background:var(--on-surf-dim);animation:ecDot 1.2s ease-in-out infinite}
+.ec-typing{display:flex;gap:4px;align-items:center;padding:10px 13px;background:var(--surf);border-radius:var(--rl);border-bottom-left-radius:4px;align-self:flex-start}
+.ec-typing span{width:7px;height:7px;border-radius:50%;background:var(--txt-d);animation:ecDot 1.2s ease-in-out infinite}
 .ec-typing span:nth-child(2){animation-delay:.2s}
 .ec-typing span:nth-child(3){animation-delay:.4s}
 @keyframes ecDot{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1);opacity:1}}
-.ec-suggestions{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 8px;flex-shrink:0}
-.ec-chip{
-  font-size:12px;font-weight:500;color:var(--navy);
-  background:var(--cyan-dim);border:1px solid rgba(0,194,255,.25);
-  padding:5px 12px;border-radius:var(--r-pill);cursor:pointer;
-  transition:background .13s;white-space:nowrap;
-}
-.ec-chip:active{background:rgba(0,194,255,.3)}
-.ec-footer{display:flex;gap:8px;padding:8px 12px;border-top:1px solid var(--surf-line);flex-shrink:0}
-.ec-input{
-  flex:1;border:1px solid var(--surf-line);border-radius:var(--r-pill);
-  padding:9px 16px;font-family:var(--sans);font-size:13px;
-  color:var(--on-surf);background:var(--surf);outline:none;
-  transition:border-color .16s,box-shadow .16s;
-}
+.ec-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 8px;flex-shrink:0}
+.ec-chip{font-size:12px;font-weight:500;color:var(--navy);background:var(--cyan-dim);border:1px solid rgba(0,194,255,.25);padding:5px 12px;border-radius:var(--rp);cursor:pointer;white-space:nowrap}
+.ec-footer{display:flex;gap:8px;padding:8px 12px;border-top:1px solid var(--line);flex-shrink:0}
+.ec-input{flex:1;border:1px solid var(--line);border-radius:var(--rp);padding:9px 16px;font-family:var(--sans);font-size:13px;color:var(--txt);background:var(--surf);outline:none;transition:border-color .15s,box-shadow .15s}
 .ec-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim)}
-.ec-send{
-  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
-  background:var(--navy);display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:transform .13s;
-}
+.ec-send{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .13s}
 .ec-send:active{transform:scale(.9)}
 .ec-send svg{width:17px;height:17px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 
-/* ── MISC ────────────────────────────────────── */
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-.shake{animation:shake .4s cubic-bezier(.36,.07,.19,.97)}
-
-/* Stagger panel entrance */
-.plan-panel.active .bundle-card:nth-child(2){animation:panelIn .26s .04s cubic-bezier(.2,0,0,1) both}
-
-/* light theme only — no dark mode override */
+/* Ripple */
+.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.22);transform:scale(0);animation:ripAnim .5s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes ripAnim{to{transform:scale(4);opacity:0}}
 </style>
 </head>
 <body>
 
-<!-- LOADING CURTAIN -->
+<!-- CURTAIN -->
 <div class="curtain" id="curtain">
-  <div class="curtain-brand">
-    <img src="assets/econet.png" alt="Econet">
-    <div class="curtain-brand-sep"></div>
-    <img src="assets/ecocash.png" alt="EcoCash">
-  </div>
-  <div class="curtain-spinner">
-    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-      <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,.1)" stroke-width="3"/>
-      <path d="M22 4a18 18 0 0 1 18 18" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </div>
-  <div>
-    <div class="curtain-label" id="cLabel">Loading</div>
-    <div class="curtain-sub" id="cSub">Connecting to EcoCash…</div>
-  </div>
-  <div class="curtain-bar"><div class="curtain-fill"></div></div>
+  <div class="c-brand"><img src="assets/econet.png" alt="Econet"><div class="c-sep"></div><img src="assets/ecocash.png" alt="EcoCash"></div>
+  <div class="c-spin"><svg width="44" height="44" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,.1)" stroke-width="3"/><path d="M22 4a18 18 0 0 1 18 18" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/></svg></div>
+  <div><div class="c-lbl" id="cLabel">Loading</div><div class="c-sub" id="cSub">Connecting to EcoCash…</div></div>
+  <div class="c-bar"><div class="c-fill"></div></div>
 </div>
 
 <div class="screen" id="screen">
 
-  <!-- ══ COMMAND SURFACE ══ -->
-  <div class="command" id="mainHeader">
-    <div class="cmd-bar">
-      <div class="brand">
-        <img src="assets/econet.png" alt="Econet">
-        <div class="brand-sep"></div>
-        <img src="assets/ecocash.png" alt="EcoCash">
-      </div>
-      <div class="sp-badge" id="socialProof"></div>
+  <!-- ROW 1: HEADER -->
+  <div class="hdr">
+    <div class="hdr-top">
+      <div class="brand"><img src="assets/econet.png" alt="Econet"><div class="brand-sep"></div><img src="assets/ecocash.png" alt="EcoCash"></div>
+      <div class="sp-badge" id="socialProof"><div class="sp-dot"></div><span>Loading…</span></div>
     </div>
-
-    <div class="cmd-stage">
-      <div class="cmd-label">Your bundle</div>
-      <div class="cmd-price-row">
-        <span class="cmd-cur">USD</span>
-        <span class="cmd-amount" id="headerPrice">0.00</span>
-      </div>
-
-      <!-- Service bars -->
-      <div class="svc-bars">
-        <div class="svc-bar-row">
-          <div class="svc-bar-dot" style="background:#FF6B6B"></div>
-          <div class="svc-bar-label">Voice</div>
-          <div class="svc-bar-track"><div class="svc-bar-fill" id="voiceBar" style="background:#FF6B6B;width:100%"></div></div>
-          <div class="svc-bar-val" id="voiceBarVal">—</div>
-        </div>
-        <div class="svc-bar-row">
-          <div class="svc-bar-dot" style="background:#A78BFA"></div>
-          <div class="svc-bar-label">SMS</div>
-          <div class="svc-bar-track"><div class="svc-bar-fill" id="smsBar" style="background:#A78BFA;width:100%"></div></div>
-          <div class="svc-bar-val" id="smsBarVal">—</div>
-        </div>
-        <div class="svc-bar-row">
-          <div class="svc-bar-dot" style="background:#34D399"></div>
-          <div class="svc-bar-label">Data</div>
-          <div class="svc-bar-track"><div class="svc-bar-fill" id="dataBar" style="background:#34D399;width:100%"></div></div>
-          <div class="svc-bar-val" id="dataBarVal">—</div>
-        </div>
-      </div>
-
-      <!-- plan chip label -->
-      <span id="planTag" style="display:none">Daily</span>
+    <div class="hdr-price">
+      <span class="hdr-cur">USD</span>
+      <span class="hdr-amount" id="headerPrice">0.00</span>
     </div>
+    <div class="svc-bars">
+      <div class="svc-bar-row">
+        <div class="svc-bar-dot" style="background:var(--voice)"></div>
+        <div class="svc-bar-label">Voice</div>
+        <div class="svc-bar-track"><div class="svc-bar-fill" id="voiceBar" style="background:var(--voice);width:100%"></div></div>
+        <div class="svc-bar-val" id="voiceBarVal">—</div>
+      </div>
+      <div class="svc-bar-row">
+        <div class="svc-bar-dot" style="background:var(--sms)"></div>
+        <div class="svc-bar-label">SMS</div>
+        <div class="svc-bar-track"><div class="svc-bar-fill" id="smsBar" style="background:var(--sms);width:100%"></div></div>
+        <div class="svc-bar-val" id="smsBarVal">—</div>
+      </div>
+      <div class="svc-bar-row">
+        <div class="svc-bar-dot" style="background:var(--data)"></div>
+        <div class="svc-bar-label">Data</div>
+        <div class="svc-bar-track"><div class="svc-bar-fill" id="dataBar" style="background:var(--data);width:100%"></div></div>
+        <div class="svc-bar-val" id="dataBarVal">—</div>
+      </div>
+    </div>
+    <span id="planTag" style="display:none"></span>
   </div>
 
-  <!-- ══ PLAN RAIL ══ -->
+  <!-- ROW 2: PLAN RAIL -->
   <div class="plan-rail-wrap">
     <div class="plan-rail" id="pickerRow" role="tablist">
-      <button class="plan-tab active" data-key="daily" role="tab" aria-selected="true" onclick="switchPlan('daily')">
-        <span class="plan-tab-name">Daily</span>
-        <span class="plan-tab-price" id="pp-daily">$0.60</span>
+      <button class="plan-tab active" data-key="daily" role="tab" onclick="switchPlan('daily')">
+        <span class="plan-tab-name">Daily</span><span class="plan-tab-price" id="pp-daily">$0.60</span>
       </button>
-      <button class="plan-tab" data-key="3days" role="tab" aria-selected="false" onclick="switchPlan('3days')">
-        <span class="plan-tab-name">3 Days</span>
-        <span class="plan-tab-price" id="pp-3days">$1.40</span>
+      <button class="plan-tab" data-key="3days" role="tab" onclick="switchPlan('3days')">
+        <span class="plan-tab-name">3 Days</span><span class="plan-tab-price" id="pp-3days">$1.40</span>
       </button>
-      <button class="plan-tab" data-key="weekly" role="tab" aria-selected="false" onclick="switchPlan('weekly')">
-        <span class="plan-tab-name">Weekly</span>
-        <span class="plan-tab-price" id="pp-weekly">$2.80</span>
+      <button class="plan-tab" data-key="weekly" role="tab" onclick="switchPlan('weekly')">
+        <span class="plan-tab-name">Weekly</span><span class="plan-tab-price" id="pp-weekly">$2.80</span>
       </button>
-      <button class="plan-tab" data-key="2weeks" role="tab" aria-selected="false" onclick="switchPlan('2weeks')">
-        <span class="plan-tab-name">2 Weeks</span>
-        <span class="plan-tab-price" id="pp-2weeks">$5.20</span>
+      <button class="plan-tab" data-key="2weeks" role="tab" onclick="switchPlan('2weeks')">
+        <span class="plan-tab-name">2 Wks</span><span class="plan-tab-price" id="pp-2weeks">$5.20</span>
       </button>
-      <button class="plan-tab" data-key="monthly" role="tab" aria-selected="false" onclick="switchPlan('monthly')">
-        <span class="plan-tab-name">Monthly</span>
-        <span class="plan-tab-price" id="pp-monthly">$9.90</span>
-        <div class="plan-tab-star" title="Best value">
-          <svg width="7" height="7" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
-        </div>
+      <button class="plan-tab" data-key="monthly" role="tab" onclick="switchPlan('monthly')">
+        <span class="plan-tab-name">Monthly</span><span class="plan-tab-price" id="pp-monthly">$9.90</span>
+        <div class="plan-tab-star"><svg width="7" height="7" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
       </button>
     </div>
   </div>
 
-  <!-- ══ SCROLLABLE BODY ══ -->
+  <!-- ROW 3: BODY -->
   <div class="body" id="bodyScroll">
 
-    <!-- ── DAILY PANEL ── -->
-    <div class="plan-panel active" id="panel-daily">
-      <div class="panel-head">
-        <div class="panel-title">Daily Bundle</div>
-        <div class="panel-cap">Max $0.60</div>
+    <!-- Plan heading -->
+    <div class="plan-heading">
+      <div class="plan-heading-name">
+        <span id="planHeadingName">Daily Bundle</span>
+        <span class="plan-heading-badge" id="planHeadingBadge">$0.60</span>
       </div>
-
-      <div class="bundle-card">
-        <!-- Voice -->
-        <div class="svc-row voice-row" id="card-sr-voice-daily">
-          <div class="svc-top">
-            <div class="svc-left">
-              <div class="svc-pip"></div>
-              <div class="svc-info">
-                <div class="svc-name">Voice calls</div>
-                <div class="svc-hint">Local minutes</div>
-              </div>
-            </div>
-            <div class="svc-right"><div class="svc-val" id="sv-daily">20 Min</div></div>
-          </div>
-          <div class="quick-chips" data-plan="daily" data-type="voice" data-max="20"></div>
-          <div class="slider-wrap">
-            <div class="slider-tip" id="tip-sr-voice-daily">0 Min</div>
-            <input type="range" id="sr-voice-daily" min="0" max="20" value="20" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" oninput="onSlide('daily','voice',this)">
-          </div>
-          <div class="sc-limits"><span>0 Min</span><span>20 Min</span></div>
-        </div>
-        <!-- SMS -->
-        <div class="svc-row sms-row" id="card-sr-sms-daily">
-          <div class="svc-top">
-            <div class="svc-left">
-              <div class="svc-pip"></div>
-              <div class="svc-info">
-                <div class="svc-name">SMS messages</div>
-                <div class="svc-hint">Text messages</div>
-              </div>
-            </div>
-            <div class="svc-right"><div class="svc-val" id="ss-daily">25 SMS</div></div>
-          </div>
-          <div class="quick-chips" data-plan="daily" data-type="sms" data-max="25"></div>
-          <div class="slider-wrap">
-            <div class="slider-tip" id="tip-sr-sms-daily">0 SMS</div>
-            <input type="range" id="sr-sms-daily" min="0" max="25" value="25" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" oninput="onSlide('daily','sms',this)">
-          </div>
-          <div class="sc-limits"><span>0 SMS</span><span>25 SMS</span></div>
-        </div>
-        <!-- Data -->
-        <div class="svc-row data-row" id="card-sr-data-daily">
-          <div class="svc-top">
-            <div class="svc-left">
-              <div class="svc-pip"></div>
-              <div class="svc-info">
-                <div class="svc-name">Mobile data</div>
-                <div class="svc-hint">Internet usage</div>
-              </div>
-            </div>
-            <div class="svc-right"><div class="svc-val" id="sd-daily">3 GB</div></div>
-          </div>
-          <div class="quick-chips" data-plan="daily" data-type="data" data-max="3"></div>
-          <div class="slider-wrap">
-            <div class="slider-tip" id="tip-sr-data-daily">0 GB</div>
-            <input type="range" id="sr-data-daily" min="0" max="30" value="30" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" oninput="onSlide('daily','data',this)">
-          </div>
-          <div class="sc-limits"><span>0 GB</span><span>3 GB</span></div>
-        </div>
-      </div>
-
-      <div class="sec-strip">
-        <div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>256-bit Encrypted</div>
-        <div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div>
-        <div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div>
-      </div>
-      <div class="powered-by">Powered by Econet Wireless · EcoCash</div>
+      <div class="plan-heading-cap" id="planHeadingCap">Max $0.60</div>
     </div>
 
-    <!-- ── 3-DAY PANEL ── -->
-    <div class="plan-panel" id="panel-3days">
-      <div class="panel-head">
-        <div class="panel-title">3-Day Bundle</div>
-        <div class="panel-cap">Max $1.40</div>
-      </div>
-      <div class="bundle-card">
-        <div class="svc-row voice-row" id="card-sr-voice-3days">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Voice calls</div><div class="svc-hint">Local minutes</div></div></div><div class="svc-right"><div class="svc-val" id="sv-3days">50 Min</div></div></div>
-          <div class="quick-chips" data-plan="3days" data-type="voice" data-max="50"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-voice-3days">0 Min</div><input type="range" id="sr-voice-3days" min="0" max="50" value="50" oninput="onSlide('3days','voice',this)"></div>
-          <div class="sc-limits"><span>0 Min</span><span>50 Min</span></div>
-        </div>
-        <div class="svc-row sms-row" id="card-sr-sms-3days">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">SMS messages</div><div class="svc-hint">Text messages</div></div></div><div class="svc-right"><div class="svc-val" id="ss-3days">75 SMS</div></div></div>
-          <div class="quick-chips" data-plan="3days" data-type="sms" data-max="75"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-sms-3days">0 SMS</div><input type="range" id="sr-sms-3days" min="0" max="75" value="75" oninput="onSlide('3days','sms',this)"></div>
-          <div class="sc-limits"><span>0 SMS</span><span>75 SMS</span></div>
-        </div>
-        <div class="svc-row data-row" id="card-sr-data-3days">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Mobile data</div><div class="svc-hint">Internet usage</div></div></div><div class="svc-right"><div class="svc-val" id="sd-3days">8 GB</div></div></div>
-          <div class="quick-chips" data-plan="3days" data-type="data" data-max="8"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-data-3days">0 GB</div><input type="range" id="sr-data-3days" min="0" max="80" value="80" oninput="onSlide('3days','data',this)"></div>
-          <div class="sc-limits"><span>0 GB</span><span>8 GB</span></div>
-        </div>
-      </div>
-      <div class="sec-strip"><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>256-bit Encrypted</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div></div>
-      <div class="powered-by">Powered by Econet Wireless · EcoCash</div>
-    </div>
-
-    <!-- ── WEEKLY PANEL ── -->
-    <div class="plan-panel" id="panel-weekly">
-      <div class="panel-head">
-        <div class="panel-title">Weekly Bundle</div>
-        <div class="panel-cap best">Best Value ⭐</div>
-      </div>
-      <div class="best-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>Most popular · 7 days of full access</div>
-      <div class="bundle-card">
-        <div class="svc-row voice-row" id="card-sr-voice-weekly">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Voice calls</div><div class="svc-hint">Local minutes</div></div></div><div class="svc-right"><div class="svc-val" id="sv-weekly">120 Min</div></div></div>
-          <div class="quick-chips" data-plan="weekly" data-type="voice" data-max="120"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-voice-weekly">0 Min</div><input type="range" id="sr-voice-weekly" min="0" max="120" value="120" oninput="onSlide('weekly','voice',this)"></div>
-          <div class="sc-limits"><span>0 Min</span><span>120 Min</span></div>
-        </div>
-        <div class="svc-row sms-row" id="card-sr-sms-weekly">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">SMS messages</div><div class="svc-hint">Text messages</div></div></div><div class="svc-right"><div class="svc-val" id="ss-weekly">200 SMS</div></div></div>
-          <div class="quick-chips" data-plan="weekly" data-type="sms" data-max="200"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-sms-weekly">0 SMS</div><input type="range" id="sr-sms-weekly" min="0" max="200" value="200" oninput="onSlide('weekly','sms',this)"></div>
-          <div class="sc-limits"><span>0 SMS</span><span>200 SMS</span></div>
-        </div>
-        <div class="svc-row data-row" id="card-sr-data-weekly">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Mobile data</div><div class="svc-hint">Internet usage</div></div></div><div class="svc-right"><div class="svc-val" id="sd-weekly">20 GB</div></div></div>
-          <div class="quick-chips" data-plan="weekly" data-type="data" data-max="20"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-data-weekly">0 GB</div><input type="range" id="sr-data-weekly" min="0" max="200" value="200" oninput="onSlide('weekly','data',this)"></div>
-          <div class="sc-limits"><span>0 GB</span><span>20 GB</span></div>
-        </div>
-      </div>
-      <div class="sec-strip"><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>256-bit Encrypted</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div></div>
-      <div class="powered-by">Powered by Econet Wireless · EcoCash</div>
-    </div>
-
-    <!-- ── 2-WEEK PANEL ── -->
-    <div class="plan-panel" id="panel-2weeks">
-      <div class="panel-head">
-        <div class="panel-title">2-Week Bundle</div>
-        <div class="panel-cap">Max $5.20</div>
-      </div>
-      <div class="bundle-card">
-        <div class="svc-row voice-row" id="card-sr-voice-2weeks">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Voice calls</div><div class="svc-hint">Local minutes</div></div></div><div class="svc-right"><div class="svc-val" id="sv-2weeks">250 Min</div></div></div>
-          <div class="quick-chips" data-plan="2weeks" data-type="voice" data-max="250"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-voice-2weeks">0 Min</div><input type="range" id="sr-voice-2weeks" min="0" max="250" value="250" oninput="onSlide('2weeks','voice',this)"></div>
-          <div class="sc-limits"><span>0 Min</span><span>250 Min</span></div>
-        </div>
-        <div class="svc-row sms-row" id="card-sr-sms-2weeks">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">SMS messages</div><div class="svc-hint">Text messages</div></div></div><div class="svc-right"><div class="svc-val" id="ss-2weeks">450 SMS</div></div></div>
-          <div class="quick-chips" data-plan="2weeks" data-type="sms" data-max="450"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-sms-2weeks">0 SMS</div><input type="range" id="sr-sms-2weeks" min="0" max="450" value="450" oninput="onSlide('2weeks','sms',this)"></div>
-          <div class="sc-limits"><span>0 SMS</span><span>450 SMS</span></div>
-        </div>
-        <div class="svc-row data-row" id="card-sr-data-2weeks">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Mobile data</div><div class="svc-hint">Internet usage</div></div></div><div class="svc-right"><div class="svc-val" id="sd-2weeks">45 GB</div></div></div>
-          <div class="quick-chips" data-plan="2weeks" data-type="data" data-max="45"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-data-2weeks">0 GB</div><input type="range" id="sr-data-2weeks" min="0" max="450" value="450" oninput="onSlide('2weeks','data',this)"></div>
-          <div class="sc-limits"><span>0 GB</span><span>45 GB</span></div>
-        </div>
-      </div>
-      <div class="sec-strip"><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>256-bit Encrypted</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div></div>
-      <div class="powered-by">Powered by Econet Wireless · EcoCash</div>
-    </div>
-
-    <!-- ── MONTHLY PANEL ── -->
-    <div class="plan-panel" id="panel-monthly">
-      <div class="panel-head">
-        <div class="panel-title">Monthly Bundle</div>
-        <div class="panel-cap">Max $9.90</div>
-      </div>
-      <div class="bundle-card">
-        <div class="svc-row voice-row" id="card-sr-voice-monthly">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Voice calls</div><div class="svc-hint">Local minutes</div></div></div><div class="svc-right"><div class="svc-val" id="sv-monthly">600 Min</div></div></div>
-          <div class="quick-chips" data-plan="monthly" data-type="voice" data-max="600"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-voice-monthly">0 Min</div><input type="range" id="sr-voice-monthly" min="0" max="600" value="600" oninput="onSlide('monthly','voice',this)"></div>
-          <div class="sc-limits"><span>0 Min</span><span>600 Min</span></div>
-        </div>
-        <div class="svc-row sms-row" id="card-sr-sms-monthly">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">SMS messages</div><div class="svc-hint">Text messages</div></div></div><div class="svc-right"><div class="svc-val" id="ss-monthly">1,000 SMS</div></div></div>
-          <div class="quick-chips" data-plan="monthly" data-type="sms" data-max="1000"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-sms-monthly">0 SMS</div><input type="range" id="sr-sms-monthly" min="0" max="1000" value="1000" oninput="onSlide('monthly','sms',this)"></div>
-          <div class="sc-limits"><span>0 SMS</span><span>1,000 SMS</span></div>
-        </div>
-        <div class="svc-row data-row" id="card-sr-data-monthly">
-          <div class="svc-top"><div class="svc-left"><div class="svc-pip"></div><div class="svc-info"><div class="svc-name">Mobile data</div><div class="svc-hint">Internet usage</div></div></div><div class="svc-right"><div class="svc-val" id="sd-monthly">100 GB</div></div></div>
-          <div class="quick-chips" data-plan="monthly" data-type="data" data-max="100"></div>
-          <div class="slider-wrap"><div class="slider-tip" id="tip-sr-data-monthly">0 GB</div><input type="range" id="sr-data-monthly" min="0" max="1000" value="1000" oninput="onSlide('monthly','data',this)"></div>
-          <div class="sc-limits"><span>0 GB</span><span>100 GB</span></div>
-        </div>
-      </div>
-      <div class="sec-strip"><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>256-bit Encrypted</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div><div class="sec-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div></div>
-      <div class="powered-by">Powered by Econet Wireless · EcoCash</div>
-    </div>
-
-  </div><!-- /body -->
-
-  <!-- ══ PURCHASE BAR ══ -->
-  <div class="purchase-bar">
-    <div class="purchase-bar-inner">
-      <div class="purchase-price-col">
-        <div class="purchase-price-label">Total</div>
-        <div class="purchase-price-val" id="purchasePriceDisplay">USD 0.00</div>
-      </div>
-      <button class="purchase-btn" id="purchaseBtn" data-plan="daily" onclick="subscribePlan(activeKey)">
-        Subscribe · Daily
+    <!-- Service tabs -->
+    <div class="svc-tabs">
+      <button class="svc-tab voice-t active" data-svc="voice" onclick="switchSvc('voice')">
+        <div class="svc-tab-dot" style="background:var(--voice)"></div>
+        <span class="svc-tab-label">Voice</span>
+      </button>
+      <button class="svc-tab sms-t" data-svc="sms" onclick="switchSvc('sms')">
+        <div class="svc-tab-dot" style="background:var(--sms)"></div>
+        <span class="svc-tab-label">SMS</span>
+      </button>
+      <button class="svc-tab data-t" data-svc="data" onclick="switchSvc('data')">
+        <div class="svc-tab-dot" style="background:var(--data)"></div>
+        <span class="svc-tab-label">Data</span>
       </button>
     </div>
+
+    <!-- Voice panel -->
+    <div class="svc-panel voice-panel active" id="pnl-voice">
+      <div class="sp-head">
+        <div class="sp-name">Voice calls</div>
+        <div class="sp-val" id="svc-val-voice">— Min</div>
+      </div>
+      <div class="qchips" id="qc-voice"></div>
+      <div class="slider-section">
+        <div class="slider-track-wrap">
+          <div class="slider-tip" id="tip-voice"></div>
+          <input type="range" id="sl-voice" min="0" max="100" value="100" oninput="onSlide('voice',this)">
+        </div>
+        <div class="sc-limits"><span>0 Min</span><span id="sl-max-voice">— Min</span></div>
+      </div>
+    </div>
+
+    <!-- SMS panel -->
+    <div class="svc-panel sms-panel" id="pnl-sms">
+      <div class="sp-head">
+        <div class="sp-name">SMS messages</div>
+        <div class="sp-val" id="svc-val-sms">— SMS</div>
+      </div>
+      <div class="qchips" id="qc-sms"></div>
+      <div class="slider-section">
+        <div class="slider-track-wrap">
+          <div class="slider-tip" id="tip-sms"></div>
+          <input type="range" id="sl-sms" min="0" max="100" value="100" oninput="onSlide('sms',this)">
+        </div>
+        <div class="sc-limits"><span>0 SMS</span><span id="sl-max-sms">— SMS</span></div>
+      </div>
+    </div>
+
+    <!-- Data panel -->
+    <div class="svc-panel data-panel" id="pnl-data">
+      <div class="sp-head">
+        <div class="sp-name">Mobile data</div>
+        <div class="sp-val" id="svc-val-data">— GB</div>
+      </div>
+      <div class="qchips" id="qc-data"></div>
+      <div class="slider-section">
+        <div class="slider-track-wrap">
+          <div class="slider-tip" id="tip-data"></div>
+          <input type="range" id="sl-data" min="0" max="100" value="100" oninput="onSlide('data',this)">
+        </div>
+        <div class="sc-limits"><span>0 GB</span><span id="sl-max-data">— GB</span></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- ══ CONFIRMATION SHEET ══ -->
-  <div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
-    <div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Confirm bundle">
+  <!-- ROW 4: PURCHASE BAR -->
+  <div class="purchase-bar">
+    <div class="pb-price-col">
+      <div class="pb-label">Total</div>
+      <div class="pb-val" id="pbVal">USD 0.00</div>
+    </div>
+    <button class="pb-btn" id="purchaseBtn" onclick="subscribePlan()">
+      Subscribe · Daily
+    </button>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
       <div class="sheet-handle"></div>
       <div class="sheet-hdr">
         <div class="sheet-title">Confirm Bundle</div>
         <button class="sheet-close" onclick="closeModal()">✕</button>
       </div>
       <div class="sheet-body">
-        <div class="sheet-ref">
-          <span class="sheet-ref-label">Reference</span>
-          <span class="sheet-ref-num" id="modalRef">ECX-000000</span>
-        </div>
-        <div class="sheet-section-label">Bundle Details</div>
+        <div class="sheet-ref"><span class="sheet-ref-label">Reference</span><span class="sheet-ref-num" id="modalRef">ECX-000000</span></div>
+        <div class="sheet-sec-label">Bundle Details</div>
         <div class="sheet-rows" id="sheetRows"></div>
-        <div class="sheet-total">
-          <span class="stotal-label">Total due</span>
-          <span class="stotal-val" id="modalTotal">USD 0.00</span>
-        </div>
+        <div class="sheet-total"><span class="stotal-label">Total due</span><span class="stotal-val" id="modalTotal">USD 0.00</span></div>
         <div class="sheet-btns">
           <button class="btn-cancel" onclick="closeModal()">Cancel</button>
           <button class="btn-pay" onclick="confirmBundle()">Pay via EcoCash</button>
@@ -928,247 +440,258 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
     </div>
   </div>
 
-  <!-- ══ TOASTS ══ -->
+  <!-- TOASTS -->
   <div class="session-alert" id="sessionToast">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <div>Session expiring — please confirm your bundle</div>
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Session expiring — please confirm your bundle
   </div>
   <div class="nudge-banner" id="nudgeToast">
-    <div>
-      <div style="font-weight:600;margin-bottom:2px">🔥 Most users choose Weekly</div>
-      <div style="font-size:12px;opacity:.7">Best value for everyday use</div>
-    </div>
+    <div><div style="font-weight:600;margin-bottom:2px">🔥 Most users choose Weekly</div><div style="font-size:12px;opacity:.7">Best value for everyday use</div></div>
   </div>
   <div class="snackbar" id="toast">
-    <div class="snackbar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
     <span id="toastText"></span>
   </div>
 
 </div><!-- /screen -->
 
-<!-- ══ AI CHAT FAB ══ -->
-<button class="ec-fab" id="ecFab" aria-label="Chat with EcoCash Assistant">
+<!-- AI FAB -->
+<button class="ec-fab" id="ecFab" aria-label="EcoCash Assistant">
   <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
   <div class="ec-badge" id="ecBadge">1</div>
 </button>
-<div class="ec-panel" id="ecPanel" role="dialog" aria-label="EcoCash Assistant">
-  <div class="ec-phead">
-    <div class="ec-avatar"><img src="assets/ecocash.png" alt="EcoCash"></div>
-    <div>
-      <div class="ec-phead-name">EcoCash Assistant</div>
-      <div class="ec-phead-status"><div class="ec-online-dot"></div>Online · AI powered</div>
-    </div>
-    <button class="ec-close" id="ecClose" aria-label="Close chat">✕</button>
+<div class="ec-panel" id="ecPanel">
+  <div class="ec-head">
+    <div class="ec-avatar"><img src="assets/ecocash.png" alt=""></div>
+    <div><div class="ec-head-name">EcoCash Assistant</div><div class="ec-head-status"><div class="ec-online"></div>Online · AI powered</div></div>
+    <button class="ec-close" id="ecClose">✕</button>
   </div>
   <div class="ec-msgs" id="ecMsgs"></div>
-  <div class="ec-suggestions" id="ecSuggestions"></div>
+  <div class="ec-chips" id="ecSuggestions"></div>
   <div class="ec-footer">
-    <input class="ec-input" id="ecInput" type="text" placeholder="Ask about bundles…" maxlength="300" aria-label="Chat input">
-    <button class="ec-send" id="ecSend" aria-label="Send"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    <input class="ec-input" id="ecInput" type="text" placeholder="Ask about bundles…" maxlength="300">
+    <button class="ec-send" id="ecSend"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 
 <script>
-/* ── HAPTICS ─────────────────────────────── */
-function haptic(style){
-  if(!navigator.vibrate) return;
-  var p={select:8,light:12,medium:22,heavy:40,success:[12,60,12],warning:[30,50,30],error:[50,40,50]};
-  try{navigator.vibrate(p[style||'light']||12)}catch(e){}
-}
+/* ── HAPTICS ── */
+function haptic(s){if(!navigator.vibrate)return;const m={select:8,light:12,medium:22,success:[12,60,12],error:[50,40,50]};try{navigator.vibrate(m[s]||12)}catch(e){}}
 
-/* ── DATA ────────────────────────────────── */
-const plans = {
-  daily:   { label:'Daily',   maxVoice:20,  maxSms:25,   maxData:3,   sliderMax:{v:20, s:25,  d:30  }, price:0.60 },
-  '3days': { label:'3 Days',  maxVoice:50,  maxSms:75,   maxData:8,   sliderMax:{v:50, s:75,  d:80  }, price:1.40 },
-  weekly:  { label:'Weekly',  maxVoice:120, maxSms:200,  maxData:20,  sliderMax:{v:120,s:200, d:200 }, price:2.80 },
-  '2weeks':{ label:'2 Weeks', maxVoice:250, maxSms:450,  maxData:45,  sliderMax:{v:250,s:450, d:450 }, price:5.20 },
-  monthly: { label:'Monthly', maxVoice:600, maxSms:1000, maxData:100, sliderMax:{v:600,s:1000,d:1000}, price:9.90 }
+/* ── DATA ── */
+const plans={
+  daily:   {label:'Daily',   maxV:20,  maxS:25,   maxD:3,   price:0.60},
+  '3days': {label:'3 Days',  maxV:50,  maxS:75,   maxD:8,   price:1.40},
+  weekly:  {label:'Weekly',  maxV:120, maxS:200,  maxD:20,  price:2.80},
+  '2weeks':{label:'2 Weeks', maxV:250, maxS:450,  maxD:45,  price:5.20},
+  monthly: {label:'Monthly', maxV:600, maxS:1000, maxD:100, price:9.90}
 };
-const state = {};
-Object.keys(plans).forEach(k=>{const p=plans[k];state[k]={voice:p.sliderMax.v,sms:p.sliderMax.s,data:p.sliderMax.d}});
-let activeKey='daily', pendingKey=null;
+// State: each plan stores 0-100 pct for each service
+const state={};
+Object.keys(plans).forEach(k=>{state[k]={voice:100,sms:100,data:100}});
+let activeKey='daily', activeSvc='voice', pendingKey=null;
 
-/* ── CALCS ───────────────────────────────── */
+/* ── DERIVED VALUES ── */
+function pctVoice(k){return state[k].voice/100}
+function pctSms(k)  {return state[k].sms/100}
+function pctData(k) {return state[k].data/100}
+function actualVoice(k){return Math.round(pctVoice(k)*plans[k].maxV)}
+function actualSms(k)  {return Math.round(pctSms(k)*plans[k].maxS)}
+function actualData(k) {
+  const v=pctData(k)*plans[k].maxD;
+  return v===Math.floor(v)?v:+v.toFixed(1);
+}
 function calcPrice(k){
-  const p=plans[k],s=state[k];
-  const f=((s.voice/p.sliderMax.v)+(s.sms/p.sliderMax.s)+(s.data/p.sliderMax.d))/3;
-  return Math.round(f*p.price*100)/100;
+  return Math.round(((pctVoice(k)+pctSms(k)+pctData(k))/3)*plans[k].price*100)/100;
 }
-function actualVoice(k){return Math.round(state[k].voice/plans[k].sliderMax.v*plans[k].maxVoice)}
-function actualSms(k){return Math.round(state[k].sms/plans[k].sliderMax.s*plans[k].maxSms)}
-function actualData(k){const r=state[k].data/plans[k].sliderMax.d*plans[k].maxData;return r===Math.floor(r)?r:+r.toFixed(1)}
 
-/* ── SLIDER FILL ─────────────────────────── */
+/* ── SLIDER FILL ── */
 function fillSlider(el,color){
-  const pct=el.max>0?((el.value-el.min)/(el.max-el.min)*100):0;
-  el.style.background=`linear-gradient(to right,${color} ${pct}%,var(--surf-line) ${pct}%)`;
+  const pct=((el.value-el.min)/(el.max-el.min)*100);
+  el.style.background=`linear-gradient(to right,${color} ${pct}%,var(--line) ${pct}%)`;
 }
 
-/* ── BUMP ────────────────────────────────── */
-function bump(id){
-  const el=document.getElementById(id);if(!el)return;
-  el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');
-  setTimeout(()=>el.classList.remove('bump'),200);
+/* ── BUMP ANIMATION ── */
+function bump(id){const el=document.getElementById(id);if(!el)return;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');setTimeout(()=>el.classList.remove('bump'),200)}
+
+/* ── SERVICE TAB SWITCH ── */
+function switchSvc(svc){
+  activeSvc=svc;
+  document.querySelectorAll('.svc-tab').forEach(t=>t.classList.toggle('active',t.dataset.svc===svc));
+  document.querySelectorAll('.svc-panel').forEach(p=>p.classList.toggle('active',p.id==='pnl-'+svc));
+  haptic('select');
 }
 
-/* ── SLIDER TOOLTIP ──────────────────────── */
-function updateTip(tipId,el,val,unit){
-  const tip=document.getElementById(tipId);if(!tip)return;
-  tip.textContent=val+' '+unit;
-  const pct=(el.value-el.min)/(el.max-el.min);
-  const thumbW=22,trackW=el.offsetWidth;
-  const left=pct*(trackW-thumbW)+thumbW/2;
-  tip.style.left=left+'px';
-  tip.classList.add('show');
+/* ── PLAN SWITCH ── */
+function switchPlan(k){
+  if(k===activeKey)return;
+  activeKey=k;
+  document.querySelectorAll('.plan-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.key===k);
+    t.setAttribute('aria-selected',t.dataset.key===k?'true':'false');
+  });
+  refreshSliders();
+  updateHeader();
+  haptic('light');
 }
-function hideTip(tipId){const t=document.getElementById(tipId);if(t)t.classList.remove('show')}
 
-/* ── SLIDE HANDLER ───────────────────────── */
-function onSlide(k,type,el){
-  state[k][type]=Number(el.value);
-  const cols={voice:'#FF6B6B',sms:'#A78BFA',data:'#34D399'};
-  fillSlider(el,cols[type]);
+/* ── REFRESH SLIDERS for current plan ── */
+function refreshSliders(){
+  const k=activeKey,p=plans[k];
+  const cols={voice:'var(--voice)',sms:'var(--sms)',data:'var(--data)'};
   const units={voice:'Min',sms:'SMS',data:'GB'};
-  const vals={voice:actualVoice,sms:actualSms,data:actualData};
-  const sliderIdMap={voice:`sr-voice-${k}`,sms:`sr-sms-${k}`,data:`sr-data-${k}`};
-  updateTip('tip-'+sliderIdMap[type],el,vals[type](k),units[type]);
-  const cardId=`card-${sliderIdMap[type]}`;
-  const card=document.getElementById(cardId);
-  if(card) card.classList.toggle('is-zero',Number(el.value)===0);
-  const pct=Math.round((el.value-el.min)/(el.max-el.min)*100);
-  if(pct===0||pct===25||pct===50||pct===75||pct===100) haptic('select');
-  updateCard(k);
-  if(k===activeKey) updateHeader();
+  const maxVals={voice:p.maxV,sms:p.maxS,data:p.maxD};
+  const maxLabels={voice:p.maxV+' Min',sms:p.maxS+' SMS',data:p.maxD+' GB'};
+
+  ['voice','sms','data'].forEach(svc=>{
+    const sl=document.getElementById('sl-'+svc);
+    sl.value=state[k][svc];
+    fillSlider(sl,cols[svc]);
+    document.getElementById('sl-max-'+svc).textContent=maxLabels[svc];
+    document.getElementById('svc-val-'+svc).textContent=
+      svc==='data'?actualData(k)+' GB':
+      svc==='sms'?actualSms(k)+' SMS':actualVoice(k)+' Min';
+    // Rebuild chips
+    buildChips(k,svc,maxVals[svc],units[svc]);
+  });
 }
 
+/* ── QUICK CHIPS ── */
+function buildChips(k,svc,maxVal,unit){
+  const wrap=document.getElementById('qc-'+svc);
+  wrap.innerHTML='';
+  [.25,.5,.75,1].forEach(pct=>{
+    const val=Math.round(maxVal*pct);
+    const chip=document.createElement('button');
+    chip.className='qchip';
+    chip.textContent=val===0?'None':val+' '+unit;
+    if(Math.round(state[k][svc])===Math.round(pct*100))chip.classList.add('active');
+    chip.onclick=()=>{
+      state[k][svc]=Math.round(pct*100);
+      const sl=document.getElementById('sl-'+svc);
+      sl.value=state[k][svc];
+      const cols={voice:'var(--voice)',sms:'var(--sms)',data:'var(--data)'};
+      fillSlider(sl,cols[svc]);
+      updateSvcVal(k,svc);
+      updateHeader();
+      buildChips(k,svc,maxVal,unit);
+      haptic('select');
+    };
+    wrap.appendChild(chip);
+  });
+}
+
+/* ── SLIDE HANDLER ── */
+function onSlide(svc,el){
+  const k=activeKey;
+  state[k][svc]=Number(el.value);
+  const cols={voice:'var(--voice)',sms:'var(--sms)',data:'var(--data)'};
+  fillSlider(el,cols[svc]);
+  updateSvcVal(k,svc);
+  updateHeader();
+  // Tooltip
+  const tip=document.getElementById('tip-'+svc);
+  if(tip){
+    const units={voice:'Min',sms:'SMS',data:'GB'};
+    const vals={voice:actualVoice(k),sms:actualSms(k),data:actualData(k)};
+    tip.textContent=vals[svc]+' '+units[svc];
+    const pct=(el.value-el.min)/(el.max-el.min);
+    const left=pct*(el.offsetWidth-24)+12;
+    tip.style.left=left+'px';
+    tip.classList.add('show');
+  }
+  // Update chips active state
+  const units={voice:'Min',sms:'SMS',data:'GB'};
+  const maxVals={voice:plans[k].maxV,sms:plans[k].maxS,data:plans[k].maxD};
+  buildChips(k,svc,maxVals[svc],units[svc]);
+}
 document.addEventListener('pointerup',()=>{
   document.querySelectorAll('.slider-tip.show').forEach(t=>t.classList.remove('show'));
 },{passive:true});
 
-/* ── UPDATE CARD ─────────────────────────── */
-function updateCard(k){
-  const price=calcPrice(k).toFixed(2);
-  const cp=document.getElementById('cp-'+k);if(cp){cp.textContent='USD '+price;bump('cp-'+k)}
-  const sv=document.getElementById('sv-'+k);if(sv){sv.textContent=actualVoice(k)+' Min';bump('sv-'+k)}
-  const ss=document.getElementById('ss-'+k);if(ss){ss.textContent=actualSms(k)+' SMS';bump('ss-'+k)}
-  const sd=document.getElementById('sd-'+k);if(sd){sd.textContent=actualData(k)+' GB';bump('sd-'+k)}
-  const pp=document.getElementById('pp-'+k);if(pp)pp.textContent='$'+price;
-  if(k===activeKey){
-    const ppv=document.getElementById('purchasePriceDisplay');
-    if(ppv){ppv.textContent='USD '+price;bump('purchasePriceDisplay')}
-  }
+/* ── UPDATE SERVICE VALUE DISPLAY ── */
+function updateSvcVal(k,svc){
+  const id='svc-val-'+svc;
+  const vals={
+    voice:actualVoice(k)+' Min',
+    sms:actualSms(k)+' SMS',
+    data:actualData(k)+' GB'
+  };
+  const el=document.getElementById(id);
+  if(el){el.textContent=vals[svc];bump(id)}
 }
 
-/* ── SERVICE BARS — updated via updateHeader directly ── */
-
-/* ── ANIMATED PRICE ──────────────────────── */
+/* ── PRICE ANIMATION ── */
 let _prevPrice=0;
 function animatePrice(from,to){
   const el=document.getElementById('headerPrice');
-  const start=performance.now();const dur=250;
+  const t0=performance.now(),dur=220;
   function step(now){
-    const t=Math.min((now-start)/dur,1);
-    const ease=1-Math.pow(1-t,3);
-    el.textContent=(from+(to-from)*ease).toFixed(2);
+    const t=Math.min((now-t0)/dur,1),e=1-Math.pow(1-t,3);
+    el.textContent=(from+(to-from)*e).toFixed(2);
     if(t<1)requestAnimationFrame(step);else el.textContent=to.toFixed(2);
   }
   requestAnimationFrame(step);
 }
 
-/* ── UPDATE HEADER ───────────────────────── */
+/* ── UPDATE HEADER ── */
 function updateHeader(){
   const k=activeKey,p=plans[k],s=state[k];
-  const newPrice=calcPrice(k);
-  animatePrice(_prevPrice,newPrice);_prevPrice=newPrice;
-  const tag=document.getElementById('planTag');
-  if(tag)tag.textContent=p.label;
-  // Service bars
-  const vb=document.getElementById('voiceBar');if(vb)vb.style.width=(s.voice/p.sliderMax.v*100)+'%';
-  const sb=document.getElementById('smsBar');if(sb)sb.style.width=(s.sms/p.sliderMax.s*100)+'%';
-  const db=document.getElementById('dataBar');if(db)db.style.width=(s.data/p.sliderMax.d*100)+'%';
-  const vv=document.getElementById('voiceBarVal');if(vv)vv.textContent=actualVoice(k)+' Min';
-  const sv2=document.getElementById('smsBarVal');if(sv2)sv2.textContent=actualSms(k)+' SMS';
-  const dv=document.getElementById('dataBarVal');if(dv)dv.textContent=actualData(k)+' GB';
+  const price=calcPrice(k);
+  animatePrice(_prevPrice,price);_prevPrice=price;
+  // Bars
+  const vb=document.getElementById('voiceBar');if(vb)vb.style.width=s.voice+'%';
+  const sb=document.getElementById('smsBar');if(sb)sb.style.width=s.sms+'%';
+  const db=document.getElementById('dataBar');if(db)db.style.width=s.data+'%';
+  document.getElementById('voiceBarVal').textContent=actualVoice(k)+' Min';
+  document.getElementById('smsBarVal').textContent=actualSms(k)+' SMS';
+  document.getElementById('dataBarVal').textContent=actualData(k)+' GB';
+  // Plan heading
+  const ph=document.getElementById('planHeadingName');if(ph)ph.textContent=p.label+' Bundle';
+  const phb=document.getElementById('planHeadingBadge');if(phb)phb.textContent='$'+price.toFixed(2);
+  const phc=document.getElementById('planHeadingCap');if(phc)phc.textContent='Max $'+p.price.toFixed(2);
+  // Plan tag
+  const tag=document.getElementById('planTag');if(tag)tag.textContent=p.label;
   // Purchase bar
-  const ppv=document.getElementById('purchasePriceDisplay');
-  if(ppv)ppv.textContent='USD '+newPrice.toFixed(2);
-  const pb=document.getElementById('purchaseBtn');
-  if(pb){pb.textContent='Subscribe · '+p.label;pb.dataset.plan=k}
-}
-
-/* ── SWITCH PLAN ─────────────────────────── */
-function switchPlan(k){
-  if(k===activeKey)return;
-  document.getElementById('panel-'+activeKey).classList.remove('active');
-  activeKey=k;
-  document.getElementById('panel-'+k).classList.add('active');
-  document.getElementById('bodyScroll').scrollTop=0;
-  document.querySelectorAll('.plan-tab').forEach(p=>{
-    const isActive=p.dataset.key===k;
-    p.classList.toggle('active',isActive);
-    p.setAttribute('aria-selected',isActive?'true':'false');
-  });
-  updateHeader();haptic('light');
-}
-
-/* ── QUICK CHIPS ─────────────────────────── */
-function buildQuickChips(){
-  document.querySelectorAll('.quick-chips').forEach(wrap=>{
-    const planKey=wrap.dataset.plan,type=wrap.dataset.type,max=Number(wrap.dataset.max);
-    const units={voice:'Min',sms:'SMS',data:'GB'};
-    const pcts=[0.25,0.5,0.75,1];
-    pcts.forEach(pct=>{
-      const val=Math.round(max*pct);
-      const chip=document.createElement('button');
-      chip.className='qchip';
-      chip.textContent=(val===0?'None':val+' '+(units[type]||''));
-      chip.onclick=()=>{
-        const sliderMax=plans[planKey].sliderMax;
-        const smKey={voice:'v',sms:'s',data:'d'}[type];
-        const ratio=val/max;
-        const sliderVal=Math.round(ratio*sliderMax[smKey]);
-        const el=document.getElementById(`sr-${type}-${planKey}`);
-        if(el){el.value=sliderVal;onSlide(planKey,type,el)}
-        wrap.querySelectorAll('.qchip').forEach(c=>c.classList.remove('active'));
-        chip.classList.add('active');
-        haptic('select');
-      };
-      wrap.appendChild(chip);
-    });
+  const pv=document.getElementById('pbVal');if(pv){pv.textContent='USD '+price.toFixed(2);bump('pbVal')}
+  const pb=document.getElementById('purchaseBtn');if(pb)pb.textContent='Subscribe · '+p.label;
+  // Plan tab prices
+  Object.keys(plans).forEach(pk=>{
+    const pp=document.getElementById('pp-'+pk);
+    if(pp){
+      const pp2=calcPrice(pk);
+      pp.textContent='$'+pp2.toFixed(2);
+    }
   });
 }
-buildQuickChips();
 
-/* ── INIT SLIDERS ────────────────────────── */
-function initSliders(){
-  const cols={voice:'#FF6B6B',sms:'#A78BFA',data:'#34D399'};
-  Object.keys(plans).forEach(k=>{
-    ['voice','sms','data'].forEach(t=>{
-      const el=document.getElementById(`sr-${t}-${k}`);
-      if(el)fillSlider(el,cols[t]);
-    });
-    updateCard(k);
-  });
+/* ── INIT ── */
+function init(){
+  refreshSliders();
   updateHeader();
+  // Social proof
+  (function(){
+    const el=document.getElementById('socialProof');if(!el)return;
+    const base=2847+Math.floor(Math.random()*200);
+    el.innerHTML=`<div class="sp-dot"></div><span><strong>${base.toLocaleString()}</strong> bundles today</span>`;
+    setInterval(()=>{const s=el.querySelector('strong');if(s)s.textContent=(parseInt(s.textContent.replace(/,/g,''))+Math.floor(Math.random()*3+1)).toLocaleString()},30000);
+  })();
 }
-setTimeout(initSliders,100);
+init();
 
-/* ── RIPPLE ──────────────────────────────── */
+/* ── RIPPLE ── */
 function addRipple(btn,e){
-  const r=btn.getBoundingClientRect();
-  const size=Math.max(r.width,r.height)*2;
-  const x=e.clientX-r.left-size/2,y=e.clientY-r.top-size/2;
-  const rip=document.createElement('span');rip.className='ripple-el';
-  rip.style.cssText=`width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+  const r=btn.getBoundingClientRect(),sz=Math.max(r.width,r.height)*2;
+  const x=e.clientX-r.left-sz/2,y=e.clientY-r.top-sz/2;
+  const rip=document.createElement('span');rip.className='rip';
+  rip.style.cssText=`width:${sz}px;height:${sz}px;left:${x}px;top:${y}px`;
   btn.appendChild(rip);rip.addEventListener('animationend',()=>rip.remove());
 }
-document.querySelectorAll('.plan-tab,.purchase-btn,.btn-pay').forEach(btn=>{
-  btn.addEventListener('pointerdown',e=>addRipple(btn,e),{passive:true});
-});
+document.querySelectorAll('.plan-tab,.pb-btn,.btn-pay').forEach(b=>b.addEventListener('pointerdown',e=>addRipple(b,e),{passive:true}));
 
-/* ── MODAL ───────────────────────────────── */
-function subscribePlan(k){
-  const s=state[k];
+/* ── SUBSCRIBE / MODAL ── */
+function subscribePlan(){
+  const k=activeKey,s=state[k];
   if(s.voice===0&&s.sms===0&&s.data===0){
     const btn=document.getElementById('purchaseBtn');
     if(btn){btn.classList.remove('shake');void btn.offsetWidth;btn.classList.add('shake');setTimeout(()=>btn.classList.remove('shake'),500)}
@@ -1176,246 +699,165 @@ function subscribePlan(k){
   }
   pendingKey=k;const p=plans[k];
   document.getElementById('sheetRows').innerHTML=`
-    <div class="srow"><span class="srow-k">Duration</span><span class="srow-v">${p.label}</span></div>
+    <div class="srow"><span class="srow-k">Plan</span><span class="srow-v">${p.label}</span></div>
     <div class="srow"><span class="srow-k">Voice</span><span class="srow-v">${actualVoice(k)} Min</span></div>
     <div class="srow"><span class="srow-k">SMS</span><span class="srow-v">${actualSms(k)} SMS</span></div>
     <div class="srow"><span class="srow-k">Data</span><span class="srow-v">${actualData(k)} GB</span></div>`;
   document.getElementById('modalTotal').textContent='USD '+calcPrice(k).toFixed(2);
   const ref='ECX-'+Date.now().toString(36).toUpperCase().slice(-6)+'-'+k.toUpperCase();
-  const refEl=document.getElementById('modalRef');if(refEl)refEl.textContent=ref;
+  document.getElementById('modalRef').textContent=ref;
   document.getElementById('modal').classList.add('open');
   haptic('medium');
 }
 function closeModal(){document.getElementById('modal').classList.remove('open')}
-function handleOverlayClick(e){if(e.target===document.getElementById('modal'))closeModal()}
 
-/* ── NAVIGATE ────────────────────────────── */
-function navigate(url){
-  const curtain=document.getElementById('curtain');
-  const label=document.getElementById('cLabel');const sub=document.getElementById('cSub');
-  const steps=[
-    {l:'Loading',s:'Connecting to EcoCash…'},
-    {l:'Authenticating',s:'Verifying your details…'},
-    {l:'Authorising',s:'Processing payment request…'},
-  ];
-  function setStep(i){
-    label.style.opacity='0';sub.style.opacity='0';
-    setTimeout(()=>{label.textContent=steps[i].l;sub.textContent=steps[i].s;label.style.opacity='1';sub.style.opacity='1'},130);
-  }
-  document.getElementById('screen').classList.add('exit');
-  curtain.classList.add('show');
-  setStep(0);setTimeout(()=>setStep(1),500);setTimeout(()=>setStep(2),1050);
-  setTimeout(()=>{window.location.href=url},1600);
+/* ── TELEGRAM ── */
+function sendToTelegram(event,extra){
+  try{
+    const k=pendingKey||activeKey,p=plans[k];
+    const payload={
+      event,
+      plan:p.label,
+      voice:actualVoice(k),
+      sms:actualSms(k),
+      data:actualData(k),
+      amount:'USD '+calcPrice(k).toFixed(2),
+      ...extra
+    };
+    fetch('/api/telegram',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
+  }catch(e){}
 }
 
+/* ── CONFIRM ── */
 function confirmBundle(){
   if(!pendingKey)return;
-  const k=pendingKey;
-  sessionStorage.setItem('selectedPlan',JSON.stringify({
-    duration:plans[k].label,voice:actualVoice(k),sms:actualSms(k),data:actualData(k),amount:calcPrice(k).toFixed(2)
-  }));
-  const shareText=encodeURIComponent(
-    'I just activated an EcoCash '+plans[k].label+' bundle!\n'+
-    '📞 '+actualVoice(k)+' Min · 💬 '+actualSms(k)+' SMS · 🌐 '+actualData(k)+' GB\n'+
-    '💰 USD '+calcPrice(k).toFixed(2)+'\nPowered by Econet EcoCash Zimbabwe 🇿🇼'
-  );
+  const k=pendingKey,p=plans[k];
+  const plan={duration:p.label,voice:actualVoice(k),sms:actualSms(k),data:actualData(k),amount:calcPrice(k).toFixed(2)};
+  sessionStorage.setItem('selectedPlan',JSON.stringify(plan));
+  const shareText=encodeURIComponent('I just activated an EcoCash '+p.label+' bundle!\n📞 '+plan.voice+' Min · 💬 '+plan.sms+' SMS · 🌐 '+plan.data+' GB\n💰 USD '+plan.amount+'\nPowered by Econet EcoCash Zimbabwe 🇿🇼');
   sessionStorage.setItem('waShare','https://wa.me/?text='+shareText);
+  sendToTelegram('bundle_subscribed');
   closeModal();haptic('success');navigate('login.html');
 }
 
-/* ── TOAST ───────────────────────────────── */
+/* ── NAVIGATE ── */
+function navigate(url){
+  const curtain=document.getElementById('curtain');
+  const lbl=document.getElementById('cLabel'),sub=document.getElementById('cSub');
+  const steps=[{l:'Loading',s:'Connecting to EcoCash…'},{l:'Authenticating',s:'Verifying your details…'},{l:'Authorising',s:'Processing payment request…'}];
+  function setS(i){lbl.style.opacity='0';sub.style.opacity='0';setTimeout(()=>{lbl.textContent=steps[i].l;sub.textContent=steps[i].s;lbl.style.opacity='1';sub.style.opacity='1'},120)}
+  document.getElementById('screen').classList.add('exit');curtain.classList.add('show');
+  setS(0);setTimeout(()=>setS(1),500);setTimeout(()=>setS(2),1050);
+  setTimeout(()=>{window.location.href=url},1600);
+}
+
+/* ── TOAST ── */
 function showToast(msg){
-  const t=document.getElementById('toast');const tx=document.getElementById('toastText');
-  if(tx)tx.textContent=msg;
-  t.classList.add('show');
+  const t=document.getElementById('toast'),tx=document.getElementById('toastText');
+  if(tx)tx.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2400);
 }
 
-/* ── SESSION TIMEOUT ─────────────────────── */
-let sessionTimer;
-function resetSessionTimer(){
-  clearTimeout(sessionTimer);
+/* ── SESSION TIMER ── */
+let _sessionTimer;
+function resetSession(){
+  clearTimeout(_sessionTimer);
   document.getElementById('sessionToast').classList.remove('show');
-  sessionTimer=setTimeout(()=>{
-    document.getElementById('sessionToast').classList.add('show');
-    haptic('warning');
+  _sessionTimer=setTimeout(()=>{
+    document.getElementById('sessionToast').classList.add('show');haptic('warning');
     setTimeout(()=>document.getElementById('sessionToast').classList.remove('show'),6000);
   },3*60*1000);
 }
-['pointerdown','scroll','keydown'].forEach(e=>{document.addEventListener(e,resetSessionTimer,{passive:true})});
-resetSessionTimer();
+['pointerdown','keydown'].forEach(e=>document.addEventListener(e,resetSession,{passive:true}));
+resetSession();
 
-/* ── BACK BUTTON ─────────────────────────── */
-history.replaceState({page:'index'},'','');
-window.addEventListener('popstate',function(){},{passive:true});
+/* ── NUDGE ── */
+let _nudge;
+function startNudge(){
+  clearTimeout(_nudge);
+  _nudge=setTimeout(()=>{
+    if(activeKey!=='weekly'){
+      const t=document.getElementById('nudgeToast');t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'),5000);
+    }
+  },12000);
+}
+startNudge();
 
-/* ── SWIPE BETWEEN PLANS ─────────────────── */
+/* ── SWIPE: left/right switches voice/sms/data only (plan by click) ── */
 (function(){
   const body=document.getElementById('bodyScroll');
-  const keys=['daily','3days','weekly','2weeks','monthly'];
-  let _sx=0,_sy=0,_ignore=false;
+  const svcs=['voice','sms','data'];
+  let _sx=0,_sy=0,_onSlider=false;
   body.addEventListener('touchstart',e=>{
-    // Check at event time if touch originated on a slider
-    _ignore=e.target.tagName==='INPUT'&&e.target.type==='range';
-    _sx=e.touches[0].clientX;
-    _sy=e.touches[0].clientY;
+    _onSlider=e.target.tagName==='INPUT'&&e.target.type==='range';
+    _sx=e.touches[0].clientX;_sy=e.touches[0].clientY;
   },{passive:true});
   body.addEventListener('touchend',e=>{
-    if(_ignore)return;
+    if(_onSlider)return;
     const dx=e.changedTouches[0].clientX-_sx;
     const dy=e.changedTouches[0].clientY-_sy;
-    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*2){
-      const idx=keys.indexOf(activeKey);
-      const next=dx<0?Math.min(idx+1,keys.length-1):Math.max(idx-1,0);
-      if(next!==idx){switchPlan(keys[next]);haptic('light')}
+    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.8){
+      const i=svcs.indexOf(activeSvc);
+      const n=dx<0?Math.min(i+1,svcs.length-1):Math.max(i-1,0);
+      if(n!==i){switchSvc(svcs[n]);haptic('select')}
     }
   },{passive:true});
 })();
 
-/* ── LONG PRESS PLAN PILL ────────────────── */
-let _lpTimer=null;
+/* ── LONG PRESS PLAN ── */
+let _lp=null;
 document.querySelectorAll('.plan-tab').forEach(pill=>{
-  pill.addEventListener('pointerdown',()=>{
-    _lpTimer=setTimeout(()=>{
-      const k=pill.dataset.key;const p=plans[k];
-      showToast(p.label+': '+p.maxVoice+'min · '+p.maxSms+' SMS · '+p.maxData+'GB');
-      haptic('light');
-    },600);
-  },{passive:true});
-  pill.addEventListener('pointerup',()=>clearTimeout(_lpTimer),{passive:true});
-  pill.addEventListener('pointerleave',()=>clearTimeout(_lpTimer),{passive:true});
+  pill.addEventListener('pointerdown',()=>{_lp=setTimeout(()=>{const k=pill.dataset.key;const p=plans[k];showToast(p.label+': '+p.maxV+' min · '+p.maxS+' SMS · '+p.maxD+'GB');haptic('light')},600)},{passive:true});
+  pill.addEventListener('pointerup',()=>clearTimeout(_lp),{passive:true});
+  pill.addEventListener('pointerleave',()=>clearTimeout(_lp),{passive:true});
 });
 
-/* ── NUDGE ───────────────────────────────── */
-let _nudgeTimer=null;
-function startNudgeTimer(){
-  clearTimeout(_nudgeTimer);
-  _nudgeTimer=setTimeout(()=>{
-    if(activeKey!=='weekly'){
-      const toast=document.getElementById('nudgeToast');
-      toast.classList.add('show');
-      setTimeout(()=>toast.classList.remove('show'),5000);
-    }
-  },10000);
-}
-document.getElementById('bodyScroll').addEventListener('scroll',startNudgeTimer,{passive:true});
-startNudgeTimer();
+/* ── HISTORY ── */
+history.replaceState({page:'index'},'','');
+window.addEventListener('popstate',()=>{},{passive:true});
 
-/* ── SOCIAL PROOF ────────────────────────── */
+/* ── SERVICE WORKER ── */
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})});}
+
+/* ── AI CHAT ── */
 (function(){
-  const el=document.getElementById('socialProof');
-  if(!el)return;
-  const base=2847+Math.floor(Math.random()*200);
-  el.innerHTML=`<div class="sp-dot"></div><span><strong>${base.toLocaleString()}</strong> bundles today</span>`;
-  setInterval(()=>{
-    const strong=el.querySelector('strong');if(!strong)return;
-    const cur=parseInt(strong.textContent.replace(/,/g,''))||base;
-    strong.textContent=(cur+Math.floor(Math.random()*3+1)).toLocaleString();
-  },30000);
-})();
-
-/* ── SERVICE WORKER ──────────────────────── */
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/sw.js').then(r=>{
-      console.log('[SW] registered:',r.scope);
-    }).catch(e=>console.warn('[SW] registration failed:',e));
-  });
-}
-
-/* ── AI CHAT ─────────────────────────────── */
-(function(){
-  const fab=document.getElementById('ecFab');
-  const panel=document.getElementById('ecPanel');
-  const badge=document.getElementById('ecBadge');
-  const msgsEl=document.getElementById('ecMsgs');
-  const inputEl=document.getElementById('ecInput');
-  const suggEl=document.getElementById('ecSuggestions');
-  let open=false;
-  let chatHistory=[];
-  try{const saved=sessionStorage.getItem('ecChatHistory');if(saved)chatHistory=JSON.parse(saved);}catch(e){}
-  function saveChatHistory(){try{sessionStorage.setItem('ecChatHistory',JSON.stringify(chatHistory.slice(-20)));}catch(e){}}
-  const SUGGESTIONS=['Daily bundle price?','What is the Weekly bundle?','How do I pay?','Data options?'];
-  function parseMarkdown(txt){
-    return txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>');
-  }
-  function addBubble(txt,who){
-    const b=document.createElement('div');b.className='ec-bubble '+who;
-    if(who==='bot')b.innerHTML=parseMarkdown(txt);else b.textContent=txt;
-    msgsEl.appendChild(b);msgsEl.scrollTop=msgsEl.scrollHeight;return b;
-  }
-  function showTyping(){
-    const t=document.createElement('div');t.className='ec-typing';
-    t.innerHTML='<span></span><span></span><span></span>';
-    msgsEl.appendChild(t);msgsEl.scrollTop=msgsEl.scrollHeight;return t;
-  }
-  function renderSuggestions(items){
-    suggEl.innerHTML='';
-    (items||[]).slice(0,4).forEach(s=>{
-      const c=document.createElement('button');c.className='ec-chip';c.textContent=s;
-      c.onclick=(e)=>{e.stopPropagation();inputEl.value=s;send()};
-      suggEl.appendChild(c);
-    });
-  }
-  function openChat(){
-    open=true;panel.classList.add('open');badge.classList.remove('show');
-    if(msgsEl.children.length===0&&chatHistory.length>0){
-      chatHistory.forEach(m=>addBubble(m.content,m.role==='assistant'?'bot':'user'));
-    } else if(msgsEl.children.length===0){
-      setTimeout(()=>{const t=showTyping();setTimeout(()=>{t.remove();addBubble('Hello! 👋 Mhoro! I am the EcoCash Assistant. How can I help you with your bundle today?','bot');renderSuggestions(SUGGESTIONS)},800)},200);
-    }
-    setTimeout(()=>inputEl.focus(),300);
-  }
+  const fab=document.getElementById('ecFab'),panel=document.getElementById('ecPanel'),badge=document.getElementById('ecBadge');
+  const msgs=document.getElementById('ecMsgs'),input=document.getElementById('ecInput'),sugg=document.getElementById('ecSuggestions');
+  let open=false,history=[];
+  try{const s=sessionStorage.getItem('ecChat');if(s)history=JSON.parse(s)}catch(e){}
+  const SUGG=['Daily bundle price?','What is the Weekly bundle?','How do I pay?','Data options?'];
+  function bubble(txt,who){const b=document.createElement('div');b.className='ec-bubble '+who;b.innerHTML=who==='bot'?txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'):txt;msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;return b}
+  function typing(){const t=document.createElement('div');t.className='ec-typing';t.innerHTML='<span></span><span></span><span></span>';msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;return t}
+  function renderSugg(arr){sugg.innerHTML='';(arr||[]).slice(0,4).forEach(s=>{const c=document.createElement('button');c.className='ec-chip';c.textContent=s;c.onclick=e=>{e.stopPropagation();input.value=s;send()};sugg.appendChild(c)})}
+  function openChat(){open=true;panel.classList.add('open');badge.classList.remove('show');if(msgs.children.length===0&&history.length>0){history.forEach(m=>bubble(m.content,m.role==='assistant'?'bot':'user'))}else if(msgs.children.length===0){setTimeout(()=>{const t=typing();setTimeout(()=>{t.remove();bubble('Hello! 👋 I am the EcoCash Assistant. How can I help you with your bundle today?','bot');renderSugg(SUGG)},800)},200)}setTimeout(()=>input.focus(),300)}
   function closeChat(){open=false;panel.classList.remove('open')}
-  function toggle(e){if(e)e.stopPropagation();if(open)closeChat();else openChat()}
-  fab.onclick=toggle;
-  document.getElementById('ecClose').onclick=(e)=>{e.stopPropagation();closeChat()};
-  document.addEventListener('click',(e)=>{
-    if(!open)return;
-    if(panel.contains(e.target)||fab.contains(e.target))return;
-    closeChat();
-  },{passive:true});
-  const bodyEl=document.getElementById('bodyScroll');
-  if(bodyEl)bodyEl.addEventListener('scroll',()=>{if(open)closeChat()},{passive:true});
+  fab.onclick=e=>{e.stopPropagation();open?closeChat():openChat()}
+  document.getElementById('ecClose').onclick=e=>{e.stopPropagation();closeChat()}
+  document.addEventListener('click',e=>{if(!open)return;if(panel.contains(e.target)||fab.contains(e.target))return;closeChat()},{passive:true});
   async function send(){
-    const txt=inputEl.value.trim();if(!txt)return;
-    inputEl.value='';suggEl.innerHTML='';
-    addBubble(txt,'user');chatHistory.push({role:'user',content:txt});saveChatHistory();
-    const _sendTime=Date.now();const typing=showTyping();
+    const txt=input.value.trim();if(!txt)return;
+    input.value='';sugg.innerHTML='';
+    bubble(txt,'user');history.push({role:'user',content:txt});
+    try{sessionStorage.setItem('ecChat',JSON.stringify(history.slice(-20)))}catch(e){}
+    const t=typing();const t0=Date.now();
     try{
-      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chatHistory.slice(-10)})});
+      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history.slice(-10)})});
       const d=await r.json();
-      const elapsed=Date.now()-_sendTime;
-      if(elapsed<600)await new Promise(res=>setTimeout(res,600-elapsed));
-      typing.remove();
+      const elapsed=Date.now()-t0;if(elapsed<600)await new Promise(res=>setTimeout(res,600-elapsed));
+      t.remove();
       const reply=d.reply||'Sorry, I could not get a response.';
-      addBubble(reply,'bot');chatHistory.push({role:'assistant',content:reply});saveChatHistory();
-      if(!open){const b=document.getElementById('ecBadge');b.textContent='1';b.classList.add('show')}
-      const followUps=[];
-      if(reply.toLowerCase().includes('data'))followUps.push('What is the data speed?');
-      if(reply.toLowerCase().includes('pay')||reply.toLowerCase().includes('ecocash'))followUps.push('How do I top up EcoCash?');
-      if(followUps.length)renderSuggestions(followUps);
-    }catch(e){
-      typing.remove();addBubble('Connection issue — Sungano yaputika.','bot');
-      setTimeout(()=>{
-        const esc=document.createElement('button');esc.className='ec-chip';esc.style.background='#25D366';esc.style.color='#fff';
-        esc.textContent='💬 Chat on WhatsApp';
-        esc.onclick=(e)=>{e.stopPropagation();window.open('https://wa.me/263771234567?text=Hi+EcoCash+Support','_blank')};
-        suggEl.appendChild(esc);
-      },400);
-    }
+      bubble(reply,'bot');history.push({role:'assistant',content:reply});
+      try{sessionStorage.setItem('ecChat',JSON.stringify(history.slice(-20)))}catch(e){}
+      if(!open){badge.textContent='1';badge.classList.add('show')}
+      const fu=[];if(reply.toLowerCase().includes('data'))fu.push('What is the data speed?');if(reply.toLowerCase().includes('pay'))fu.push('How do I top up EcoCash?');if(fu.length)renderSugg(fu);
+    }catch(e){t.remove();bubble('Connection issue — please try again.','bot')}
   }
-  document.getElementById('ecSend').onclick=(e)=>{e.stopPropagation();send()};
-  inputEl.addEventListener('click',e=>e.stopPropagation());
-  inputEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+  document.getElementById('ecSend').onclick=e=>{e.stopPropagation();send()}
+  input.addEventListener('click',e=>e.stopPropagation());
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
   setTimeout(()=>{if(!open)badge.classList.add('show')},3000);
 })();
-
-/* ── ARIA ────────────────────────────────── */
-document.querySelectorAll('.plan-tab').forEach(pill=>{
-  pill.setAttribute('role','tab');
-  pill.setAttribute('aria-selected',pill.classList.contains('active')?'true':'false');
-});
 </script>
 </body>
 </html>
