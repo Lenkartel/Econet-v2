@@ -74,7 +74,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .hdr{
   flex-shrink:0;
   background:var(--blue);
-  padding:max(14px,env(safe-area-inset-top)) 20px 12px;
+  padding:max(12px,env(safe-area-inset-top)) 20px 10px;
   display:flex;align-items:center;justify-content:space-between;
 }
 .logo{display:flex;align-items:center;gap:9px}
@@ -91,11 +91,13 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
   We set explicit height to prevent overflow into other zones.
 */
 .circle-zone{
-  flex-shrink:0;
-  height:300px;
+  flex:1;
+  min-height:260px;
+  max-height:min(360px,55vw + 120px);
   display:flex;align-items:center;justify-content:center;
   position:relative;
   background:var(--bg);
+  /* No overflow:hidden — pods extend beyond circle edge */
 }
 
 /* Soft radial glow behind circle */
@@ -109,7 +111,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 
 /* The circle */
 .circle{
-  width:200px;height:200px;border-radius:50%;
+  width:min(200px,52vw);height:min(200px,52vw);border-radius:50%;
   background:linear-gradient(145deg,var(--blue) 0%,var(--blue2) 55%,var(--blue3) 100%);
   box-shadow:
     0 0 0 1.5px rgba(0,194,255,.4),
@@ -131,7 +133,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 /* Orbiting rings — visible on light background */
 .circle-ring{
   position:absolute;
-  width:228px;height:228px;border-radius:50%;
+  width:min(228px,59vw);height:min(228px,59vw);border-radius:50%;
   border:1.5px dashed rgba(0,95,142,.18);
   animation:ringRot 12s linear infinite;
   pointer-events:none;z-index:1;
@@ -155,7 +157,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 /* Outer slow ring */
 .circle-ring-outer{
   position:absolute;
-  width:248px;height:248px;border-radius:50%;
+  width:min(248px,64vw);height:min(248px,64vw);border-radius:50%;
   border:1px solid rgba(0,194,255,.08);
   animation:ringRot 30s linear infinite reverse;
   pointer-events:none;z-index:0;
@@ -228,7 +230,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 /* ══════ ZONE 3 — PRESETS ══════ */
 .presets-zone{
   flex-shrink:0;
-  padding:8px 16px 6px;
+  padding:6px 16px 4px;
   background:var(--bg);
 }
 .preset-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t4);margin-bottom:6px}
@@ -250,9 +252,10 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .preset-chip.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 3px 10px rgba(0,95,142,.25)}
 
 /* ══════ ZONE 4 — PLAN SELECTOR ══════ */
+.plan-zone-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--t4);margin-bottom:5px;padding:0 2px;}
 .plan-zone{
   flex-shrink:0;
-  padding:4px 16px 6px;
+  padding:3px 16px 5px;
   background:var(--bg);
 }
 .plan-track{
@@ -262,7 +265,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 }
 .plan-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;
-  padding:7px 3px;border-radius:var(--rp);border:none;cursor:pointer;
+  padding:6px 3px;border-radius:var(--rp);border:none;cursor:pointer;
   background:transparent;
   transition:background .16s;position:relative;outline:none;
 }
@@ -277,11 +280,11 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 /* ══════ ZONE 5 — PAY BUTTON ══════ */
 .pay-zone{
   flex-shrink:0;
-  padding:6px 16px max(18px,env(safe-area-inset-bottom));
+  padding:4px 16px max(14px,env(safe-area-inset-bottom));
   background:var(--bg);
 }
 .pay-btn{
-  width:100%;min-height:54px;padding:13px 20px;
+  width:100%;min-height:50px;padding:11px 18px;
   border:none;border-radius:var(--r20);cursor:pointer;
   background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 60%,var(--blue3) 100%);
   display:flex;align-items:center;justify-content:space-between;
@@ -509,6 +512,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 
   <!-- ZONE 4: PLAN SELECTOR -->
   <div class="plan-zone">
+    <div class="plan-zone-label">Choose bundle</div>
     <div class="plan-track" role="tablist">
       <button class="plan-btn active" data-key="daily" role="tab" aria-selected="true" onclick="switchPlan('daily')">
         <span class="plan-btn-name">Daily</span><span class="plan-btn-price" id="pp-daily">$0.60</span>
