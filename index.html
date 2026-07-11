@@ -335,12 +335,12 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .nudge.show{display:flex}
 
 /* ══════ AI ASSISTANT ══════ */
-.ai-fab{position:fixed;bottom:max(82px,calc(74px + env(safe-area-inset-bottom)));right:16px;width:48px;height:48px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;z-index:8000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,194,255,.35),0 1px 4px rgba(0,0,0,.08);transition:transform .14s var(--sp);outline:none}
+.ai-fab{position:fixed;bottom:max(206px,calc(196px + env(safe-area-inset-bottom)));right:16px;width:44px;height:44px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;z-index:8000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,194,255,.35),0 1px 4px rgba(0,0,0,.08);transition:transform .14s var(--sp);outline:none}
 .ai-fab:active{transform:scale(.86)}
 .ai-fab svg{display:block}
 .ai-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:#EF4444;border:2px solid var(--bg);font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:opacity .2s,transform .22s var(--sp)}
 .ai-badge.show{opacity:1;transform:scale(1)}
-.ai-panel{position:fixed;bottom:max(82px,calc(74px + env(safe-area-inset-bottom)));right:16px;left:16px;background:var(--card);border-radius:var(--r20);box-shadow:0 10px 40px rgba(0,0,0,.18),0 0 0 1px rgba(0,95,142,.1);z-index:8001;display:flex;flex-direction:column;overflow:hidden;transform:translateY(16px) scale(.96);opacity:0;transition:transform .28s var(--ease),opacity .22s;pointer-events:none;height:62dvh;max-height:520px;}
+.ai-panel{position:fixed;bottom:max(262px,calc(252px + env(safe-area-inset-bottom)));right:16px;left:16px;background:var(--card);border-radius:var(--r20);box-shadow:0 10px 40px rgba(0,0,0,.18),0 0 0 1px rgba(0,95,142,.1);z-index:8001;display:flex;flex-direction:column;overflow:hidden;transform:translateY(12px) scale(.97);opacity:0;transition:transform .26s var(--ease),opacity .22s;pointer-events:none;height:44dvh;max-height:360px;}
 .ai-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
 .ai-head{background:var(--blue);padding:13px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .ai-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
