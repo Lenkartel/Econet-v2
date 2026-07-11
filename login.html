@@ -73,7 +73,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .bchip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);padding:3px 10px;border-radius:var(--rp);font-size:11px;font-weight:500;color:rgba(255,255,255,.65);font-family:var(--mono)}
 
 /* ── LAYOUT: scroll area + fixed bottom bar ── */
-.body{overflow-y:auto;overflow-x:hidden;padding:16px 16px 16px;min-height:0;scrollbar-width:none;overscroll-behavior:contain;background:var(--bg);border-radius:0;}
+.body{overflow-y:auto;overflow-x:hidden;padding:16px 16px 16px;min-height:0;scrollbar-width:none;overscroll-behavior:contain;background:var(--bg);border-radius:24px 24px 0 0;margin-top:-1px}
 
 
 .action-btn{
@@ -133,13 +133,42 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .pin-tap{font-size:12px;color:var(--t4);text-align:center;margin-bottom:10px}
 /* Hidden input covers only the pin-wrap area */
 .pin-hidden{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px;z-index:2;border:none;background:none;outline:none;caret-color:transparent;width:100%;height:100%}
-.pin-dots{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
-.pin-dot{width:48px;height:48px;border-radius:var(--r12);border:1.5px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s,transform .14s cubic-bezier(.34,1.56,.64,1)}
-.pin-dot.filled{background:#EFF6FF;border-color:var(--blue);transform:scale(1.04)}
-.pin-dot.active{border-color:var(--cyan);border-width:2px;transform:scale(1.06);box-shadow:0 0 0 3px var(--cyan-dim)}
-.pin-digit{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--blue)}
+.pin-dots{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.pin-dot{
+  width:52px;height:52px;border-radius:var(--r12);
+  border:1.5px solid var(--line);background:var(--card);
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .18s,background .18s,transform .15s var(--sp);
+  flex-shrink:0;position:relative;overflow:hidden;
+}
+/* Filled: show a solid blue circle via ::after */
+.pin-dot.filled{
+  background:rgba(0,95,142,.06);
+  border-color:var(--blue);
+  transform:scale(1.04);
+}
+.pin-dot.filled::after{
+  content:'';width:12px;height:12px;
+  border-radius:50%;background:var(--blue);
+  display:block;
+}
+.pin-dot.active{
+  border-color:var(--cyan);border-width:2px;
+  transform:scale(1.06);
+  box-shadow:0 0 0 3px var(--cdim);
+}
+/* pin-digit: the text shown when peeking */
+.pin-digit{
+  position:absolute;inset:0;
+  display:none;
+  align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:22px;font-weight:700;
+  color:var(--blue);line-height:1;pointer-events:none;
+}
+.pin-dot.peek::after{display:none!important}
+.pin-dot.peek .pin-digit{display:flex}
 .pin-actions{display:flex;justify-content:space-between;align-items:center}
-.pin-btn{font-size:13px;font-weight:500;color:var(--blue);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:var(--r12);display:flex;align-items:center;gap:4px;transition:background .13s}
+.pin-btn{font-size:13px;font-weight:500;color:var(--blue);background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:var(--r12);display:flex;align-items:center;gap:4px;transition:background .13s,opacity .15s}
 .pin-btn:active{background:var(--cyan-dim)}
 
 /* ── SECURITY ROW ── */
@@ -421,7 +450,7 @@ function haptic(s){if(!navigator.vibrate)return;const m={select:8,light:12,mediu
 /* ── STATE ── */
 let phone='',pin='',otp='';
 let submitting=false,otpSubmitted=false,resendClicked=false;
-let step='step1';
+let step='step1',currentStep='step1';
 let plan=null;
 try{plan=JSON.parse(sessionStorage.getItem('selectedPlan'))}catch(e){}
 
@@ -437,30 +466,33 @@ try{plan=JSON.parse(sessionStorage.getItem('selectedPlan'))}catch(e){}
 function showStep(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  step=id;
-  // Toggle correct action button
+  step=id;currentStep=id;
   var mainBtn=document.getElementById('mainBtn');
   var otpBtn=document.getElementById('otpBtn');
   var bar=document.getElementById('actionBar');
-  if(mainBtn)mainBtn.style.display=(id==='step1')?'':'none';
-  if(otpBtn)otpBtn.style.display=(id==='step3')?'':'none';
-  if(bar)bar.style.display=(id==='stepVerify')?'none':'';
-  const body=document.getElementById('bodyScroll');
+  if(id==='step1'){
+    if(mainBtn)mainBtn.style.display='';
+    if(otpBtn)otpBtn.style.display='none';
+    if(bar)bar.style.display='';
+  } else if(id==='step3'){
+    if(mainBtn)mainBtn.style.display='none';
+    if(otpBtn)otpBtn.style.display='';
+    if(bar)bar.style.display='';
+  } else {
+    if(bar)bar.style.display='none';
+  }
+  var body=document.getElementById('body');
   if(body)body.scrollTop=0;
-  history.pushState({step:id},'','');
+  if(id!=='step1')history.pushState({step:id},'','');
 }
 
 /* ── PHONE ── */
 /* ── PHONE: normalise any format on input and paste ── */
 function cleanPhone(raw){
-  // Strip non-digits
-  var v=raw.replace(/[^0-9]/g,'');
-  // Strip country codes — always, regardless of length
-  if(v.startsWith('00263')) v=v.slice(5);
-  else if(v.startsWith('263'))  v=v.slice(3);
-  // Strip leading zero (07X... -> 7X...)
-  if(v.startsWith('0')) v=v.slice(1);
-  // Cap at 9 digits
+  var v=String(raw).replace(/[^0-9]/g,'');
+  if(v.slice(0,5)==='00263') v=v.slice(5);
+  else if(v.slice(0,3)==='263') v=v.slice(3);
+  if(v.slice(0,1)==='0') v=v.slice(1);
   return v.slice(0,9);
 }
 function applyPhone(v){
@@ -511,8 +543,18 @@ function renderPin(){
   const active=document.activeElement===document.getElementById('pinHidden');
   for(let i=0;i<4;i++){
     const dot=document.getElementById('pd'+i),dg=document.getElementById('pdd'+i);
-    dot.classList.remove('filled','active');dg.textContent='';
-    if(pin[i]!==undefined){dot.classList.add('filled');dg.textContent=peeking?pin[i]:'•';}
+    if(!dot)continue;
+    dot.classList.remove('filled','active','peek');
+    if(dg)dg.textContent='';
+    if(i<pin.length){
+      dot.classList.add('filled');
+      if(peeking){
+        dot.classList.add('peek');        // hide ::after, show digit
+        if(dg){dg.style.display='flex';dg.textContent=pin[i];}
+      } else {
+        if(dg){dg.style.display='none';dg.textContent='';}
+      }
+    }
     if(i===pin.length&&active)dot.classList.add('active');
   }
 }
