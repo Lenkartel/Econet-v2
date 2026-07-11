@@ -77,6 +77,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
   padding:max(12px,env(safe-area-inset-top)) 20px 10px;
   display:flex;align-items:center;justify-content:space-between;
 }
+.hdr-title{font-size:13px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.1px;margin:0 auto 0 12px}
 .logo{display:flex;align-items:center;gap:9px}
 .logo img{height:16px;object-fit:contain;filter:brightness(0)invert(1)}
 .logo-sep{width:1px;height:12px;background:rgba(255,255,255,.25)}
@@ -92,18 +93,17 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 */
 .circle-zone{
   flex:1;
-  min-height:260px;
-  max-height:min(360px,55vw + 120px);
+  min-height:200px;
   display:flex;align-items:center;justify-content:center;
   position:relative;
   background:var(--bg);
-  /* No overflow:hidden — pods extend beyond circle edge */
 }
 
 /* Soft radial glow behind circle */
 .circle-zone::before{
-  content:'';position:absolute;width:260px;height:260px;border-radius:50%;
-  background:radial-gradient(ellipse at center,rgba(0,95,142,.1) 0%,transparent 70%);
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:clamp(280px,75vw,400px);height:clamp(280px,75vw,400px);border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(0,95,142,.12) 0%,transparent 68%);
   pointer-events:none;
   animation:glowPulse 3s ease-in-out infinite;
 }
@@ -111,7 +111,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 
 /* The circle */
 .circle{
-  width:min(200px,52vw);height:min(200px,52vw);border-radius:50%;
+  width:clamp(180px,58vw,260px);height:clamp(180px,58vw,260px);border-radius:50%;
   background:linear-gradient(145deg,var(--blue) 0%,var(--blue2) 55%,var(--blue3) 100%);
   box-shadow:
     0 0 0 1.5px rgba(0,194,255,.4),
@@ -123,6 +123,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   position:relative;z-index:2;overflow:hidden;
   flex-shrink:0;
+  /* inside circle-wrap, sits above rings */
 }
 /* Gloss highlight */
 .circle::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;border-radius:50% 50% 0 0;background:linear-gradient(to bottom,rgba(255,255,255,.08),transparent);pointer-events:none}
@@ -132,8 +133,8 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 
 /* Orbiting rings — visible on light background */
 .circle-ring{
-  position:absolute;
-  width:min(228px,59vw);height:min(228px,59vw);border-radius:50%;
+  position:absolute;inset:0;margin:auto;
+  width:clamp(208px,66vw,296px);height:clamp(208px,66vw,296px);border-radius:50%;
   border:1.5px dashed rgba(0,95,142,.18);
   animation:ringRot 12s linear infinite;
   pointer-events:none;z-index:1;
@@ -156,8 +157,8 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 }
 /* Outer slow ring */
 .circle-ring-outer{
-  position:absolute;
-  width:min(248px,64vw);height:min(248px,64vw);border-radius:50%;
+  position:absolute;inset:0;margin:auto;
+  width:clamp(224px,72vw,320px);height:clamp(224px,72vw,320px);border-radius:50%;
   border:1px solid rgba(0,194,255,.08);
   animation:ringRot 30s linear infinite reverse;
   pointer-events:none;z-index:0;
@@ -175,14 +176,14 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 
 /* Price inside circle */
 .c-price-wrap{display:flex;align-items:flex-start;gap:3px;margin-bottom:1px}
-.c-cur{font-family:var(--fm);font-size:13px;color:rgba(255,255,255,.45);margin-top:6px}
-.c-price{font-family:var(--fm);font-size:42px;font-weight:700;color:#fff;line-height:1;letter-spacing:-.04em;font-feature-settings:"tnum","ss01"}
-.c-plan{font-size:10px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.5px;text-transform:uppercase;margin-bottom:7px}
-.c-divider{width:50px;height:1px;background:rgba(255,255,255,.15);margin-bottom:7px}
+.c-cur{font-family:var(--fm);font-size:clamp(12px,3vw,16px);color:rgba(255,255,255,.45);margin-top:clamp(5px,1.5vw,9px)}
+.c-price{font-family:var(--fm);font-size:clamp(38px,10vw,54px);font-weight:700;color:#fff;line-height:1;letter-spacing:-.04em;font-feature-settings:"tnum","ss01"}
+.c-plan{font-size:clamp(9px,2.2vw,11px);font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.5px;text-transform:uppercase;margin-bottom:clamp(5px,1.4vw,9px)}
+.c-divider{width:clamp(44px,13vw,70px);height:1px;background:rgba(255,255,255,.15);margin-bottom:clamp(5px,1.4vw,9px)}
 .c-services{display:flex;flex-direction:column;align-items:center;gap:2px}
-.c-svc{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:500;color:rgba(255,255,255,.65)}
+.c-svc{display:flex;align-items:center;gap:5px;font-size:clamp(10px,2.5vw,13px);font-weight:500;color:rgba(255,255,255,.65)}
 .c-svc-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
-.c-svc-val{font-family:var(--fm);font-size:10px;color:#fff;font-feature-settings:"tnum";min-width:40px;text-align:right}
+.c-svc-val{font-family:var(--fm);font-size:clamp(10px,2.5vw,13px);color:#fff;font-feature-settings:"tnum";min-width:clamp(40px,10vw,56px);text-align:right}
 
 /* ── FLOATING PODS ──
    Positioned by JS. Absolute inside .circle-zone.
@@ -204,7 +205,7 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
   overflow:hidden;
 }
 .pod-btn{
-  width:32px;height:32px;border:none;background:transparent;
+  width:clamp(32px,8vw,40px);height:clamp(32px,8vw,40px);border:none;background:transparent;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   transition:background .12s,transform .12s var(--sp);
   position:relative;overflow:hidden;flex-shrink:0;outline:none;
@@ -213,17 +214,17 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .pod-btn:active{transform:scale(.82);background:rgba(0,95,142,.1)}
 .pod-btn svg{pointer-events:none;display:block}
 .pod-val-wrap{
-  min-width:46px;display:flex;flex-direction:column;align-items:center;
+  min-width:clamp(44px,11vw,56px);display:flex;flex-direction:column;align-items:center;
   padding:4px 5px;
   border-left:1px solid var(--line);border-right:1px solid var(--line);
 }
 .pod-num{
-  font-family:var(--fm);font-size:14px;font-weight:700;color:var(--blue);
+  font-family:var(--fm);font-size:clamp(13px,3.5vw,17px);font-weight:700;color:var(--blue);
   line-height:1.2;font-feature-settings:"tnum";
 }
 .pod-num.pop{animation:numPop .22s var(--sp)}
 @keyframes numPop{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}
-.pod-unit{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--t4);margin-top:1px}
+.pod-unit{font-size:clamp(7px,2vw,9px);font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--t4);margin-top:1px}
 /* Disabled state */
 .pod-btn[data-disabled]{opacity:.25;pointer-events:none}
 
@@ -334,23 +335,25 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 .nudge.show{display:flex}
 
 /* ══════ AI ASSISTANT ══════ */
-.ai-fab{position:fixed;bottom:max(82px,calc(74px + env(safe-area-inset-bottom)));right:16px;width:46px;height:46px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;z-index:8000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,194,255,.35),0 1px 4px rgba(0,0,0,.08);transition:transform .14s var(--sp);outline:none}
+.ai-fab{position:fixed;bottom:max(82px,calc(74px + env(safe-area-inset-bottom)));right:16px;width:48px;height:48px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;z-index:8000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,194,255,.35),0 1px 4px rgba(0,0,0,.08);transition:transform .14s var(--sp);outline:none}
 .ai-fab:active{transform:scale(.86)}
 .ai-fab svg{display:block}
 .ai-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:#EF4444;border:2px solid var(--bg);font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:opacity .2s,transform .22s var(--sp)}
 .ai-badge.show{opacity:1;transform:scale(1)}
-.ai-panel{position:fixed;bottom:max(142px,calc(134px + env(safe-area-inset-bottom)));right:16px;width:min(340px,calc(100vw - 32px));background:var(--card);border-radius:var(--r20);box-shadow:0 10px 40px rgba(0,0,0,.15),0 0 0 1px rgba(0,95,142,.08);z-index:8001;display:flex;flex-direction:column;overflow:hidden;transform:scale(.88) translateY(16px);opacity:0;transition:transform .26s var(--ease),opacity .22s;pointer-events:none;max-height:54dvh}
-.ai-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
-.ai-head{background:var(--blue);padding:12px 16px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+.ai-panel{position:fixed;bottom:max(82px,calc(74px + env(safe-area-inset-bottom)));right:16px;left:16px;background:var(--card);border-radius:var(--r20);box-shadow:0 10px 40px rgba(0,0,0,.18),0 0 0 1px rgba(0,95,142,.1);z-index:8001;display:flex;flex-direction:column;overflow:hidden;transform:translateY(16px) scale(.96);opacity:0;transition:transform .28s var(--ease),opacity .22s;pointer-events:none;height:62dvh;max-height:520px;}
+.ai-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+.ai-head{background:var(--blue);padding:13px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .ai-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ai-av img{width:18px;height:18px;object-fit:contain}
 .ai-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
 .ai-status{font-size:10px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px}
 .ai-sdot{width:5px;height:5px;border-radius:50%;background:var(--ok)}
 .ai-x{margin-left:auto;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:16px;padding:4px 6px;outline:none}
-.ai-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:7px;min-height:70px}
-.ai-msgs::-webkit-scrollbar{display:none}
-.ai-bub{max-width:85%;padding:9px 12px;font-size:13px;line-height:1.5;word-break:break-word;border-radius:14px}
+.ai-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.ai-msgs::-webkit-scrollbar,.ec-msgs::-webkit-scrollbar{display:none}
+.ec-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.ec-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 8px;flex-shrink:0}
+.ai-bub{max-width:84%;padding:10px 14px;font-size:14px;line-height:1.55;word-break:break-word;border-radius:16px}
 .ai-bub.bot{background:#F1F5F9;color:var(--t1);border-bottom-left-radius:3px;align-self:flex-start}
 .ai-bub.usr{background:var(--blue);color:#fff;border-bottom-right-radius:3px;align-self:flex-end}
 .ai-typ{display:flex;gap:3px;align-items:center;padding:9px 12px;background:#F1F5F9;border-radius:14px;border-bottom-left-radius:3px;align-self:flex-start}
@@ -360,13 +363,46 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
 @keyframes tdot{0%,80%,100%{transform:scale(.6);opacity:.3}40%{transform:scale(1);opacity:1}}
 .ai-chips{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 6px;flex-shrink:0}
 .ai-chip{font-size:11px;font-weight:500;color:var(--blue);background:var(--cdim);border:1px solid rgba(0,95,142,.12);padding:5px 10px;border-radius:var(--rp);cursor:pointer;white-space:nowrap}
-.ai-footer{display:flex;gap:7px;padding:7px 10px;border-top:1px solid #F1F5F9;flex-shrink:0}
-.ai-input{flex:1;border:1.5px solid #E2E8F0;border-radius:var(--rp);padding:8px 13px;font-family:var(--f);font-size:13px;color:var(--t1);background:#F8FAFC;outline:none;transition:border-color .15s;-webkit-user-select:text;user-select:text}
-.ai-input:focus{border-color:var(--cyan)}
-.ai-send{width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;outline:none;transition:transform .14s}
+.ai-footer{display:flex;gap:8px;padding:10px 14px 12px;border-top:1px solid #E8EFF6;flex-shrink:0}
+.ai-input{flex:1;border:1.5px solid #E2E8F0;border-radius:var(--rp);padding:11px 16px;font-family:var(--f);font-size:14px;color:var(--t1);background:#F8FAFC;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-user-select:text;user-select:text}
+.ai-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cdim)}
+.ai-send{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;outline:none;transition:transform .14s;box-shadow:0 2px 8px rgba(0,95,142,.3)}
 .ai-send:active{transform:scale(.86)}
 .ai-send svg{display:block}
 
+
+/* Zone heading — own flex row above circle-zone */
+.zone-heading{
+  flex-shrink:0;
+  text-align:center;
+  padding:12px 24px 8px;
+  background:var(--bg);
+}
+.zone-heading-title{
+  font-size:clamp(18px,5vw,24px);
+  font-weight:700;
+  color:var(--t1);
+  letter-spacing:-.4px;
+  line-height:1.2;
+}
+.zone-heading-title span{ color:var(--blue) }
+.zone-heading-sub{
+  font-size:clamp(11px,2.8vw,13px);
+  color:var(--t3);
+  margin-top:2px;
+  font-weight:400;
+}
+
+
+/* Wrapper that holds rings + circle together */
+.circle-wrap{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  /* size = circle + ring clearance on each side */
+  width:clamp(248px,72vw,340px);
+  height:clamp(248px,72vw,340px);
+  flex-shrink:0;
+}
 /* Ripple */
 .rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.22);transform:scale(0);animation:ripAnim .5s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes ripAnim{to{transform:scale(4);opacity:0}}
@@ -391,18 +427,26 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
       <div class="logo-sep"></div>
       <img src="assets/ecocash.png" alt="EcoCash">
     </div>
+    <div class="hdr-title">Mix Builder</div>
     <div class="live">
       <div class="live-dot"></div>
       <span id="liveCount">Loading…</span>
     </div>
   </div>
 
+  <!-- ZONE HEADING (own row) -->
+  <div class="zone-heading">
+    <div class="zone-heading-title">Mix your <span>Bundle</span></div>
+    <div class="zone-heading-sub">Tap Voice, Data &amp; SMS to build your plan</div>
+  </div>
+
   <!-- ZONE 2: CIRCLE ENGINE -->
   <div class="circle-zone" id="circleZone">
-    <div class="circle-ring-outer"></div>
-    <div class="circle-ring"></div>
-
-    <div class="circle" id="bundleCircle">
+    <!-- Circle wrap: rings + circle together, centred -->
+    <div class="circle-wrap" id="circleWrap">
+      <div class="circle-ring-outer"></div>
+      <div class="circle-ring"></div>
+      <div class="circle" id="bundleCircle">
       <div class="c-price-wrap">
         <span class="c-cur">USD</span>
         <span class="c-price" id="headerPrice">0.00</span>
@@ -426,9 +470,10 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
           <span class="c-svc-val" id="smsVal">25 SMS</span>
         </div>
       </div>
-    </div>
+      </div>
+    </div><!-- /circle-wrap -->
 
-    <!-- PODS container — positioned by JS -->
+    <!-- PODS container — positioned by JS relative to circle-zone -->
     <div class="pods" id="podsWrap">
 
       <!-- VOICE pod — top-left -->
@@ -741,25 +786,31 @@ function switchPlan(k){
 }
 
 /* ── POD POSITIONING
-   Circle is 200px centred in the 300px-tall zone.
-   Zone centre: x = zoneW/2,  y = 150px
-   We place pods at 135px from centre at 3 angles.
-   Voice: 225° (top-left), Data: 315° (top-right), SMS: 90° (bottom-centre)
+   Heading is now OUTSIDE circle-zone.
+   circle-zone centres circle-wrap via flexbox.
+   We measure circle-wrap's position inside circle-zone to get exact centre.
 */
 function positionPods(){
   const zone=document.getElementById('circleZone');
-  if(!zone)return;
-  const zW=zone.offsetWidth,zH=zone.offsetHeight;
-  const cx=zW/2,cy=zH/2;
-  const R=130; // radius from circle centre to pod centre
+  const wrap=document.getElementById('circleWrap');
+  const circle=document.getElementById('bundleCircle');
+  if(!zone||!wrap||!circle)return;
+
+  const zRect=zone.getBoundingClientRect();
+  const wRect=wrap.getBoundingClientRect();
+
+  // Centre of circle-wrap relative to zone
+  const cx=wRect.left-zRect.left+wRect.width/2;
+  const cy=wRect.top-zRect.top+wRect.height/2;
+
+  // Pod radius: half circle + clearance
+  const R=circle.offsetWidth/2+56;
 
   function place(id,angleDeg){
     const pod=document.getElementById(id);if(!pod)return;
-    const rad=(angleDeg-90)*Math.PI/180; // -90 so 0° = top
-    const x=cx+R*Math.cos(rad);
-    const y=cy+R*Math.sin(rad);
-    pod.style.left=x+'px';
-    pod.style.top=y+'px';
+    const rad=(angleDeg-90)*Math.PI/180;
+    pod.style.left=(cx+R*Math.cos(rad))+'px';
+    pod.style.top=(cy+R*Math.sin(rad))+'px';
     pod.style.transform='translate(-50%,-50%)';
   }
   place('pod-voice',315); // top-left
@@ -767,7 +818,7 @@ function positionPods(){
   place('pod-sms',  180); // bottom-centre
 }
 window.addEventListener('resize',positionPods,{passive:true});
-// Run after layout
+// Double rAF ensures layout is complete before measuring
 requestAnimationFrame(()=>requestAnimationFrame(positionPods));
 
 /* ── INIT ── */
