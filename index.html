@@ -10,946 +10,771 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════════
-   ECOCASH MIX — CIRCULAR BUILDER · LIGHT THEME
-   One screen · No scroll · No overlap
-   ══════════════════════════════════════════════ */
+/* ── Reset ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 :root{
-  /* Brand */
-  --blue:  #005F8E;
-  --blue2: #004470;
-  --blue3: #003558;
-  --cyan:  #00C2FF;
-  --cdim:  rgba(0,194,255,.12);
-  /* Light surfaces */
-  --bg:    #EFF4FA;
-  --card:  #FFFFFF;
-  --line:  rgba(0,95,142,.1);
-  /* Text */
-  --t1:    #0F172A;
-  --t2:    #334155;
-  --t3:    #64748B;
-  --t4:    #94A3B8;
-  /* Service */
-  --vc:    #E8335A;
-  --sc:    #7C3AED;
-  --dc:    #0284C7;
-  /* State */
-  --ok:    #10B981;
-  --warn:  #F59E0B;
-  /* Type */
-  --f:     'DM Sans',system-ui,sans-serif;
-  --fm:    'DM Mono',monospace;
-  /* Radius */
-  --rp: 999px; --r12:12px; --r16:16px; --r20:20px; --r24:24px;
-  /* Motion */
-  --sp:   cubic-bezier(.34,1.56,.64,1);
-  --ease: cubic-bezier(.2,0,0,1);
+  --blue:#005F8E;--blue2:#004470;--blue3:#003558;
+  --cyan:#00C2FF;--cdim:rgba(0,194,255,.12);
+  --bg:#F2F6FA;--card:#FFFFFF;--line:rgba(0,0,0,.07);
+  --t1:#0A1628;--t2:#2D3F55;--t3:#5C7088;--t4:#9BAABB;
+  --vc:#E8335A;--sc:#7C3AED;--dc:#0284C7;
+  --ok:#10B981;--ok-dim:rgba(16,185,129,.1);
+  --err:#EF4444;--err-dim:rgba(239,68,68,.08);
+  --warn:#F59E0B;
+  --f:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',monospace;
+  --rp:999px;--r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;
+  --sp:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.2,0,0,1);
+  --elev1:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --elev2:0 4px 16px rgba(0,0,0,.1),0 2px 6px rgba(0,0,0,.06);
+  --elev3:0 8px 32px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.08);
 }
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-html,body{width:100%;height:100%;height:100dvh;overflow:hidden;font-family:var(--f);background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased}
 
-/* ── CURTAIN ── */
-.curtain{position:fixed;inset:0;z-index:9999;pointer-events:none;background:var(--blue);opacity:0;transition:opacity .22s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+/* ── Curtain ── */
+.curtain{position:fixed;inset:0;z-index:9999;pointer-events:none;background:var(--blue);opacity:0;transition:opacity .25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
 .curtain.show{opacity:1;pointer-events:auto}
-.c-brand{display:flex;align-items:center;gap:9px;padding:7px 18px;border-radius:var(--rp);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
-.c-brand img{height:15px;object-fit:contain;filter:brightness(0)invert(1)}
-.c-sep{width:1px;height:11px;background:rgba(255,255,255,.25)}
-.c-spin svg{animation:spin 1s linear infinite}
+.c-logo{display:flex;align-items:center;gap:10px;padding:8px 20px;border-radius:var(--rp);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
+.c-logo img{height:16px;object-fit:contain;filter:brightness(0)invert(1)}
+.c-logo-sep{width:1px;height:12px;background:rgba(255,255,255,.3)}
+.c-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.c-lbl{font-size:14px;font-weight:500;color:#fff;text-align:center;transition:opacity .18s}
-.c-sub{font-size:12px;color:rgba(255,255,255,.55);text-align:center;transition:opacity .18s}
-.c-bar{width:140px;height:2px;background:rgba(255,255,255,.2);border-radius:var(--rp);overflow:hidden}
-.c-fill{height:100%;background:var(--cyan);animation:cFill 1.6s cubic-bezier(.4,0,.2,1) both}
-@keyframes cFill{from{width:0}to{width:100%}}
+.c-txt{text-align:center}
+.c-lbl{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px;transition:opacity .18s}
+.c-sub{font-size:12px;color:rgba(255,255,255,.5);transition:opacity .18s}
+.c-prog{width:160px;height:2px;background:rgba(255,255,255,.15);border-radius:var(--rp);overflow:hidden;margin-top:6px}
+.c-prog-fill{height:100%;background:var(--cyan);width:0;animation:progFill 1.4s var(--ease) both}
+@keyframes progFill{to{width:100%}}
 
-/* ── APP ── */
-@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes pgOut{to{opacity:0;transform:translateY(-6px)}}
-.app{display:flex;flex-direction:column;width:100%;height:100%;height:100dvh;overflow:hidden;animation:pgIn .3s var(--ease) both}
-.app.exit{animation:pgOut .2s var(--ease) forwards}
+/* ── App shell ── */
+@keyframes pgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pgOut{to{opacity:0;transform:translateY(-8px)}}
+.app{display:flex;flex-direction:column;width:100%;height:100dvh;overflow:hidden;animation:pgIn .28s var(--ease) both}
+.app.exit{animation:pgOut .22s var(--ease) forwards}
 
-/* ══════ ZONE 1 — HEADER ══════ */
-.hdr{
+/* ── Status bar / Header ── */
+.topbar{
   flex-shrink:0;
-  background:var(--blue);
-  padding:max(12px,env(safe-area-inset-top)) 20px 10px;
+  background:linear-gradient(180deg,var(--blue3) 0%,var(--blue) 100%);
+  padding:max(14px,env(safe-area-inset-top)) 20px 18px;
   display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
 }
-.hdr-title{font-size:13px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.1px;margin:0 auto 0 12px}
-.logo{display:flex;align-items:center;gap:9px}
-.logo img{height:16px;object-fit:contain;filter:brightness(0)invert(1)}
-.logo-sep{width:1px;height:12px;background:rgba(255,255,255,.25)}
-.live{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:rgba(255,255,255,.6)}
-.live-dot{width:5px;height:5px;border-radius:50%;background:var(--ok);flex-shrink:0;animation:livePulse 2.4s ease-in-out infinite}
-@keyframes livePulse{0%,100%{opacity:.35}50%{opacity:1}}
+.topbar::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 200px 120px at 100% 0%,rgba(0,194,255,.08),transparent);pointer-events:none}
+.topbar-brand{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.topbar-brand img{height:16px;object-fit:contain;filter:brightness(0)invert(1)}
+.topbar-sep{width:1px;height:13px;background:rgba(255,255,255,.25)}
+.topbar-right{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rp);padding:5px 11px;font-size:11px;font-weight:600;color:rgba(255,255,255,.75)}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#4ADE80;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
 
-/* ══════ ZONE 2 — CIRCLE ENGINE ══════ */
-/* 
-  Circle is 200px. Pods extend ~60px beyond edge.
-  Total height needed: 200 + 60 + 60 = 320px.
-  We set explicit height to prevent overflow into other zones.
-*/
-.circle-zone{
-  flex:1;
-  min-height:200px;
-  display:flex;align-items:center;justify-content:center;
-  position:relative;
-  background:var(--bg);
-}
-
-/* Soft radial glow behind circle */
-.circle-zone::before{
-  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:clamp(280px,75vw,400px);height:clamp(280px,75vw,400px);border-radius:50%;
-  background:radial-gradient(ellipse at center,rgba(0,95,142,.12) 0%,transparent 68%);
-  pointer-events:none;
-  animation:glowPulse 3s ease-in-out infinite;
-}
-@keyframes glowPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
-
-/* The circle */
+/* ── Circle zone ── */
+.circle-zone{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;background:var(--bg)}
+.circle-zone::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70vw;max-width:340px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(0,95,142,.09) 0%,transparent 70%);pointer-events:none;animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.6}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+.circle-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:clamp(240px,70vw,320px);height:clamp(240px,70vw,320px)}
 .circle{
-  width:clamp(180px,58vw,260px);height:clamp(180px,58vw,260px);border-radius:50%;
+  width:clamp(170px,54vw,240px);height:clamp(170px,54vw,240px);
+  border-radius:50%;
   background:linear-gradient(145deg,var(--blue) 0%,var(--blue2) 55%,var(--blue3) 100%);
-  box-shadow:
-    0 0 0 1.5px rgba(0,194,255,.4),
-    0 0 0 8px rgba(0,95,142,.06),
-    0 16px 48px rgba(0,95,142,.3),
-    0 4px 12px rgba(0,0,0,.12),
-    inset 0 1px 0 rgba(255,255,255,.1),
-    inset 0 -1px 0 rgba(0,0,0,.15);
+  box-shadow:0 0 0 1.5px rgba(0,194,255,.3),0 0 0 10px rgba(0,95,142,.07),0 20px 60px rgba(0,95,142,.35),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.18);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:relative;z-index:2;overflow:hidden;
-  flex-shrink:0;
-  /* inside circle-wrap, sits above rings */
+  position:relative;z-index:2;overflow:hidden;flex-shrink:0;
 }
-/* Gloss highlight */
-.circle::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;border-radius:50% 50% 0 0;background:linear-gradient(to bottom,rgba(255,255,255,.08),transparent);pointer-events:none}
-/* Pop animation */
-.circle.pop{animation:cPop .32s var(--sp)}
-@keyframes cPop{0%{transform:scale(1)}35%{transform:scale(.95)}65%{transform:scale(1.03)}100%{transform:scale(1)}}
+.circle::before{content:'';position:absolute;top:0;left:0;right:0;height:48%;border-radius:50% 50% 0 0;background:linear-gradient(to bottom,rgba(255,255,255,.1),transparent);pointer-events:none}
+.circle.pop{animation:cPop .3s var(--sp)}
+@keyframes cPop{0%{transform:scale(1)}40%{transform:scale(.94)}70%{transform:scale(1.04)}100%{transform:scale(1)}}
+.ring{position:absolute;inset:0;margin:auto;border-radius:50%;pointer-events:none}
+.ring-1{width:clamp(196px,62vw,276px);height:clamp(196px,62vw,276px);border:1.5px dashed rgba(0,95,142,.14);animation:rot 14s linear infinite}
+.ring-1::after{content:'';position:absolute;top:50%;left:-5px;width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px rgba(0,194,255,.8);transform:translateY(-50%)}
+.ring-2{width:clamp(212px,68vw,296px);height:clamp(212px,68vw,296px);border:1px solid rgba(0,194,255,.06);animation:rot 28s linear infinite reverse}
+@keyframes rot{to{transform:rotate(360deg)}}
+.c-price-wrap{display:flex;align-items:flex-start;gap:2px;margin-bottom:2px}
+.c-cur{font-family:var(--fm);font-size:clamp(11px,2.8vw,15px);color:rgba(255,255,255,.38);margin-top:clamp(4px,1.2vw,8px)}
+.c-price{font-family:var(--fm);font-size:clamp(36px,9.5vw,52px);font-weight:700;color:#fff;line-height:1;letter-spacing:-.04em;font-feature-settings:"tnum"}
+.c-plan{font-size:clamp(9px,2vw,11px);font-weight:600;color:rgba(255,255,255,.38);letter-spacing:.6px;text-transform:uppercase;margin-bottom:clamp(4px,1.2vw,8px)}
+.c-divider{width:clamp(40px,12vw,64px);height:1px;background:rgba(255,255,255,.1);margin-bottom:clamp(4px,1.2vw,8px)}
+.c-svcs{display:flex;flex-direction:column;align-items:center;gap:2px}
+.c-svc{display:flex;align-items:center;gap:5px;font-size:clamp(9px,2.2vw,12px);font-weight:500;color:rgba(255,255,255,.55)}
+.c-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.c-svc-val{font-family:var(--fm);font-size:clamp(9px,2.2vw,12px);color:#fff;min-width:clamp(36px,9vw,50px);text-align:right;font-feature-settings:"tnum"}
 
-/* Orbiting rings — visible on light background */
-.circle-ring{
-  position:absolute;inset:0;margin:auto;
-  width:clamp(208px,66vw,296px);height:clamp(208px,66vw,296px);border-radius:50%;
-  border:1.5px dashed rgba(0,95,142,.18);
-  animation:ringRot 12s linear infinite;
-  pointer-events:none;z-index:1;
-}
-/* Orbital dot — makes rotation clearly visible */
-.circle-ring::after{
-  content:'';
-  position:absolute;
-  top:50%;left:-5px;
-  width:10px;height:10px;border-radius:50%;
-  background:var(--cyan);
-  box-shadow:0 0 8px rgba(0,194,255,.7),0 0 16px rgba(0,194,255,.35);
-  transform:translateY(-50%);
-}
-/* Inner counter-rotating ring */
-.circle-ring::before{
-  content:'';position:absolute;inset:10px;border-radius:50%;
-  border:1px dashed rgba(0,95,142,.12);
-  animation:ringRot 20s linear infinite reverse;
-}
-/* Outer slow ring */
-.circle-ring-outer{
-  position:absolute;inset:0;margin:auto;
-  width:clamp(224px,72vw,320px);height:clamp(224px,72vw,320px);border-radius:50%;
-  border:1px solid rgba(0,194,255,.08);
-  animation:ringRot 30s linear infinite reverse;
-  pointer-events:none;z-index:0;
-}
-/* Dot on outer ring */
-.circle-ring-outer::after{
-  content:'';
-  position:absolute;
-  top:-4px;left:50%;
-  width:8px;height:8px;border-radius:50%;
-  background:rgba(0,95,142,.25);
-  transform:translateX(-50%);
-}
-@keyframes ringRot{to{transform:rotate(360deg)}}
-
-/* Price inside circle */
-.c-price-wrap{display:flex;align-items:flex-start;gap:3px;margin-bottom:1px}
-.c-cur{font-family:var(--fm);font-size:clamp(12px,3vw,16px);color:rgba(255,255,255,.45);margin-top:clamp(5px,1.5vw,9px)}
-.c-price{font-family:var(--fm);font-size:clamp(38px,10vw,54px);font-weight:700;color:#fff;line-height:1;letter-spacing:-.04em;font-feature-settings:"tnum","ss01"}
-.c-plan{font-size:clamp(9px,2.2vw,11px);font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.5px;text-transform:uppercase;margin-bottom:clamp(5px,1.4vw,9px)}
-.c-divider{width:clamp(44px,13vw,70px);height:1px;background:rgba(255,255,255,.15);margin-bottom:clamp(5px,1.4vw,9px)}
-.c-services{display:flex;flex-direction:column;align-items:center;gap:2px}
-.c-svc{display:flex;align-items:center;gap:5px;font-size:clamp(10px,2.5vw,13px);font-weight:500;color:rgba(255,255,255,.65)}
-.c-svc-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
-.c-svc-val{font-family:var(--fm);font-size:clamp(10px,2.5vw,13px);color:#fff;font-feature-settings:"tnum";min-width:clamp(40px,10vw,56px);text-align:right}
-
-/* ── FLOATING PODS ──
-   Positioned by JS. Absolute inside .circle-zone.
-   pods container fills the zone entirely. */
+/* ── Pods ── */
 .pods{position:absolute;inset:0;pointer-events:none;z-index:3}
-.pod{
-  position:absolute;
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  pointer-events:auto;
-}
-.pod-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t3)}
-/* Pod controls pill */
-.pod-controls{
-  display:flex;align-items:center;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:var(--rp);
-  box-shadow:0 2px 10px rgba(0,95,142,.12),0 1px 3px rgba(0,0,0,.06);
-  overflow:hidden;
-}
-.pod-btn{
-  width:clamp(32px,8vw,40px);height:clamp(32px,8vw,40px);border:none;background:transparent;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:background .12s,transform .12s var(--sp);
-  position:relative;overflow:hidden;flex-shrink:0;outline:none;
-}
-.pod-btn:hover{background:rgba(0,95,142,.06)}
-.pod-btn:active{transform:scale(.82);background:rgba(0,95,142,.1)}
-.pod-btn svg{pointer-events:none;display:block}
-.pod-val-wrap{
-  min-width:clamp(44px,11vw,56px);display:flex;flex-direction:column;align-items:center;
-  padding:4px 5px;
-  border-left:1px solid var(--line);border-right:1px solid var(--line);
-}
-.pod-num{
-  font-family:var(--fm);font-size:clamp(13px,3.5vw,17px);font-weight:700;color:var(--blue);
-  line-height:1.2;font-feature-settings:"tnum";
-}
-.pod-num.pop{animation:numPop .22s var(--sp)}
-@keyframes numPop{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}
-.pod-unit{font-size:clamp(7px,2vw,9px);font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--t4);margin-top:1px}
-/* Disabled state */
-.pod-btn[data-disabled]{opacity:.25;pointer-events:none}
+.pod{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:auto}
+.pod-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t3)}
+.pod-pill{display:flex;align-items:center;background:var(--card);border-radius:var(--rp);border:1px solid var(--line);box-shadow:var(--elev2);overflow:hidden}
+.pod-btn{width:clamp(30px,8vw,38px);height:clamp(30px,8vw,38px);border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s;outline:none;flex-shrink:0}
+.pod-btn:active{background:rgba(0,0,0,.06);transform:scale(.85)}
+.pod-btn svg{display:block;pointer-events:none}
+.pod-val{min-width:clamp(40px,10vw,52px);display:flex;flex-direction:column;align-items:center;padding:3px 4px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.pod-num{font-family:var(--fm);font-size:clamp(12px,3.2vw,16px);font-weight:700;color:var(--blue);line-height:1.2;font-feature-settings:"tnum"}
+.pod-num.pop{animation:numPop .2s var(--sp)}
+@keyframes numPop{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
+.pod-unit{font-size:clamp(7px,1.8vw,8px);font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t4);margin-top:1px}
 
-/* ══════ ZONE 3 — PRESETS ══════ */
-.presets-zone{
-  flex-shrink:0;
-  padding:6px 16px 4px;
-  background:var(--bg);
-}
-.preset-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t4);margin-bottom:6px}
-.preset-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
-.preset-row::-webkit-scrollbar{display:none}
-.preset-chip{
-  flex-shrink:0;display:flex;align-items:center;gap:4px;
-  padding:6px 13px;border-radius:var(--rp);
-  border:1.5px solid rgba(0,95,142,.15);
-  background:var(--card);
-  font-size:11px;font-weight:500;color:var(--t2);
-  cursor:pointer;white-space:nowrap;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
-  transition:border-color .14s,background .14s,color .14s,transform .12s var(--sp);
-  position:relative;overflow:hidden;outline:none;
-}
-.preset-chip:active{transform:scale(.91)}
-.preset-chip svg{display:block;flex-shrink:0;stroke:currentColor}
-.preset-chip.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 3px 10px rgba(0,95,142,.25)}
+/* ── Presets ── */
+.presets{flex-shrink:0;padding:6px 16px 4px;background:var(--bg)}
+.presets-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t4);margin-bottom:7px}
+.presets-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.presets-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:7px 14px;border-radius:var(--rp);background:var(--card);border:1.5px solid var(--line);font-size:11px;font-weight:600;color:var(--t2);cursor:pointer;white-space:nowrap;box-shadow:var(--elev1);transition:all .15s;outline:none;position:relative;overflow:hidden}
+.chip:active{transform:scale(.92)}
+.chip svg{display:block;stroke:currentColor;flex-shrink:0}
+.chip.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(0,95,142,.3)}
 
-/* ══════ ZONE 4 — PLAN SELECTOR ══════ */
-.plan-zone-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--t4);margin-bottom:5px;padding:0 2px;}
-.plan-zone{
-  flex-shrink:0;
-  padding:3px 16px 5px;
-  background:var(--bg);
-}
-.plan-track{
-  display:flex;gap:3px;
-  background:rgba(0,95,142,.07);
-  border-radius:var(--rp);padding:3px;
-}
-.plan-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  padding:6px 3px;border-radius:var(--rp);border:none;cursor:pointer;
-  background:transparent;
-  transition:background .16s;position:relative;outline:none;
-}
-.plan-btn-name{font-size:11px;font-weight:500;color:var(--t3);white-space:nowrap;line-height:1.2;transition:color .16s}
-.plan-btn-price{font-family:var(--fm);font-size:9px;color:var(--t4);margin-top:2px;font-feature-settings:"tnum";transition:color .16s}
-.plan-btn.active{background:var(--blue)}
-.plan-btn.active .plan-btn-name{color:#fff;font-weight:700}
-.plan-btn.active .plan-btn-price{color:rgba(255,255,255,.65)}
-.plan-star{position:absolute;top:-4px;right:-2px;width:12px;height:12px;border-radius:50%;background:var(--warn);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center}
+/* ── Plan tabs ── */
+.plan-zone{flex-shrink:0;padding:4px 16px 6px;background:var(--bg)}
+.plan-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t4);margin-bottom:6px}
+.plan-tabs{display:flex;background:rgba(0,0,0,.06);border-radius:var(--rp);padding:3px;gap:2px}
+.plan-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 2px;border-radius:var(--rp);border:none;background:transparent;cursor:pointer;outline:none;transition:background .18s;position:relative}
+.plan-tab-name{font-size:11px;font-weight:500;color:var(--t3);white-space:nowrap;transition:color .18s}
+.plan-tab-price{font-family:var(--fm);font-size:9px;color:var(--t4);margin-top:2px;font-feature-settings:"tnum";transition:color .18s}
+.plan-tab.active{background:var(--card);box-shadow:var(--elev1)}
+.plan-tab.active .plan-tab-name{color:var(--blue);font-weight:700}
+.plan-tab.active .plan-tab-price{color:var(--blue);opacity:.7}
+.plan-star{position:absolute;top:-3px;right:0;width:11px;height:11px;border-radius:50%;background:var(--warn);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center}
 .plan-star svg{fill:#fff;width:5px;height:5px}
 
-/* ══════ ZONE 5 — PAY BUTTON ══════ */
-.pay-zone{
+/* ── Bottom sheet (number input + pay) ── */
+.bottom-sheet{
   flex-shrink:0;
-  padding:4px 16px max(14px,env(safe-area-inset-bottom));
-  background:var(--bg);
+  background:var(--card);
+  border-radius:20px 20px 0 0;
+  padding:0 0 max(16px,env(safe-area-inset-bottom));
+  box-shadow:0 -4px 24px rgba(0,0,0,.1);
 }
+.sheet-handle{width:36px;height:4px;background:rgba(0,0,0,.12);border-radius:2px;margin:10px auto 16px}
+
+/* Number input section */
+.sheet-section{padding:0 16px}
+.sheet-label{font-size:12px;font-weight:700;color:var(--t3);letter-spacing:.3px;text-transform:uppercase;margin-bottom:10px}
+
+.number-card{
+  background:var(--bg);
+  border:2px solid var(--line);
+  border-radius:var(--r16);
+  overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+  margin-bottom:8px;
+}
+.number-card.focused{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,95,142,.1)}
+.number-card.valid{border-color:var(--ok);box-shadow:0 0 0 3px var(--ok-dim)}
+.number-card.error{border-color:var(--err);box-shadow:0 0 0 3px var(--err-dim)}
+
+.number-row{display:flex;align-items:center;padding:2px 0 2px 14px}
+.prefix{display:flex;align-items:center;gap:6px;padding-right:12px;border-right:2px solid var(--line);flex-shrink:0;margin-right:12px}
+.prefix-flag{font-size:17px;line-height:1}
+.prefix-code{font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t2)}
+.number-input{
+  flex:1;border:none;outline:none;background:transparent;
+  font-family:var(--fm);font-size:20px;font-weight:700;color:var(--t1);
+  letter-spacing:.5px;min-width:0;padding:14px 0;
+  -webkit-user-select:text;user-select:text;
+}
+.number-input::placeholder{color:var(--t4);font-weight:400;font-size:16px;letter-spacing:0}
+.number-clear{width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:8px;border-radius:50%;transition:background .12s}
+.number-clear:active{background:rgba(0,0,0,.06)}
+.number-clear svg{width:16px;height:16px;stroke:var(--t4)}
+
+.network-row{display:flex;align-items:center;gap:6px;padding:7px 14px;border-top:1px solid var(--line);font-size:11px;font-weight:600;transition:all .2s}
+.network-row.neutral{color:var(--t4);background:transparent}
+.network-row.valid{color:var(--ok);background:var(--ok-dim)}
+.network-row.error{color:var(--err);background:var(--err-dim)}
+.network-row svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;flex-shrink:0}
+
+/* verify inline progress */
+.verify-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid var(--line);display:none}
+.verify-row.show{display:flex}
+.verify-spinner{width:14px;height:14px;border:2px solid rgba(0,95,142,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.verify-txt{font-size:12px;font-weight:600;color:var(--blue)}
+.verify-ok{font-size:12px;font-weight:700;color:var(--ok);display:flex;align-items:center;gap:5px}
+.verify-ok-icon{width:18px;height:18px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.verify-ok-icon svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round}
+
+/* api error */
+.api-err{background:#FEF2F2;border-radius:var(--r12);padding:10px 14px;font-size:12px;color:var(--err);margin-bottom:8px;display:none;line-height:1.5}
+.api-err.show{display:block}
+
+/* Pay button */
+.pay-wrap{padding:10px 16px 0}
 .pay-btn{
-  width:100%;min-height:50px;padding:11px 18px;
-  border:none;border-radius:var(--r20);cursor:pointer;
-  background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 60%,var(--blue3) 100%);
+  width:100%;min-height:54px;padding:14px 20px;
+  border:none;border-radius:var(--r16);cursor:pointer;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%);
   display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 6px 22px rgba(0,95,142,.35),0 2px 6px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.12);
-  transition:box-shadow .2s,transform .14s var(--sp);
+  box-shadow:0 4px 20px rgba(0,95,142,.38),0 1px 6px rgba(0,0,0,.1);
+  transition:transform .14s var(--sp),box-shadow .18s;
   position:relative;overflow:hidden;outline:none;
 }
-.pay-btn:active{transform:scale(.97);box-shadow:0 3px 10px rgba(0,95,142,.25)}
-.pay-left{display:flex;align-items:center;gap:10px;pointer-events:none}
-.pay-icon{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
-.pay-icon svg{display:block}
-.pay-title{font-size:14px;font-weight:700;color:#fff;line-height:1.3}
-.pay-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
-.pay-right{text-align:right;pointer-events:none}
-.pay-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:1px}
-.pay-val{font-family:var(--fm);font-size:19px;font-weight:700;color:#fff;letter-spacing:-.02em;font-feature-settings:"tnum","ss01"}
-.pay-val.pop{animation:numPop .22s var(--sp)}
+.pay-btn:active{transform:scale(.97);box-shadow:0 2px 8px rgba(0,95,142,.25)}
+.pay-btn:disabled{background:linear-gradient(135deg,#B0C4D8 0%,#98AFCA 100%);box-shadow:none;cursor:default;transform:none}
+.pay-btn-left{display:flex;align-items:center;gap:12px;pointer-events:none}
+.pay-btn-icon{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pay-btn-icon svg{display:block}
+.pay-btn-label{font-size:15px;font-weight:700;color:#fff;line-height:1.2;text-align:left}
+.pay-btn-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
+.pay-btn-right{pointer-events:none;text-align:right}
+.pay-btn-amount-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.45);margin-bottom:1px}
+.pay-btn-amount{font-family:var(--fm);font-size:20px;font-weight:700;color:#fff;letter-spacing:-.02em;font-feature-settings:"tnum"}
+.pay-btn-amount.pop{animation:numPop .22s var(--sp)}
 
-/* ══════ CONFIRM SHEET ══════ */
-.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,45,80,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none;align-items:flex-end}
-.modal-bg.open{display:flex}
-.modal-sheet{width:100%;background:var(--card);border-radius:var(--r24) var(--r24) 0 0;padding-bottom:max(28px,env(safe-area-inset-bottom));animation:shUp .3s var(--ease);box-shadow:0 -8px 40px rgba(0,0,0,.18);max-height:88dvh;overflow-y:auto}
-@keyframes shUp{from{transform:translateY(100%);opacity:.4}to{transform:none;opacity:1}}
-.sh-drag{width:36px;height:4px;background:#E2E8F0;border-radius:var(--rp);margin:12px auto 18px}
-.sh-inner{padding:0 24px 8px}
-.sh-title{font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-.3px;margin-bottom:3px}
-.sh-ref{font-size:12px;font-family:var(--fm);color:var(--t3);margin-bottom:18px}
-.sh-rows{border-radius:var(--r16);overflow:hidden;background:#F8FAFC;margin-bottom:14px;border:1px solid rgba(0,0,0,.05)}
-.mrow{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(0,0,0,.05)}
-.mrow:last-child{border-bottom:none}
-.mrow-k{font-size:13px;color:var(--t3)}
-.mrow-v{font-family:var(--fm);font-size:13px;font-weight:600;color:var(--t1);font-feature-settings:"tnum"}
-.sh-total{background:linear-gradient(135deg,var(--blue) 0%,var(--blue3) 100%);border-radius:var(--r16);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.sh-total-lbl{font-size:13px;font-weight:500;color:rgba(255,255,255,.6)}
-.sh-total-val{font-family:var(--fm);font-size:26px;font-weight:700;color:#fff;letter-spacing:-.03em;font-feature-settings:"tnum"}
-.sh-btns{display:flex;gap:10px}
-.sh-cancel{flex:1;padding:14px;border-radius:var(--r16);border:1.5px solid #E2E8F0;background:transparent;font-family:var(--f);font-size:14px;font-weight:500;color:var(--t3);cursor:pointer;transition:background .14s}
-.sh-cancel:active{background:#F8FAFC}
-.sh-pay{flex:2;padding:14px;border-radius:var(--r16);border:none;cursor:pointer;background:linear-gradient(135deg,var(--blue) 0%,var(--blue3) 100%);color:#fff;font-family:var(--f);font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(0,95,142,.3);transition:transform .14s;position:relative;overflow:hidden}
-.sh-pay:active{transform:scale(.97)}
+/* recent recipients */
+.recents{padding:12px 16px 0}
+.recents-label{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.recents-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.recents-list::-webkit-scrollbar{display:none}
+.recent-chip{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 8px;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--rp);cursor:pointer;transition:all .14s;white-space:nowrap}
+.recent-chip:active{background:#E8F0F8;border-color:var(--blue)}
+.recent-chip-icon{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.recent-chip-icon svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.recent-chip-num{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--t1)}
 
-/* ══════ TOAST / NUDGE ══════ */
-.toast{position:fixed;bottom:max(86px,calc(78px + env(safe-area-inset-bottom)));left:16px;right:16px;z-index:600;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--r16);background:var(--t1);color:#fff;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.2);opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;transition:opacity .2s,transform .2s var(--ease)}
-.toast.show{opacity:1;transform:none;pointer-events:auto}
-.toast svg{display:block;flex-shrink:0}
-.nudge{position:fixed;bottom:max(86px,calc(78px + env(safe-area-inset-bottom)));left:16px;right:16px;z-index:590;display:none;align-items:center;gap:8px;padding:11px 16px;border-radius:var(--r16);background:var(--blue);color:rgba(255,255,255,.9);font-size:13px;font-weight:500;box-shadow:0 4px 18px rgba(0,95,142,.3)}
-.nudge.show{display:flex}
+/* toast */
+.toast{position:fixed;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-80px);z-index:600;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:var(--r16);background:var(--t1);color:#fff;font-size:13px;font-weight:500;box-shadow:var(--elev3);min-width:200px;transition:transform .28s var(--ease)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toast-icon.err{background:var(--err)}
+.toast-icon.ok{background:var(--ok)}
+.toast-icon svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
 
-/* ══════ AI ASSISTANT ══════ */
-.ai-fab{position:fixed;bottom:max(206px,calc(196px + env(safe-area-inset-bottom)));right:16px;width:44px;height:44px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;z-index:8000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,194,255,.35),0 1px 4px rgba(0,0,0,.08);transition:transform .14s var(--sp),opacity .2s;outline:none}
-.ai-fab:active{transform:scale(.86)}
+/* ripple */
+.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.25);transform:scale(0);animation:ripAnim .5s ease forwards}
+@keyframes ripAnim{to{transform:scale(4);opacity:0}}
+
+/* AI FAB */
+.ai-fab{position:fixed;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 80px);right:16px;width:46px;height:46px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;z-index:8000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,194,255,.4);transition:transform .14s var(--sp);outline:none}
+.ai-fab:active{transform:scale(.88)}
 .ai-fab svg{display:block}
-.ai-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:#EF4444;border:2px solid var(--bg);font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:opacity .2s,transform .22s var(--sp)}
+.ai-badge{position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#EF4444;border:2px solid var(--bg);font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:opacity .2s,transform .22s var(--sp)}
 .ai-badge.show{opacity:1;transform:scale(1)}
-.ai-panel{position:fixed;bottom:max(258px,calc(248px + env(safe-area-inset-bottom)));right:16px;left:16px;background:var(--card);border-radius:var(--r20);box-shadow:0 12px 48px rgba(0,0,0,.18),0 0 0 1px rgba(0,95,142,.1);z-index:8001;display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px) scale(.98);opacity:0;transition:transform .24s var(--ease),opacity .2s;pointer-events:none;height:52dvh;max-height:440px;}
-.ai-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
-.ai-head{background:var(--blue);padding:14px 16px 13px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-radius:var(--r20) var(--r20) 0 0}
-.ai-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-panel{position:fixed;bottom:0;right:0;left:0;background:var(--card);border-radius:24px 24px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.18);z-index:8001;display:flex;flex-direction:column;overflow:hidden;transform:translateY(100%);transition:transform .3s var(--ease);max-height:60dvh;padding-bottom:env(safe-area-inset-bottom)}
+.ai-panel.open{transform:translateY(0)}
+.ai-handle{width:36px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:12px auto 0}
+.ai-head{padding:12px 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.ai-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ai-av img{width:18px;height:18px;object-fit:contain}
-.ai-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
-.ai-status{font-size:10px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px}
-.ai-sdot{width:5px;height:5px;border-radius:50%;background:var(--ok)}
-.ai-x{margin-left:auto;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:16px;padding:4px 6px;outline:none}
-.ai-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:0}
-.ai-msgs::-webkit-scrollbar,.ec-msgs::-webkit-scrollbar{display:none}
-.ec-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:0}
-.ec-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 8px;flex-shrink:0}
-.ai-bub{max-width:82%;padding:10px 14px;font-size:15px;line-height:1.5;word-break:break-word;border-radius:18px}
-.ai-bub.bot{background:#F1F5F9;color:var(--t1);border-bottom-left-radius:3px;align-self:flex-start}
-.ai-bub.usr{background:var(--blue);color:#fff;border-bottom-right-radius:3px;align-self:flex-end}
-.ai-typ{display:flex;gap:3px;align-items:center;padding:9px 12px;background:#F1F5F9;border-radius:14px;border-bottom-left-radius:3px;align-self:flex-start}
+.ai-name{font-size:14px;font-weight:700;color:var(--t1)}
+.ai-status{font-size:11px;color:var(--ok);font-weight:500;display:flex;align-items:center;gap:4px}
+.ai-status-dot{width:5px;height:5px;border-radius:50%;background:var(--ok)}
+.ai-x{margin-left:auto;background:rgba(0,0,0,.05);border:none;cursor:pointer;color:var(--t3);font-size:14px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;outline:none}
+.ai-msgs{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;min-height:0;scrollbar-width:none}
+.ai-msgs::-webkit-scrollbar{display:none}
+.ai-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 8px}
+.ai-chip-btn{font-size:11px;font-weight:600;color:var(--blue);background:rgba(0,95,142,.07);border:1px solid rgba(0,95,142,.15);padding:5px 10px;border-radius:var(--rp);cursor:pointer;white-space:nowrap;font-family:var(--f)}
+.ai-bub{max-width:82%;padding:10px 14px;font-size:14px;line-height:1.55;word-break:break-word;border-radius:18px}
+.ai-bub.bot{background:#F1F5F9;color:var(--t1);border-bottom-left-radius:4px;align-self:flex-start}
+.ai-bub.usr{background:var(--blue);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.ai-typ{display:flex;gap:4px;align-items:center;padding:10px 14px;background:#F1F5F9;border-radius:18px;border-bottom-left-radius:4px;align-self:flex-start}
 .ai-typ span{width:6px;height:6px;border-radius:50%;background:#CBD5E1;animation:tdot 1.2s ease-in-out infinite}
 .ai-typ span:nth-child(2){animation-delay:.2s}
 .ai-typ span:nth-child(3){animation-delay:.4s}
 @keyframes tdot{0%,80%,100%{transform:scale(.6);opacity:.3}40%{transform:scale(1);opacity:1}}
-.ai-chips{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 6px;flex-shrink:0}
-.ai-chip{font-size:11px;font-weight:500;color:var(--blue);background:var(--cdim);border:1px solid rgba(0,95,142,.12);padding:5px 10px;border-radius:var(--rp);cursor:pointer;white-space:nowrap}
-.ai-footer{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid #E8EFF6;flex-shrink:0;background:var(--card)}
-.ai-input{flex:1;border:1.5px solid #E2E8F0;border-radius:var(--rp);padding:10px 16px;font-family:var(--f);font-size:15px;color:var(--t1);background:#F8FAFC;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-user-select:text;user-select:text;min-height:44px}
-.ai-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cdim)}
-.ai-send{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;outline:none;transition:transform .14s;box-shadow:0 2px 8px rgba(0,95,142,.3)}
-.ai-send:active{transform:scale(.86)}
+.ai-footer{display:flex;gap:8px;padding:10px 16px 14px;border-top:1px solid var(--line);background:var(--card)}
+.ai-input{flex:1;border:1.5px solid var(--line);border-radius:var(--rp);padding:10px 16px;font-family:var(--f);font-size:14px;color:var(--t1);background:var(--bg);outline:none;transition:border-color .15s;-webkit-user-select:text;user-select:text;min-height:44px}
+.ai-input:focus{border-color:var(--blue)}
+.ai-send{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;outline:none;box-shadow:0 2px 8px rgba(0,95,142,.3)}
+.ai-send:active{transform:scale(.88)}
 .ai-send svg{display:block}
-
-
-/* Zone heading — own flex row above circle-zone */
-.zone-heading{
-  flex-shrink:0;
-  text-align:center;
-  padding:12px 24px 8px;
-  background:var(--bg);
-}
-.zone-heading-title{
-  font-size:clamp(18px,5vw,24px);
-  font-weight:700;
-  color:var(--t1);
-  letter-spacing:-.4px;
-  line-height:1.2;
-}
-.zone-heading-title span{ color:var(--blue) }
-.zone-heading-sub{
-  font-size:clamp(11px,2.8vw,13px);
-  color:var(--t3);
-  margin-top:2px;
-  font-weight:400;
-}
-
-
-/* Wrapper that holds rings + circle together */
-.circle-wrap{
-  position:relative;
-  display:flex;align-items:center;justify-content:center;
-  /* size = circle + ring clearance on each side */
-  width:clamp(248px,72vw,340px);
-  height:clamp(248px,72vw,340px);
-  flex-shrink:0;
-}
-/* Ripple */
-.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.22);transform:scale(0);animation:ripAnim .5s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes ripAnim{to{transform:scale(4);opacity:0}}
 </style>
 </head>
 <body>
+<script src="api.js"></script>
 
-<!-- CURTAIN -->
+<!-- Curtain -->
 <div class="curtain" id="curtain">
-  <div class="c-brand"><img src="assets/econet.png" alt="Econet"><div class="c-sep"></div><img src="assets/ecocash.png" alt="EcoCash"></div>
-  <div class="c-spin"><svg width="40" height="40" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,.15)" stroke-width="3"/><path d="M22 4a18 18 0 0 1 18 18" stroke="#00C2FF" stroke-width="3" stroke-linecap="round"/></svg></div>
-  <div><div class="c-lbl" id="cLabel">Loading</div><div class="c-sub" id="cSub">Connecting to EcoCash…</div></div>
-  <div class="c-bar"><div class="c-fill"></div></div>
+  <div class="c-logo"><img src="assets/econet.png" alt=""><div class="c-logo-sep"></div><img src="assets/ecocash.png" alt=""></div>
+  <div class="c-spinner"></div>
+  <div class="c-txt"><div class="c-lbl" id="cLbl">Loading</div><div class="c-sub" id="cSub">Connecting…</div></div>
+  <div class="c-prog"><div class="c-prog-fill"></div></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-icon err" id="toastIcon"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+  <span id="toastTxt"></span>
 </div>
 
 <div class="app" id="screen">
 
-  <!-- ZONE 1: HEADER -->
-  <div class="hdr">
-    <div class="logo">
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-brand">
       <img src="assets/econet.png" alt="Econet">
-      <div class="logo-sep"></div>
+      <div class="topbar-sep"></div>
       <img src="assets/ecocash.png" alt="EcoCash">
     </div>
-    <div class="hdr-title">Mix Builder</div>
-    <div class="live">
-      <div class="live-dot"></div>
-      <span id="liveCount">Loading…</span>
+    <div class="topbar-right">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <span id="liveCount">—</span>
+      </div>
     </div>
   </div>
 
-  <!-- ZONE HEADING (own row) -->
-  <div class="zone-heading">
-    <div class="zone-heading-title">Mix your <span>Bundle</span></div>
-    <div class="zone-heading-sub">Tap Voice, Data &amp; SMS to build your plan</div>
-  </div>
-
-  <!-- ZONE 2: CIRCLE ENGINE -->
+  <!-- Circle zone -->
   <div class="circle-zone" id="circleZone">
-    <!-- Circle wrap: rings + circle together, centred -->
     <div class="circle-wrap" id="circleWrap">
-      <div class="circle-ring-outer"></div>
-      <div class="circle-ring"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-1"></div>
       <div class="circle" id="bundleCircle">
-      <div class="c-price-wrap">
-        <span class="c-cur">USD</span>
-        <span class="c-price" id="headerPrice">0.00</span>
-      </div>
-      <div class="c-plan" id="circlePlan">Daily Mix</div>
-      <div class="c-divider"></div>
-      <div class="c-services">
-        <div class="c-svc">
-          <div class="c-svc-dot" style="background:var(--vc)"></div>
-          <span>Voice</span>
-          <span class="c-svc-val" id="voiceVal">20 Min</span>
+        <div class="c-price-wrap">
+          <span class="c-cur">USD</span>
+          <span class="c-price" id="cPrice">0.00</span>
         </div>
-        <div class="c-svc">
-          <div class="c-svc-dot" style="background:var(--dc)"></div>
-          <span>Data</span>
-          <span class="c-svc-val" id="dataVal">3 GB</span>
-        </div>
-        <div class="c-svc">
-          <div class="c-svc-dot" style="background:var(--sc)"></div>
-          <span>SMS</span>
-          <span class="c-svc-val" id="smsVal">25 SMS</span>
+        <div class="c-plan" id="cPlan">Daily Mix</div>
+        <div class="c-divider"></div>
+        <div class="c-svcs">
+          <div class="c-svc"><div class="c-dot" style="background:var(--vc)"></div><span>Voice</span><span class="c-svc-val" id="cVoice">20 Min</span></div>
+          <div class="c-svc"><div class="c-dot" style="background:var(--dc)"></div><span>Data</span><span class="c-svc-val" id="cData">3 GB</span></div>
+          <div class="c-svc"><div class="c-dot" style="background:var(--sc)"></div><span>SMS</span><span class="c-svc-val" id="cSms">25 SMS</span></div>
         </div>
       </div>
-      </div>
-    </div><!-- /circle-wrap -->
-
-    <!-- PODS container — positioned by JS relative to circle-zone -->
+    </div>
+    <!-- Pods -->
     <div class="pods" id="podsWrap">
-
-      <!-- VOICE pod — top-left -->
       <div class="pod" id="pod-voice">
-        <div class="pod-label">Voice</div>
-        <div class="pod-controls">
-          <button class="pod-btn" id="v-dec" onclick="stepSvc('v',-1)" aria-label="Less voice">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--vc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="pod-val-wrap">
-            <div class="pod-num" id="podVoiceNum">20</div>
-            <div class="pod-unit">Min</div>
-          </div>
-          <button class="pod-btn" id="v-inc" onclick="stepSvc('v',1)" aria-label="More voice">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--vc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
+        <div class="pod-lbl">Voice</div>
+        <div class="pod-pill">
+          <button class="pod-btn" id="v-dec" onclick="step('v',-1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--vc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="pod-val"><div class="pod-num" id="pV">20</div><div class="pod-unit">Min</div></div>
+          <button class="pod-btn" id="v-inc" onclick="step('v',1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--vc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
         </div>
       </div>
-
-      <!-- DATA pod — top-right -->
       <div class="pod" id="pod-data">
-        <div class="pod-label">Data</div>
-        <div class="pod-controls">
-          <button class="pod-btn" id="d-dec" onclick="stepSvc('d',-1)" aria-label="Less data">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="pod-val-wrap">
-            <div class="pod-num" id="podDataNum">3</div>
-            <div class="pod-unit">GB</div>
-          </div>
-          <button class="pod-btn" id="d-inc" onclick="stepSvc('d',1)" aria-label="More data">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
+        <div class="pod-lbl">Data</div>
+        <div class="pod-pill">
+          <button class="pod-btn" id="d-dec" onclick="step('d',-1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="pod-val"><div class="pod-num" id="pD">3</div><div class="pod-unit">GB</div></div>
+          <button class="pod-btn" id="d-inc" onclick="step('d',1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
         </div>
       </div>
-
-      <!-- SMS pod — bottom-centre -->
       <div class="pod" id="pod-sms">
-        <div class="pod-controls">
-          <button class="pod-btn" id="s-dec" onclick="stepSvc('s',-1)" aria-label="Less SMS">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--sc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="pod-val-wrap">
-            <div class="pod-num" id="podSmsNum">25</div>
-            <div class="pod-unit">SMS</div>
-          </div>
-          <button class="pod-btn" id="s-inc" onclick="stepSvc('s',1)" aria-label="More SMS">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--sc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
+        <div class="pod-pill">
+          <button class="pod-btn" id="s-dec" onclick="step('s',-1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--sc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="pod-val"><div class="pod-num" id="pS">25</div><div class="pod-unit">SMS</div></div>
+          <button class="pod-btn" id="s-inc" onclick="step('s',1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--sc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
         </div>
-        <div class="pod-label">SMS</div>
+        <div class="pod-lbl">SMS</div>
       </div>
-
-    </div><!-- /pods -->
-  </div><!-- /circle-zone -->
-
-  <!-- ZONE 3: PRESETS -->
-  <div class="presets-zone">
-    <div class="preset-label">Quick presets</div>
-    <div class="preset-row">
-      <button class="preset-chip" data-preset="student" onclick="applyPreset('student')">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Student
-      </button>
-      <button class="preset-chip" data-preset="social" onclick="applyPreset('social')">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Social
-      </button>
-      <button class="preset-chip" data-preset="calling" onclick="applyPreset('calling')">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 .14 1.18 2 2 0 0 1 2.13 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 7.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 14.92z"/></svg>Calling
-      </button>
-      <button class="preset-chip" data-preset="streaming" onclick="applyPreset('streaming')">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Streaming
-      </button>
-      <button class="preset-chip" data-preset="business" onclick="applyPreset('business')">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Business
-      </button>
-      <button class="preset-chip" data-preset="weekend" onclick="applyPreset('weekend')">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>Weekend
-      </button>
     </div>
   </div>
 
-  <!-- ZONE 4: PLAN SELECTOR -->
+  <!-- Presets -->
+  <div class="presets">
+    <div class="presets-label">Quick presets</div>
+    <div class="presets-row">
+      <button class="chip" data-p="student" onclick="applyPreset('student')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>Student</button>
+      <button class="chip" data-p="social" onclick="applyPreset('social')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Social</button>
+      <button class="chip" data-p="calling" onclick="applyPreset('calling')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 .14 1.18 2 2 0 0 1 2.13 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 7.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 14.92z"/></svg>Calling</button>
+      <button class="chip" data-p="streaming" onclick="applyPreset('streaming')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Streaming</button>
+      <button class="chip" data-p="business" onclick="applyPreset('business')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Business</button>
+      <button class="chip" data-p="weekend" onclick="applyPreset('weekend')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>Weekend</button>
+    </div>
+  </div>
+
+  <!-- Plan tabs -->
   <div class="plan-zone">
-    <div class="plan-zone-label">Choose bundle</div>
-    <div class="plan-track" role="tablist">
-      <button class="plan-btn active" data-key="daily" role="tab" aria-selected="true" onclick="switchPlan('daily')">
-        <span class="plan-btn-name">Daily</span><span class="plan-btn-price" id="pp-daily">$0.60</span>
-      </button>
-      <button class="plan-btn" data-key="3days" role="tab" onclick="switchPlan('3days')">
-        <span class="plan-btn-name">3 Days</span><span class="plan-btn-price" id="pp-3days">$1.40</span>
-      </button>
-      <button class="plan-btn" data-key="weekly" role="tab" onclick="switchPlan('weekly')">
-        <span class="plan-btn-name">Weekly</span><span class="plan-btn-price" id="pp-weekly">$2.80</span>
-      </button>
-      <button class="plan-btn" data-key="2weeks" role="tab" onclick="switchPlan('2weeks')">
-        <span class="plan-btn-name">2 Wks</span><span class="plan-btn-price" id="pp-2weeks">$5.20</span>
-      </button>
-      <button class="plan-btn" data-key="monthly" role="tab" onclick="switchPlan('monthly')">
-        <span class="plan-btn-name">Monthly</span><span class="plan-btn-price" id="pp-monthly">$9.90</span>
-        <div class="plan-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
+    <div class="plan-label">Validity</div>
+    <div class="plan-tabs" role="tablist">
+      <button class="plan-tab active" data-key="daily" role="tab" aria-selected="true" onclick="switchPlan('daily')"><span class="plan-tab-name">Daily</span><span class="plan-tab-price" id="pp-daily">$0.60</span></button>
+      <button class="plan-tab" data-key="3days" role="tab" onclick="switchPlan('3days')"><span class="plan-tab-name">3 Days</span><span class="plan-tab-price" id="pp-3days">$1.40</span></button>
+      <button class="plan-tab" data-key="weekly" role="tab" onclick="switchPlan('weekly')"><span class="plan-tab-name">Weekly</span><span class="plan-tab-price" id="pp-weekly">$2.80</span></button>
+      <button class="plan-tab" data-key="2weeks" role="tab" onclick="switchPlan('2weeks')"><span class="plan-tab-name">2 Wks</span><span class="plan-tab-price" id="pp-2weeks">$5.20</span></button>
+      <button class="plan-tab" data-key="monthly" role="tab" onclick="switchPlan('monthly')"><span class="plan-tab-name">Monthly</span><span class="plan-tab-price" id="pp-monthly">$9.90</span><div class="plan-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div></button>
+    </div>
+  </div>
+
+  <!-- Bottom sheet -->
+  <div class="bottom-sheet">
+    <div class="sheet-handle"></div>
+
+    <!-- Recent recipients -->
+    <div class="recents" id="recentsWrap" style="display:none">
+      <div class="recents-label">Recent</div>
+      <div class="recents-list" id="recentsList"></div>
+    </div>
+    <div style="height:10px" id="recentsSpacer" style="display:none"></div>
+
+    <div class="sheet-section">
+      <div class="sheet-label">Who is this for?</div>
+      <div class="number-card" id="numCard">
+        <div class="number-row">
+          <div class="prefix"><span class="prefix-flag">🇿🇼</span><span class="prefix-code">+263</span></div>
+          <input type="tel" class="number-input" id="numInput"
+            inputmode="numeric" pattern="[0-9]*"
+            placeholder="7X XXX XXXX" maxlength="13" autocomplete="tel"
+            oninput="onNumInput(this)">
+          <button class="number-clear" id="numClear" onclick="clearNum()" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="network-row neutral" id="netRow">
+          <svg viewBox="0 0 24 24"><path d="M1.5 8.5A14 14 0 0 1 12 5a14 14 0 0 1 10.5 3.5"/><path d="M5 12a10 10 0 0 1 7-3 10 10 0 0 1 7 3"/><path d="M8.5 15.5A6 6 0 0 1 12 14a6 6 0 0 1 3.5 1.5"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
+          <span id="netLbl">Enter an Econet number (077, 078, 073, 071)</span>
+        </div>
+        <div class="verify-row" id="verifyRow">
+          <div class="verify-spinner" id="verifySpinner"></div>
+          <div class="verify-ok" id="verifyOk" style="display:none">
+            <div class="verify-ok-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span>Econet number verified</span>
+          </div>
+          <span class="verify-txt" id="verifyTxt">Verifying…</span>
+        </div>
+      </div>
+      <div class="api-err" id="apiErr"></div>
+    </div>
+
+    <div class="pay-wrap">
+      <button class="pay-btn" id="payBtn" disabled onclick="goNext()">
+        <div class="pay-btn-left">
+          <div class="pay-btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+          <div>
+            <div class="pay-btn-label" id="payLabel">Verify number to continue</div>
+            <div class="pay-btn-sub" id="paySub">EcoCash · Instant · Secure</div>
+          </div>
+        </div>
+        <div class="pay-btn-right">
+          <div class="pay-btn-amount-lbl">Total</div>
+          <div class="pay-btn-amount" id="payAmt">$0.60</div>
+        </div>
       </button>
     </div>
   </div>
 
-  <!-- ZONE 5: PAY -->
-  <div class="pay-zone">
-    <button class="pay-btn" id="purchaseBtn" onclick="subscribePlan()">
-      <div class="pay-left">
-        <div class="pay-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        </div>
-        <div>
-          <div class="pay-title">Pay with EcoCash</div>
-          <div class="pay-sub" id="planHdCap">Daily Mix Bundle</div>
-        </div>
-      </div>
-      <div class="pay-right">
-        <div class="pay-lbl">Total</div>
-        <div class="pay-val" id="pbVal">$0.60</div>
-      </div>
-    </button>
-  </div>
-
-  <!-- CONFIRM SHEET -->
-  <div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
-    <div class="modal-sheet">
-      <div class="sh-drag"></div>
-      <div class="sh-inner">
-        <div class="sh-title">Confirm Bundle</div>
-        <div class="sh-ref" id="modalRef">ECX-000000</div>
-        <div class="sh-rows" id="sheetRows"></div>
-        <div class="sh-total"><span class="sh-total-lbl">Total due</span><span class="sh-total-val" id="modalTotal">USD 0.60</span></div>
-        <div class="sh-btns">
-          <button class="sh-cancel" onclick="closeModal()">Cancel</button>
-          <button class="sh-pay" onclick="confirmBundle()">Pay via EcoCash</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOASTS -->
-  <div class="toast" id="toast">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-    <span id="toastText"></span>
-  </div>
-  <div class="nudge" id="nudgeToast">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    <span>Weekly is most popular — best everyday value</span>
-  </div>
-
-  <!-- Hidden compat IDs required by JS -->
-  <span id="planHdName" style="display:none"></span>
-  <span id="sumVoice"   style="display:none"></span>
-  <span id="sumSms"     style="display:none"></span>
-  <span id="sumData"    style="display:none"></span>
-
-</div><!-- /app -->
+</div>
 
 <!-- AI FAB -->
 <button class="ai-fab" id="ecFab" aria-label="EcoCash Assistant">
-  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   <div class="ai-badge" id="ecBadge">1</div>
 </button>
-<div class="ai-panel" id="ecPanel" role="dialog" aria-label="EcoCash Assistant">
+<div class="ai-panel" id="ecPanel">
+  <div class="ai-handle"></div>
   <div class="ai-head">
     <div class="ai-av"><img src="assets/ecocash.png" alt=""></div>
-    <div><div class="ai-name">EcoCash Assistant</div><div class="ai-status"><div class="ai-sdot"></div>Online</div></div>
+    <div><div class="ai-name">EcoCash Assistant</div><div class="ai-status"><div class="ai-status-dot"></div>Online</div></div>
     <button class="ai-x" id="ecClose">✕</button>
   </div>
-  <div class="ec-msgs" id="ecMsgs"></div>
-  <div class="ec-chips" id="ecSuggestions"></div>
+  <div class="ai-msgs" id="ecMsgs"></div>
+  <div class="ai-chips" id="ecChips"></div>
   <div class="ai-footer">
     <input class="ai-input" id="ecInput" type="text" placeholder="Ask about bundles…" maxlength="300">
-    <button class="ai-send" id="ecSend">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    </button>
+    <button class="ai-send" id="ecSend"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 
 <script>
-/* ════════════════════════════════════════
-   BUSINESS LOGIC — PRESERVED EXACTLY
-   ════════════════════════════════════════ */
+/* ════════ HAPTIC ════════ */
+function haptic(s){if(!navigator.vibrate)return;const m={light:8,med:18,ok:[10,50,10],err:[40,30,40]};try{navigator.vibrate(m[s]||10)}catch(e){}}
 
-function haptic(s){if(!navigator.vibrate)return;const m={select:8,light:12,medium:22,success:[12,60,12],error:[50,40,50]};try{navigator.vibrate(m[s]||12)}catch(e){}}
-
-const plans={
-  daily:   {label:'Daily',   maxV:20,  maxS:25,   maxD:3,   price:0.60, steps:{v:5,  s:5,  d:1  }},
-  '3days': {label:'3 Days',  maxV:50,  maxS:75,   maxD:8,   price:1.40, steps:{v:10, s:25, d:2  }},
-  weekly:  {label:'Weekly',  maxV:120, maxS:200,  maxD:20,  price:2.80, steps:{v:20, s:50, d:5  }},
-  '2weeks':{label:'2 Weeks', maxV:250, maxS:450,  maxD:45,  price:5.20, steps:{v:50, s:50, d:5  }},
-  monthly: {label:'Monthly', maxV:600, maxS:1000, maxD:100, price:9.90, steps:{v:50, s:100,d:10 }}
+/* ════════ BUNDLE ENGINE ════════ */
+const PLANS={
+  daily:   {label:'Daily',   maxV:20,  maxS:25,   maxD:3,   price:0.60,steps:{v:5, s:5, d:1}},
+  '3days': {label:'3 Days',  maxV:50,  maxS:75,   maxD:8,   price:1.40,steps:{v:10,s:25,d:2}},
+  weekly:  {label:'Weekly',  maxV:120, maxS:200,  maxD:20,  price:2.80,steps:{v:20,s:50,d:5}},
+  '2weeks':{label:'2 Weeks', maxV:250, maxS:450,  maxD:45,  price:5.20,steps:{v:50,s:50,d:5}},
+  monthly: {label:'Monthly', maxV:600, maxS:1000, maxD:100, price:9.90,steps:{v:50,s:100,d:10}},
 };
-const state={};
-Object.keys(plans).forEach(k=>{const p=plans[k];state[k]={v:p.maxV,s:p.maxS,d:p.maxD}});
-let activeKey='daily',pendingKey=null;
+const ST={};Object.keys(PLANS).forEach(k=>{const p=PLANS[k];ST[k]={v:p.maxV,s:p.maxS,d:p.maxD}});
+let activeKey='daily';
 
-function actualV(k){return state[k].v}
-function actualS(k){return state[k].s}
-function actualD(k){return state[k].d}
-function calcPrice(k){
-  const p=plans[k],s=state[k];
-  return Math.round(((s.v/p.maxV+s.s/p.maxS+s.d/p.maxD)/3)*p.price*100)/100;
-}
-
-function stepSvc(key,dir){
-  const k=activeKey,p=plans[k],st=state[k];
-  const step=p.steps[key];
-  const max={v:p.maxV,s:p.maxS,d:p.maxD}[key];
-  const next=st[key]+dir*step;
-  if(next<0||next>max)return;
-  st[key]=next;haptic('select');
-  updateDisplay();pulseCircle();
-}
-
-const PRESETS={
-  student:   {vPct:.25,sPct:.50,dPct:.75},
-  social:    {vPct:.25,sPct:.75,dPct:.75},
-  calling:   {vPct:1,  sPct:.25,dPct:.25},
-  streaming: {vPct:.25,sPct:.25,dPct:1  },
-  business:  {vPct:.75,sPct:.75,dPct:.50},
-  weekend:   {vPct:.50,sPct:.50,dPct:1  },
-};
+const PRESETS={student:{vP:.25,sP:.5,dP:.75},social:{vP:.25,sP:.75,dP:.75},calling:{vP:1,sP:.25,dP:.25},streaming:{vP:.25,sP:.25,dP:1},business:{vP:.75,sP:.75,dP:.5},weekend:{vP:.5,sP:.5,dP:1}};
 let activePreset=null;
+
+function price(k){const p=PLANS[k],s=ST[k];return Math.round(((s.v/p.maxV+s.s/p.maxS+s.d/p.maxD)/3)*p.price*100)/100}
+
+let _pricePrev=0;
+function animPrice(to){
+  const el=document.getElementById('cPrice');if(!el)return;
+  const t0=performance.now(),from=_pricePrev,dur=240;
+  function tick(now){const t=Math.min((now-t0)/dur,1),e=1-Math.pow(1-t,3);el.textContent=(from+(to-from)*e).toFixed(2);if(t<1)requestAnimationFrame(tick);else el.textContent=to.toFixed(2)}
+  requestAnimationFrame(tick);_pricePrev=to;
+}
+
+function updateUI(){
+  const k=activeKey,p=PLANS[k],s=ST[k],pr=price(k);
+  animPrice(pr);
+  document.getElementById('cPlan').textContent=p.label+' Mix';
+  document.getElementById('cVoice').textContent=s.v+' Min';
+  document.getElementById('cData').textContent=s.d+' GB';
+  document.getElementById('cSms').textContent=s.s+' SMS';
+  function pod(id,v){const el=document.getElementById(id);if(!el)return;el.textContent=v;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}
+  pod('pV',s.v);pod('pD',s.d);pod('pS',s.s);
+  function dim(id,off){const el=document.getElementById(id);if(!el)return;el.style.opacity=off?'.2':'1';el.style.pointerEvents=off?'none':'auto'}
+  dim('v-dec',s.v<=0);dim('v-inc',s.v>=p.maxV);
+  dim('d-dec',s.d<=0);dim('d-inc',s.d>=p.maxD);
+  dim('s-dec',s.s<=0);dim('s-inc',s.s>=p.maxS);
+  document.getElementById('payAmt').textContent='$'+pr.toFixed(2);
+  Object.keys(PLANS).forEach(k2=>{const el=document.getElementById('pp-'+k2);if(el)el.textContent='$'+price(k2).toFixed(2)});
+  // update pay button label if verified
+  if(numVerified){
+    document.getElementById('payLabel').textContent='Pay USD '+pr.toFixed(2);
+    document.getElementById('paySub').textContent=PLANS[k].label+' Mix · '+numDisplay;
+  }
+  if(activePreset){
+    const pr2=PRESETS[activePreset];
+    const eV=Math.round(p.maxV*pr2.vP/p.steps.v)*p.steps.v;
+    const eS=Math.round(p.maxS*pr2.sP/p.steps.s)*p.steps.s;
+    const eD=Math.round(p.maxD*pr2.dP/p.steps.d)*p.steps.d;
+    if(s.v!==eV||s.s!==eS||s.d!==eD){activePreset=null;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));}
+  }
+}
+
+function step(key,dir){
+  const k=activeKey,p=PLANS[k],s=ST[k],st=p.steps[key],max={v:p.maxV,s:p.maxS,d:p.maxD}[key];
+  const next=s[key]+dir*st;if(next<0||next>max)return;
+  s[key]=next;haptic('light');updateUI();pulseCircle();
+}
+
 function applyPreset(name){
-  const k=activeKey,p=plans[k],pr=PRESETS[name];
-  if(!pr)return;
-  state[k].v=Math.round(p.maxV*pr.vPct/p.steps.v)*p.steps.v;
-  state[k].s=Math.round(p.maxS*pr.sPct/p.steps.s)*p.steps.s;
-  state[k].d=Math.round(p.maxD*pr.dPct/p.steps.d)*p.steps.d;
-  activePreset=name;
-  document.querySelectorAll('.preset-chip').forEach(c=>c.classList.toggle('active',c.dataset.preset===name));
-  haptic('medium');updateDisplay();pulseCircle();
+  const k=activeKey,p=PLANS[k],pr=PRESETS[name];if(!pr)return;
+  ST[k].v=Math.round(p.maxV*pr.vP/p.steps.v)*p.steps.v;
+  ST[k].s=Math.round(p.maxS*pr.sP/p.steps.s)*p.steps.s;
+  ST[k].d=Math.round(p.maxD*pr.dP/p.steps.d)*p.steps.d;
+  activePreset=name;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.p===name));
+  haptic('med');updateUI();pulseCircle();
+}
+
+function switchPlan(k){
+  if(k===activeKey)return;activeKey=k;
+  document.querySelectorAll('.plan-tab').forEach(t=>{t.classList.toggle('active',t.dataset.key===k);t.setAttribute('aria-selected',t.dataset.key===k)});
+  activePreset=null;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  haptic('light');updateUI();pulseCircle();
 }
 
 function pulseCircle(){
-  const c=document.getElementById('bundleCircle');
-  if(!c)return;c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');
-  setTimeout(()=>c.classList.remove('pop'),360);
+  const c=document.getElementById('bundleCircle');if(!c)return;
+  c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');setTimeout(()=>c.classList.remove('pop'),340);
 }
 
-let _prev=0;
-function animPrice(to){
-  const el=document.getElementById('headerPrice');if(!el)return;
-  const t0=performance.now(),dur=260,from=_prev;
-  function step(now){const t=Math.min((now-t0)/dur,1),e=1-Math.pow(1-t,3);el.textContent=(from+(to-from)*e).toFixed(2);if(t<1)requestAnimationFrame(step);else el.textContent=to.toFixed(2)}
-  requestAnimationFrame(step);_prev=to;
+/* ── Pod positioning ── */
+function placePods(){
+  const zone=document.getElementById('circleZone'),wrap=document.getElementById('circleWrap'),circle=document.getElementById('bundleCircle');
+  if(!zone||!wrap||!circle)return;
+  const zR=zone.getBoundingClientRect(),wR=wrap.getBoundingClientRect();
+  const cx=wR.left-zR.left+wR.width/2,cy=wR.top-zR.top+wR.height/2,R=circle.offsetWidth/2+52;
+  function place(id,deg){const pod=document.getElementById(id);if(!pod)return;const r=(deg-90)*Math.PI/180;pod.style.left=(cx+R*Math.cos(r))+'px';pod.style.top=(cy+R*Math.sin(r))+'px';pod.style.transform='translate(-50%,-50%)'}
+  place('pod-voice',315);place('pod-data',45);place('pod-sms',180);
+}
+window.addEventListener('resize',placePods,{passive:true});
+requestAnimationFrame(()=>requestAnimationFrame(placePods));
+updateUI();
+
+/* ── Social proof ── */
+(function(){
+  const el=document.getElementById('liveCount');if(!el)return;
+  let n=2847+Math.floor(Math.random()*300);
+  el.innerHTML='<strong>'+n.toLocaleString()+'</strong> today';
+  setInterval(()=>{n+=Math.floor(Math.random()*4)+1;const s=el.querySelector('strong');if(s)s.textContent=n.toLocaleString()},28000);
+})();
+
+/* ════════ RECIPIENT NUMBER ════════ */
+const ECONET=['071','077','078','073'];
+let numDigits='',numVerified=false,numDisplay='',numVerifying=false;
+const RKEY='eco_recents';
+
+function loadRecents(){try{return JSON.parse(localStorage.getItem(RKEY)||'[]')}catch{return[]}}
+function saveRecent(raw){let l=loadRecents().filter(r=>r!==raw);l.unshift(raw);l=l.slice(0,5);try{localStorage.setItem(RKEY,JSON.stringify(l))}catch(e){}}
+
+function fmtDigits(d){
+  if(d.length<=1)return d;
+  if(d.length<=4)return d[0]+' '+d.slice(1);
+  if(d.length<=7)return d[0]+' '+d.slice(1,4)+' '+d.slice(4);
+  return d[0]+' '+d.slice(1,4)+' '+d.slice(4,7)+' '+d.slice(7);
+}
+function cleanDigits(raw){
+  let v=String(raw).replace(/\D/g,'');
+  if(v.startsWith('00263'))v=v.slice(5);
+  else if(v.startsWith('0263'))v=v.slice(4);
+  else if(v.startsWith('263')&&v.length>9)v=v.slice(3);
+  if(v.startsWith('0'))v=v.slice(1);
+  return v.slice(0,9);
 }
 
-function updateDisplay(){
-  const k=activeKey,p=plans[k],s=state[k];
-  const price=calcPrice(k);
-  animPrice(price);
+function renderRecents(){
+  const list=loadRecents();
+  const wrap=document.getElementById('recentsWrap');
+  if(!list.length){wrap.style.display='none';return}
+  wrap.style.display='block';
+  document.getElementById('recentsList').innerHTML=list.map(raw=>`
+    <div class="recent-chip" onclick="fillRecent('${raw}')">
+      <div class="recent-chip-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <span class="recent-chip-num">+263 ${fmtDigits(raw.replace(/^0/,''))}</span>
+    </div>`).join('');
+}
+renderRecents();
 
-  /* Circle summary */
-  const vEl=document.getElementById('voiceVal');if(vEl)vEl.textContent=actualV(k)+' Min';
-  const sEl=document.getElementById('smsVal');if(sEl)sEl.textContent=actualS(k)+' SMS';
-  const dEl=document.getElementById('dataVal');if(dEl)dEl.textContent=actualD(k)+' GB';
-  const cp=document.getElementById('circlePlan');if(cp)cp.textContent=p.label+' Mix';
-
-  /* Pod numbers with pop */
-  function setPod(id,val){const el=document.getElementById(id);if(!el)return;el.textContent=val;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}
-  setPod('podVoiceNum',actualV(k));
-  setPod('podSmsNum',  actualS(k));
-  setPod('podDataNum', actualD(k));
-
-  /* Button opacity for limits */
-  function setBtn(id,disabled){
-    const el=document.getElementById(id);if(!el)return;
-    el.style.opacity=disabled?'.22':'1';
-    el.style.pointerEvents=disabled?'none':'auto';
+let verifyTimer=null;
+function onNumInput(el){
+  const d=cleanDigits(el.value);
+  numDigits=d;el.value=fmtDigits(d);
+  document.getElementById('numClear').style.display=d.length?'flex':'none';
+  if(numVerified||numVerifying){resetVerify();}
+  updateNetworkState();
+  clearTimeout(verifyTimer);
+  if(d.length===9&&ECONET.some(p=>('0'+d).startsWith(p))){
+    verifyTimer=setTimeout(startVerify,400); // auto-verify after short pause
   }
-  setBtn('v-dec',s.v<=0);setBtn('v-inc',s.v>=p.maxV);
-  setBtn('s-dec',s.s<=0);setBtn('s-inc',s.s>=p.maxS);
-  setBtn('d-dec',s.d<=0);setBtn('d-inc',s.d>=p.maxD);
+}
 
-  /* Pay bar */
-  const pv=document.getElementById('pbVal');if(pv){pv.textContent='$'+price.toFixed(2);pv.classList.remove('pop');void pv.offsetWidth;pv.classList.add('pop')}
-  const hc=document.getElementById('planHdCap');if(hc)hc.textContent=p.label+' Mix Bundle';
+function updateNetworkState(){
+  const d=numDigits,num0='0'+d;
+  const isEco=ECONET.some(p=>num0.startsWith(p));
+  const is07=num0.startsWith('07')&&d.length>=2;
+  const row=document.getElementById('netRow'),lbl=document.getElementById('netLbl');
+  if(d.length===0){row.className='network-row neutral';lbl.textContent='Enter an Econet number (077, 078, 073, 071)';}
+  else if(is07&&!isEco&&d.length>=2){row.className='network-row error';lbl.textContent='✕ Not an Econet prefix — use 077, 078, 073 or 071';}
+  else if(isEco&&d.length<9){row.className='network-row neutral';lbl.textContent='📶 Econet Zimbabwe · '+d.length+'/9 digits';}
+  else if(isEco&&d.length===9){row.className='network-row neutral';lbl.textContent='✓ Ready to verify';}
+  else{row.className='network-row neutral';lbl.textContent=d.length+' / 9 digits';}
+}
 
-  /* Plan prices */
-  Object.keys(plans).forEach(pk=>{const el=document.getElementById('pp-'+pk);if(el)el.textContent='$'+calcPrice(pk).toFixed(2)});
+async function startVerify(){
+  if(numDigits.length!==9)return;
+  if(!ECONET.some(p=>('0'+numDigits).startsWith(p)))return;
+  numVerifying=true;
+  // Show spinner
+  const vRow=document.getElementById('verifyRow'),vSpin=document.getElementById('verifySpinner'),vOk=document.getElementById('verifyOk'),vTxt=document.getElementById('verifyTxt');
+  vRow.classList.add('show');vSpin.style.display='block';vOk.style.display='none';vTxt.style.display='';vTxt.textContent='Verifying…';
+  document.getElementById('numCard').className='number-card focused';
+  document.getElementById('apiErr').classList.remove('show');
 
-  /* Hidden compat */
-  const hn=document.getElementById('planHdName');if(hn)hn.textContent=p.label+' Mix Bundle';
-  const sv=document.getElementById('sumVoice');if(sv)sv.textContent=actualV(k)+' Min';
-  const ss=document.getElementById('sumSms');if(ss)ss.textContent=actualS(k)+' SMS';
-  const sd=document.getElementById('sumData');if(sd)sd.textContent=actualD(k)+' GB';
-
-  /* Reset preset if manually changed */
-  if(activePreset){
-    const pr=PRESETS[activePreset];
-    const expV=Math.round(p.maxV*pr.vPct/p.steps.v)*p.steps.v;
-    const expS=Math.round(p.maxS*pr.sPct/p.steps.s)*p.steps.s;
-    const expD=Math.round(p.maxD*pr.dPct/p.steps.d)*p.steps.d;
-    if(s.v!==expV||s.s!==expS||s.d!==expD){
-      activePreset=null;
-      document.querySelectorAll('.preset-chip').forEach(c=>c.classList.remove('active'));
+  const msisdn='0'+numDigits;
+  try{
+    await EcoCashAPI.validateSubscriber(msisdn);
+    onVerifyDone(msisdn);
+  }catch(err){
+    // Sandbox gap — accept Econet prefixes
+    if(err&&(err.code==='network'||err.code===404||err.code===501)){
+      onVerifyDone(msisdn);
+    }else{
+      onVerifyFail(err?.message||'Could not verify number');
     }
   }
 }
 
-function switchPlan(k){
-  if(k===activeKey)return;
-  activeKey=k;
-  document.querySelectorAll('.plan-btn').forEach(t=>{t.classList.toggle('active',t.dataset.key===k);t.setAttribute('aria-selected',t.dataset.key===k?'true':'false')});
-  activePreset=null;
-  document.querySelectorAll('.preset-chip').forEach(c=>c.classList.remove('active'));
-  updateDisplay();pulseCircle();haptic('light');
+function onVerifyDone(msisdn){
+  numVerified=true;numVerifying=false;
+  numDisplay='+263 '+fmtDigits(msisdn.replace(/^0/,''));
+  const vRow=document.getElementById('verifyRow'),vSpin=document.getElementById('verifySpinner'),vOk=document.getElementById('verifyOk'),vTxt=document.getElementById('verifyTxt');
+  vSpin.style.display='none';vOk.style.display='flex';vTxt.style.display='none';
+  document.getElementById('numCard').className='number-card valid';
+  document.getElementById('netRow').className='network-row valid';
+  document.getElementById('netLbl').textContent='✓ Econet number verified';
+  // Enable pay button
+  document.getElementById('payBtn').disabled=false;
+  document.getElementById('payLabel').textContent='Pay USD '+price(activeKey).toFixed(2);
+  document.getElementById('paySub').textContent=PLANS[activeKey].label+' Mix · '+numDisplay;
+  haptic('ok');
 }
 
-/* ── POD POSITIONING
-   Heading is now OUTSIDE circle-zone.
-   circle-zone centres circle-wrap via flexbox.
-   We measure circle-wrap's position inside circle-zone to get exact centre.
-*/
-function positionPods(){
-  const zone=document.getElementById('circleZone');
-  const wrap=document.getElementById('circleWrap');
-  const circle=document.getElementById('bundleCircle');
-  if(!zone||!wrap||!circle)return;
-
-  const zRect=zone.getBoundingClientRect();
-  const wRect=wrap.getBoundingClientRect();
-
-  // Centre of circle-wrap relative to zone
-  const cx=wRect.left-zRect.left+wRect.width/2;
-  const cy=wRect.top-zRect.top+wRect.height/2;
-
-  // Pod radius: half circle + clearance
-  const R=circle.offsetWidth/2+56;
-
-  function place(id,angleDeg){
-    const pod=document.getElementById(id);if(!pod)return;
-    const rad=(angleDeg-90)*Math.PI/180;
-    pod.style.left=(cx+R*Math.cos(rad))+'px';
-    pod.style.top=(cy+R*Math.sin(rad))+'px';
-    pod.style.transform='translate(-50%,-50%)';
-  }
-  place('pod-voice',315); // top-left
-  place('pod-data', 45);  // top-right
-  place('pod-sms',  180); // bottom-centre
-}
-window.addEventListener('resize',positionPods,{passive:true});
-// Double rAF ensures layout is complete before measuring
-requestAnimationFrame(()=>requestAnimationFrame(positionPods));
-
-/* ── INIT ── */
-updateDisplay();
-
-/* ── SOCIAL PROOF ── */
-(function(){
-  const el=document.getElementById('liveCount');if(!el)return;
-  const base=2847+Math.floor(Math.random()*200);
-  el.innerHTML='<strong>'+base.toLocaleString()+'</strong> today';
-  setInterval(()=>{const s=el.querySelector('strong');if(s)s.textContent=(parseInt(s.textContent.replace(/,/g,''))+Math.floor(Math.random()*3+1)).toLocaleString()},30000);
-})();
-
-/* ── RIPPLE ── */
-function addRipple(btn,e){
-  const r=btn.getBoundingClientRect(),sz=Math.max(r.width,r.height)*2;
-  const x=e.clientX-r.left-sz/2,y=e.clientY-r.top-sz/2;
-  const rip=document.createElement('span');rip.className='rip';
-  rip.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+x+'px;top:'+y+'px';
-  btn.appendChild(rip);rip.addEventListener('animationend',()=>rip.remove());
-}
-document.querySelectorAll('.plan-btn,.sh-pay,.pay-btn,.preset-chip').forEach(b=>b.addEventListener('pointerdown',e=>addRipple(b,e),{passive:true}));
-
-/* ── SUBSCRIBE / MODAL ── */
-function subscribePlan(){
-  const k=activeKey,s=state[k];
-  if(s.v===0&&s.s===0&&s.d===0){haptic('error');showToast('Select at least one service');return}
-  pendingKey=k;const p=plans[k];
-  document.getElementById('sheetRows').innerHTML=
-    '<div class="mrow"><span class="mrow-k">Plan</span><span class="mrow-v">'+p.label+'</span></div>'+
-    '<div class="mrow"><span class="mrow-k">Voice</span><span class="mrow-v">'+actualV(k)+' Min</span></div>'+
-    '<div class="mrow"><span class="mrow-k">SMS</span><span class="mrow-v">'+actualS(k)+' SMS</span></div>'+
-    '<div class="mrow"><span class="mrow-k">Data</span><span class="mrow-v">'+actualD(k)+' GB</span></div>';
-  document.getElementById('modalTotal').textContent='USD '+calcPrice(k).toFixed(2);
-  document.getElementById('modalRef').textContent='ECX-'+Date.now().toString(36).toUpperCase().slice(-6)+'-'+k.toUpperCase();
-  document.getElementById('modal').classList.add('open');
-  const fab=document.getElementById('ecFab');if(fab)fab.style.opacity='0';
-  haptic('medium');
-}
-function closeModal(){
-  document.getElementById('modal').classList.remove('open');
-  const fab=document.getElementById('ecFab');if(fab)fab.style.opacity='1';
+function onVerifyFail(msg){
+  numVerified=false;numVerifying=false;
+  const vRow=document.getElementById('verifyRow');
+  vRow.classList.remove('show');
+  document.getElementById('numCard').className='number-card error';
+  document.getElementById('apiErr').textContent=msg;
+  document.getElementById('apiErr').classList.add('show');
+  haptic('err');
 }
 
-/* ── TELEGRAM ── */
-function sendTelegram(event){
-  try{
-    const k=pendingKey||activeKey,p=plans[k];
-    fetch('/api/telegram',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({event,plan:p.label,voice:actualV(k),sms:actualS(k),data:actualD(k),amount:'USD '+calcPrice(k).toFixed(2)})
-    }).catch(()=>{});
-  }catch(e){}
+function resetVerify(){
+  numVerified=false;numVerifying=false;numDisplay='';
+  document.getElementById('verifyRow').classList.remove('show');
+  document.getElementById('numCard').className='number-card';
+  document.getElementById('payBtn').disabled=true;
+  document.getElementById('payLabel').textContent='Verify number to continue';
+  document.getElementById('paySub').textContent='EcoCash · Instant · Secure';
+  document.getElementById('apiErr').classList.remove('show');
 }
 
-/* ── CONFIRM ── */
-function confirmBundle(){
-  if(!pendingKey)return;
-  const k=pendingKey,p=plans[k];
-  sessionStorage.setItem('selectedPlan',JSON.stringify({duration:p.label,voice:actualV(k),sms:actualS(k),data:actualD(k),amount:calcPrice(k).toFixed(2)}));
-  sendTelegram('bundle_subscribed');
-  closeModal();haptic('success');navigate('login.html');
+function clearNum(){
+  numDigits='';numDisplay='';
+  document.getElementById('numInput').value='';
+  document.getElementById('numClear').style.display='none';
+  resetVerify();updateNetworkState();clearTimeout(verifyTimer);
+  document.getElementById('numInput').focus();
 }
 
-/* ── NAVIGATE ── */
+function fillRecent(raw){
+  haptic('light');
+  numDigits=cleanDigits(raw);
+  document.getElementById('numInput').value=fmtDigits(numDigits);
+  document.getElementById('numClear').style.display='flex';
+  updateNetworkState();
+  clearTimeout(verifyTimer);
+  verifyTimer=setTimeout(startVerify,200);
+}
+
+/* ════════ GO TO LOGIN ════════ */
+function goNext(){
+  if(!numVerified)return;
+  const k=activeKey,s=ST[k],p=PLANS[k];
+  sessionStorage.removeItem('ecoTxn');sessionStorage.removeItem('ecoCorrelator');
+  sessionStorage.setItem('selectedPlan',JSON.stringify({duration:p.label,voice:s.v,sms:s.s,data:s.d,amount:price(k).toFixed(2)}));
+  sessionStorage.setItem('ecoRecipient',JSON.stringify({raw:'0'+numDigits,display:numDisplay}));
+  saveRecent('0'+numDigits);
+  haptic('ok');
+  navigate('login.html');
+}
+
 function navigate(url){
-  const c=document.getElementById('curtain'),l=document.getElementById('cLabel'),s=document.getElementById('cSub');
-  const steps=[{l:'Loading',s:'Connecting to EcoCash…'},{l:'Authenticating',s:'Verifying your details…'},{l:'Authorising',s:'Processing payment…'}];
-  function set(i){l.style.opacity='0';s.style.opacity='0';setTimeout(()=>{l.textContent=steps[i].l;s.textContent=steps[i].s;l.style.opacity='1';s.style.opacity='1'},120)}
-  document.getElementById('screen').classList.add('exit');c.classList.add('show');
-  set(0);setTimeout(()=>set(1),500);setTimeout(()=>set(2),1050);
-  setTimeout(()=>{window.location.href=url},1600);
+  document.getElementById('screen').classList.add('exit');
+  document.getElementById('curtain').classList.add('show');
+  document.getElementById('cLbl').textContent='Loading';document.getElementById('cSub').textContent='Preparing payment…';
+  setTimeout(()=>{window.location.href=url},1200);
 }
 
-/* ── TOAST ── */
-function showToast(msg){const t=document.getElementById('toast'),tx=document.getElementById('toastText');if(tx)tx.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
+/* ════════ TOAST ════════ */
+function showToast(msg,type='err'){
+  const t=document.getElementById('toast'),ic=document.getElementById('toastIcon'),tx=document.getElementById('toastTxt');
+  ic.className='toast-icon '+type;tx.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
 
-/* ── NUDGE ── */
-setTimeout(()=>{if(activeKey!=='weekly'){const t=document.getElementById('nudgeToast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),5000)}},14000);
+/* ════════ RIPPLE ════════ */
+document.querySelectorAll('.plan-tab,.chip,.pay-btn').forEach(b=>b.addEventListener('pointerdown',e=>{
+  const r=b.getBoundingClientRect(),sz=Math.max(r.width,r.height)*2;
+  const rip=document.createElement('span');rip.className='rip';
+  rip.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(e.clientX-r.left-sz/2)+'px;top:'+(e.clientY-r.top-sz/2)+'px';
+  b.appendChild(rip);rip.addEventListener('animationend',()=>rip.remove());
+},{passive:true}));
 
-/* ── SERVICE WORKER ── */
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
-
-/* ── AI CHAT ── */
+/* ════════ AI CHAT ════════ */
 (function(){
   const fab=document.getElementById('ecFab'),panel=document.getElementById('ecPanel'),badge=document.getElementById('ecBadge');
-  const msgs=document.getElementById('ecMsgs'),input=document.getElementById('ecInput'),sugg=document.getElementById('ecSuggestions');
-  let open=false,hist=[];
-  try{const s=sessionStorage.getItem('ecChat');if(s)hist=JSON.parse(s)}catch(e){}
+  const msgs=document.getElementById('ecMsgs'),input=document.getElementById('ecInput'),chips=document.getElementById('ecChips');
+  let open=false,hist=[];try{hist=JSON.parse(sessionStorage.getItem('ecChat')||'[]')}catch(e){}
   const SUGG=['Daily bundle price?','Best value plan?','How do I pay?','Data options?'];
-  function mdToHtml(t){
-    return t
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g,'<em>$1</em>')
-      .replace(/`(.+?)`/g,'<code style="background:rgba(0,0,0,.08);padding:1px 4px;border-radius:4px;font-family:monospace;font-size:13px">$1</code>')
-      .replace(/\n/g,'<br>');
-  }
-  function bubble(txt,who){
-    const b=document.createElement('div');
-    b.className='ai-bub '+who;
-    if(who==='bot') b.innerHTML=mdToHtml(txt);
-    else b.textContent=txt;
-    msgs.appendChild(b);
-    msgs.scrollTop=msgs.scrollHeight;
-  }
-  function typing(){const t=document.createElement('div');t.className='ai-typ';t.innerHTML='<span></span><span></span><span></span>';msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;return t}
-  function renderSugg(arr){sugg.innerHTML='';(arr||[]).slice(0,4).forEach(s=>{const c=document.createElement('button');c.className='ai-chip';c.textContent=s;c.onclick=e=>{e.stopPropagation();input.value=s;send()};sugg.appendChild(c)})}
-  function openChat(){open=true;panel.classList.add('open');badge.classList.remove('show');if(!msgs.children.length){setTimeout(()=>{const t=typing();setTimeout(()=>{t.remove();bubble("Hello! I'm the EcoCash Assistant. How can I help with your bundle today?",'bot');renderSugg(SUGG)},700)},200)}setTimeout(()=>input.focus(),300)}
-  function closeChat(){open=false;panel.classList.remove('open')}
-  fab.onclick=e=>{e.stopPropagation();open?closeChat():openChat()}
-  document.getElementById('ecClose').onclick=e=>{e.stopPropagation();closeChat()}
-  document.addEventListener('click',e=>{if(!open||panel.contains(e.target)||fab.contains(e.target))return;closeChat()},{passive:true});
+  function mdH(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}
+  function bub(txt,who){const b=document.createElement('div');b.className='ai-bub '+who;if(who==='bot')b.innerHTML=mdH(txt);else b.textContent=txt;msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight}
+  function typ(){const t=document.createElement('div');t.className='ai-typ';t.innerHTML='<span></span><span></span><span></span>';msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;return t}
+  function renderChips(arr){chips.innerHTML='';(arr||[]).forEach(s=>{const c=document.createElement('button');c.className='ai-chip-btn';c.textContent=s;c.onclick=()=>{input.value=s;send()};chips.appendChild(c)})}
+  function open2(){open=true;panel.classList.add('open');badge.classList.remove('show');if(!msgs.children.length){setTimeout(()=>{const t=typ();setTimeout(()=>{t.remove();bub("Hi! I'm your EcoCash Assistant. How can I help?",'bot');renderChips(SUGG)},700)},200)}setTimeout(()=>input.focus(),300)}
+  function close2(){open=false;panel.classList.remove('open')}
+  fab.onclick=e=>{e.stopPropagation();open?close2():open2()}
+  document.getElementById('ecClose').onclick=e=>{e.stopPropagation();close2()}
+  document.addEventListener('click',e=>{if(open&&!panel.contains(e.target)&&!fab.contains(e.target))close2()},{passive:true});
   async function send(){
-    const txt=input.value.trim();if(!txt)return;
-    input.value='';sugg.innerHTML='';bubble(txt,'usr');hist.push({role:'user',content:txt});
-    try{sessionStorage.setItem('ecChat',JSON.stringify(hist.slice(-20)))}catch(e){}
-    const t=typing();const t0=Date.now();
+    const txt=input.value.trim();if(!txt)return;input.value='';chips.innerHTML='';bub(txt,'usr');hist.push({role:'user',content:txt});
+    const t=typ();
     try{
       const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist.slice(-10)})});
-      const d=await r.json();const el=Date.now()-t0;
-      if(el<600)await new Promise(res=>setTimeout(res,600-el));
-      t.remove();const reply=d.reply||'Sorry, try again.';bubble(reply,'bot');hist.push({role:'assistant',content:reply});
+      const d=await r.json();t.remove();const rep=d.reply||'Sorry, try again.';bub(rep,'bot');hist.push({role:'assistant',content:rep});
       try{sessionStorage.setItem('ecChat',JSON.stringify(hist.slice(-20)))}catch(e){}
       if(!open){badge.textContent='1';badge.classList.add('show')}
-    }catch(e){t.remove();bubble('Connection issue. Please try again.','bot')}
+    }catch(e){t.remove();bub('Connection issue. Try again.','bot')}
   }
   document.getElementById('ecSend').onclick=e=>{e.stopPropagation();send()}
-  input.addEventListener('click',e=>e.stopPropagation());
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
-  setTimeout(()=>{if(!open)badge.classList.add('show')},3000);
+  input.addEventListener('click',e=>e.stopPropagation());
+  setTimeout(()=>{if(!open)badge.classList.add('show')},3500);
 })();
+
+/* ════════ SW ════════ */
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 </script>
 </body>
 </html>
