@@ -399,7 +399,7 @@ html,body{
             <span class="num-code">+263</span>
           </div>
           <input id="numInput" type="tel" inputmode="numeric"
-            placeholder="7X XXX XXXX"
+            placeholder="7XXXXXXXX"
             autocomplete="tel" maxlength="13">
           <button class="num-clear" id="numClear">
             <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -614,14 +614,8 @@ function saveRecent(raw){
   l.unshift(raw);l=l.slice(0,5);
   try{localStorage.setItem(RKEY,JSON.stringify(l));}catch(e){}
 }
-function fmt(d){
-  if(!d)return'';
-  if(d.length<=1)return d;
-  if(d.length<=4)return d[0]+' '+d.slice(1);
-  if(d.length<=7)return d[0]+' '+d.slice(1,4)+' '+d.slice(4);
-  return d[0]+' '+d.slice(1,4)+' '+d.slice(4,7)+' '+d.slice(7);
-}
 function clean(raw){
+  /* Strip any country prefix, return 9 raw digits starting with 7X */
   var v=String(raw).replace(/\D/g,'');
   if(v.startsWith('00263'))v=v.slice(5);
   else if(v.startsWith('0263'))v=v.slice(4);
@@ -639,7 +633,7 @@ function renderRecents(){
   list.forEach(function(raw){
     html+='<div class="recent-chip" data-raw="'+raw+'">'
       +'<div class="recent-chip-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>'
-      +'<span class="recent-chip-num">+263 '+fmt(raw.replace(/^0/,''))+'</span>'
+      +'<span class="recent-chip-num">+263 '+clean(raw)+'</span>'
       +'</div>';
   });
   document.getElementById('recentsList').innerHTML=html;
@@ -654,22 +648,22 @@ var clearBtn=document.getElementById('numClear');
 var verifyTimer=null;
 
 numEl.addEventListener('input',function(){
-  var d=clean(this.value);
-  numDigits=d;
-
-  /* Only reformat if needed — preserve cursor on Android */
-  var want=fmt(d);
-  if(this.value!==want){
-    var cur=this.selectionStart||0;
-    this.value=want;
-    try{this.setSelectionRange(cur,cur);}catch(e){}
-  }
-
-  clearBtn.classList.toggle('show',d.length>0);
+  /* Strip non-digits, limit to 9 chars, no reformatting — keeps cursor stable */
+  var raw=this.value.replace(/\D/g,'');
+  /* Strip country prefix if user pastes full number */
+  if(raw.startsWith('00263'))raw=raw.slice(5);
+  else if(raw.startsWith('0263'))raw=raw.slice(4);
+  else if(raw.startsWith('263')&&raw.length>9)raw=raw.slice(3);
+  if(raw.startsWith('0'))raw=raw.slice(1);
+  raw=raw.slice(0,9);
+  /* Only update value if it actually changed to avoid cursor jump */
+  if(this.value!==raw)this.value=raw;
+  numDigits=raw;
+  clearBtn.classList.toggle('show',raw.length>0);
   if(numVerified||numVerifying)resetVerify();
   updateNet();
   clearTimeout(verifyTimer);
-  if(d.length===9&&ECONET.some(function(p){return('0'+d).startsWith(p);})){
+  if(raw.length===9&&ECONET.some(function(p){return('0'+raw).startsWith(p);})){
     verifyTimer=setTimeout(doVerify,600);
   }
 });
@@ -691,7 +685,7 @@ clearBtn.addEventListener('click',function(){
 function fillRecent(raw){
   haptic('light');
   numDigits=clean(raw);
-  numEl.value=fmt(numDigits);
+  numEl.value=numDigits;
   clearBtn.classList.add('show');
   updateNet();
   clearTimeout(verifyTimer);
@@ -756,7 +750,7 @@ function doVerify(){
 
 function verifyOK(msisdn){
   numVerified=true;numVerifying=false;
-  numDisplay='+263 '+fmt(msisdn.replace(/^0/,''));
+  numDisplay='+263 '+msisdn.replace(/^0/,'');
 
   document.getElementById('verSpin').style.display='none';
   document.getElementById('verOk').classList.add('show');
