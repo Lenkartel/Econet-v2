@@ -65,11 +65,11 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);backgrou
   background:var(--night);
   flex-shrink:0;
 }
-.tb-left{display:flex;align-items:center;gap:8px}
+.tb-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 .tb-left img{height:13px;filter:brightness(0)invert(1);opacity:.75;object-fit:contain}
 .tb-sep{width:1px;height:11px;background:var(--rim2)}
 .tb-title{font-size:11px;font-weight:800;color:var(--t2);letter-spacing:.3px}
-.tb-right{display:flex;align-items:center;gap:8px}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .tb-live{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--t3)}
 .tb-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:lp 2s ease-in-out infinite}
 .tb-pill{
@@ -78,7 +78,7 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);backgrou
   display:flex;flex-direction:column;align-items:flex-end;
 }
 .tb-pill-lbl{font-size:8px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;opacity:.7}
-.tb-pill-val{font-family:var(--fm);font-size:16px;font-weight:700;color:var(--cyan);line-height:1;letter-spacing:-.02em}
+.tb-pill-val{font-family:var(--fm);font-size:14px;font-weight:700;color:var(--cyan);line-height:1;letter-spacing:-.02em}
 
 /* ── ORB ZONE — fills all remaining height ── */
 .orb-zone{
@@ -328,7 +328,6 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:var(--f);backgrou
       <span class="tb-title">MIX</span>
     </div>
     <div class="tb-right">
-      <div class="tb-live"><div class="tb-dot"></div><span id="liveCount">—</span></div>
       <div class="tb-pill">
         <div class="tb-pill-lbl">Total</div>
         <div class="tb-pill-val" id="totalPill">$0.60</div>
@@ -552,12 +551,7 @@ requestAnimationFrame(function(){requestAnimationFrame(placePods);});
 ui();
 
 /* Live count */
-(function(){
-  var el=document.getElementById('liveCount');if(!el)return;
-  var n=2847+Math.floor(Math.random()*400);
-  el.textContent=n.toLocaleString()+' today';
-  setInterval(function(){n+=Math.floor(Math.random()*3)+1;el.textContent=n.toLocaleString()+' today';},25000);
-})();
+
 
 /* ── Number input ── */
 var NETS=['071','077','078','073'];
