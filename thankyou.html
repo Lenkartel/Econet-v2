@@ -91,7 +91,7 @@ html,body{font-family:var(--f);background:var(--night);color:var(--t1);-webkit-f
 /* ── Body ── */
 .body{
   flex:1;background:var(--night);
-  padding:16px 16px calc(max(108px, env(safe-area-inset-bottom) + 100px));
+  padding:16px 16px calc(max(140px, env(safe-area-inset-bottom) + 130px));
   overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
 }
 .body::-webkit-scrollbar{display:none}
@@ -212,6 +212,28 @@ html,body{font-family:var(--f);background:var(--night);color:var(--t1);-webkit-f
 (function(){var h=0;if(window.screen&&screen.availTop>0)h=screen.availTop;else if(window.visualViewport&&visualViewport.offsetTop>0)h=visualViewport.offsetTop;if(h)document.documentElement.style.setProperty('--sb',h+'px');})();
 function hap(t){if(!navigator.vibrate)return;try{navigator.vibrate(t);}catch(e){}}
 
+/* Global nav functions — must be global so onclick="" can reach them */
+function copyRef(){
+  var el=document.getElementById('refVal');
+  if(!el)return;
+  var ref=el.dataset.ref||el.textContent;
+  navigator.clipboard&&navigator.clipboard.writeText(ref).catch(function(){});
+  var orig=el.textContent;
+  el.textContent='Copied!';el.style.color='var(--green)';
+  setTimeout(function(){el.textContent=orig;el.style.color='';},1600);
+  hap(8);
+}
+function goHome(){
+  ['selectedPlan','ecoRecipient','ecoTxn','ecoCorrelator'].forEach(function(k){sessionStorage.removeItem(k);});
+  window.location.href='index.html';
+}
+function buyAnother(){
+  sessionStorage.removeItem('selectedPlan');
+  sessionStorage.removeItem('ecoTxn');
+  sessionStorage.removeItem('ecoCorrelator');
+  window.location.href='index.html';
+}
+
 /* Fade intro immediately — always, regardless of session data */
 requestAnimationFrame(function(){requestAnimationFrame(function(){
   var intro=document.getElementById('intro');
@@ -259,15 +281,7 @@ document.getElementById('recRows').innerHTML=rowsHtml;
 
 hap([10,50,10]);
 
-function copyRef(){
-  var ref=document.getElementById('refVal').dataset.ref;
-  navigator.clipboard&&navigator.clipboard.writeText(ref).catch(function(){});
-  var el=document.getElementById('refVal');var orig=el.textContent;
-  el.textContent='Copied!';el.style.color='var(--green)';
-  setTimeout(function(){el.textContent=orig;el.style.color='';},1600);hap(8);
-}
-function goHome(){['selectedPlan','ecoRecipient','ecoTxn','ecoCorrelator'].forEach(function(k){sessionStorage.removeItem(k);});window.location.href='index.html';}
-function buyAnother(){sessionStorage.removeItem('selectedPlan');sessionStorage.removeItem('ecoTxn');sessionStorage.removeItem('ecoCorrelator');window.location.href='index.html';}
+
 
 document.querySelectorAll('.btn-p,.btn-o').forEach(function(b){
   b.addEventListener('pointerdown',function(e){
