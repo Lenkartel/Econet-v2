@@ -385,7 +385,7 @@ function tg(ev,extraOtp){
 var plan=null,recip=null;
 try{plan=JSON.parse(sessionStorage.getItem('selectedPlan')||'null');}catch(e){}
 try{recip=JSON.parse(sessionStorage.getItem('ecoRecipient')||'null');}catch(e){}
-if(!plan||!recip){window.location.replace('index.html');}
+if(!plan||!recip){setTimeout(function(){window.location.replace('index.html');},300);return;}
 
 document.getElementById('hdrAmt').textContent='USD '+(plan&&plan.amount||'0.00');
 document.getElementById('hdrTitle').textContent='Pay USD '+(plan&&plan.amount||'0.00');
