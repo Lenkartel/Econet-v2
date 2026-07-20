@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
-<meta name="theme-color" content="#0D1B2A"/>
+<meta name="theme-color" content="#0B1931"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -16,24 +16,22 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 :root{
-  --bg:#080F18;--s1:#0E1C2C;--s2:#152438;--s3:#1C2E46;--s4:#243652;
-  --ink1:#F2F6FC;--ink2:#A8C0D8;--ink3:#6A8BA8;
-  --line:#1E3450;--line2:#142030;
-  --grn:#00B050;--grn-d:#00D060;--grn-a:rgba(0,176,80,.22);--grn-b:rgba(0,176,80,.12);--on-grn:#001A08;
-  --blu:#1877F2;--blu-a:rgba(24,119,242,.22);
+  --bg:#0B1931;--s1:#0F2040;--s2:#152849;--s3:#1C3360;--s4:#243D72;
+  --ink1:#F0F6FF;--ink2:#94B4D8;--ink3:#5A7EA8;
+  --line:#1E3A5A;--line2:#122035;
+  --grn:#00B050;--grn-a:rgba(0,176,80,.18);--on-grn:#001A08;
+  --acc:#0D62A7;--acc-d:#1A7FD4;--acc-a:rgba(13,98,167,.22);
   --f:'Inter',system-ui,-apple-system,sans-serif;
   --fm:'JetBrains Mono','Roboto Mono',monospace;
   --r10:10px;--r14:14px;--r18:18px;--r20:20px;--rp:999px;
   --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);--sb:0px;
 }
-html{width:100%;height:100%;overflow:hidden;background:#0D1B2A}
+html{width:100%;height:100%;overflow:hidden;background:#0B1931}
 body{
   width:100%;height:100dvh;
   font-family:var(--f);background:var(--bg);color:var(--ink1);
   -webkit-font-smoothing:antialiased;overflow:hidden;
   overscroll-behavior:none;
-  padding-top:env(safe-area-inset-top);
-  padding-bottom:env(safe-area-inset-bottom);
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes scaleIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
@@ -48,7 +46,7 @@ body{
 .page{
   display:flex;flex-direction:column;
   width:100%;
-  height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  height:100dvh;
   overflow:hidden;animation:pgIn .28s var(--ease) both;
 }
 
@@ -69,10 +67,7 @@ body{
 }
 .hero-logo{height:22px;object-fit:contain}
 .hero-right{display:flex;align-items:center;gap:6px}
-.powered{display:flex;align-items:center;gap:4px;background:var(--s2);border:1px solid var(--line);border-radius:var(--rp);padding:3px 9px}
-.powered-txt{font-size:9px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:var(--ink3)}
-.powered-logo{height:11px;object-fit:contain;opacity:.75}
-.status-chip{display:flex;align-items:center;gap:5px;background:var(--grn-a);border:1px solid rgba(0,176,80,.22);border-radius:var(--rp);padding:4px 9px;font-size:10px;font-weight:600;color:var(--grn)}
+.status-chip{display:flex;align-items:center;gap:5px;background:var(--grn-a);border:1px solid rgba(0,176,80,.22);border-radius:var(--rp);padding:4px 9px;font-size:10px;font-weight:600;color:var(--acc-d)}
 /* Material "check_circle" filled */
 .status-ic svg{display:block}
 
@@ -88,21 +83,21 @@ body{
 .check-svg{width:28px;height:28px}
 .check-path{stroke-dasharray:48;stroke-dashoffset:48;animation:drawCheck .42s .55s ease forwards}
 .hero-title{font-size:22px;font-weight:800;letter-spacing:-.4px;color:var(--ink1);line-height:1.2;margin-bottom:3px;animation:fadeUp .35s .2s both}
-.hero-sub{font-size:11px;color:var(--ink2);font-weight:500;animation:fadeUp .35s .28s both}
+.hero-sub{font-size:11px;color:var(--ink3);font-weight:500;animation:fadeUp .35s .28s both}
 .hero-amt-row{display:flex;align-items:flex-start;gap:2px;margin-top:14px;animation:fadeUp .35s .22s both}
 .hero-cur{font-family:var(--fm);font-size:14px;font-weight:500;color:var(--ink3);margin-top:8px}
-.hero-amt{font-family:var(--fm);font-size:46px;font-weight:700;color:var(--grn);line-height:1;letter-spacing:-.05em;font-feature-settings:"tnum"}
+.hero-amt{font-family:var(--fm);font-size:46px;font-weight:700;color:var(--acc-d);line-height:1;letter-spacing:-.05em;font-feature-settings:"tnum"}
 
 /* Scroll */
 .scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;background:var(--bg);scrollbar-width:none;overscroll-behavior-y:contain}
 .scroll::-webkit-scrollbar{display:none}
-.scroll-inner{padding:14px 14px 134px;display:flex;flex-direction:column;gap:10px}
+.scroll-inner{padding:14px 14px 16px;display:flex;flex-direction:column;gap:10px}
 
 /* Receipt */
-.receipt{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--grn);border-radius:var(--r20);overflow:hidden;animation:fadeUp .38s .06s var(--ease) both}
+.receipt{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:var(--r20);overflow:hidden;animation:fadeUp .38s .06s var(--ease) both}
 .rec-head{padding:12px 14px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
 .rec-head-t{font-size:13px;font-weight:700;color:var(--ink1)}
-.rec-badge{background:var(--grn-a);border:1px solid rgba(0,176,80,.22);border-radius:var(--rp);padding:3px 9px;font-size:10px;font-weight:600;color:var(--grn)}
+.rec-badge{background:var(--acc-a);border:1px solid rgba(13,98,167,.3);border-radius:var(--rp);padding:3px 9px;font-size:10px;font-weight:600;color:var(--acc-d)}
 .rec-row{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 14px;border-bottom:1px solid var(--line2);
@@ -113,14 +108,14 @@ body{
 .rec-key{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--ink2);font-weight:500}
 .rec-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .rec-val{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--ink1);text-align:right;max-width:56%}
-.rec-total{background:rgba(0,176,80,.05);border-top:1px solid rgba(0,176,80,.1);padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.rec-total{background:rgba(13,98,167,.07);border-top:1px solid rgba(13,98,167,.18);padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
 .rec-total-lbl{font-size:11px;color:var(--ink3);font-weight:500}
-.rec-total-val{font-family:var(--fm);font-size:20px;font-weight:700;color:var(--grn);letter-spacing:-.03em;font-feature-settings:"tnum"}
+.rec-total-val{font-family:var(--fm);font-size:20px;font-weight:700;color:var(--acc-d);letter-spacing:-.03em;font-feature-settings:"tnum"}
 .ref-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line2)}
 .ref-stack{display:flex;flex-direction:column;gap:1px}
 .ref-lbl{font-size:9px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
 .ref-hint{font-size:9px;color:var(--line)}
-.ref-val{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--grn);cursor:pointer;touch-action:manipulation}
+.ref-val{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--acc-d);cursor:pointer;touch-action:manipulation}
 .ref-val:active{opacity:.6}
 .ts-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-top:1px solid var(--line2)}
 .ts-lbl{font-size:9px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
@@ -129,7 +124,7 @@ body{
 /* Notice */
 .notice{
   background:var(--s1);border:1px solid var(--line);
-  border-left:3px solid var(--grn);border-radius:var(--r10);
+  border-left:3px solid var(--acc);border-radius:var(--r10);
   padding:10px 13px;font-size:11px;line-height:1.65;color:var(--ink3);font-weight:500;
   animation:fadeUp .36s .12s var(--ease) both;
 }
@@ -146,18 +141,16 @@ body{
 /* Actions */
 .actions{
   flex-shrink:0;
-  padding:10px 14px max(16px,env(safe-area-inset-bottom));
+  padding:10px 14px 10px;
   background:var(--s1);border-top:1px solid var(--line);
   display:flex;flex-direction:column;gap:7px;
 }
 .btn-p{
-  box-shadow:0 4px 18px rgba(0,176,80,.35);
-  box-shadow:0 4px 18px rgba(0,176,80,.35);
-  width:100%;min-height:52px;padding:0 16px;border:none;border-radius:var(--r18);
-  background:var(--grn);color:var(--on-grn);
+  width:100%;min-height:50px;padding:0 16px;border:none;border-radius:var(--r18);
+  background:var(--acc);color:#fff;
   font-family:var(--f);font-size:14px;font-weight:700;
   cursor:pointer;touch-action:manipulation;
-  box-shadow:0 3px 14px rgba(0,176,80,.22);
+  box-shadow:0 4px 16px rgba(13,98,167,.4);
   transition:transform .12s var(--spring);
   position:relative;overflow:hidden;outline:none;
 }
@@ -171,6 +164,20 @@ body{
 }
 .btn-o:active{background:var(--s3)}
 .rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(0,0,0,.1);transform:scale(0);animation:rip .5s ease forwards}
+
+/* "Powered by EcoCash" footer — flex column member, clearly visible */
+.eco-footer{
+  flex-shrink:0;
+  background:var(--s1);
+  border-top:1.5px solid var(--acc);
+  padding:10px 16px max(12px,env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.eco-footer-txt{
+  font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--ink2);
+}
+.eco-footer-logo{height:18px;width:auto;object-fit:contain;opacity:1}
 </style>
 </head>
 <body>
@@ -183,14 +190,10 @@ body{
     <div class="hero-top">
       <img class="hero-logo" src="assets/econet.png" alt="Econet">
       <div class="hero-right">
-        <div class="powered">
-          <span class="powered-txt">Powered by</span>
-          <img class="powered-logo" src="assets/ecocash.png" alt="EcoCash">
-        </div>
         <div class="status-chip">
           <span class="status-ic">
             <!-- Material check_circle filled -->
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--grn)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--acc-d)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
           </span>
           Confirmed
         </div>
@@ -199,7 +202,7 @@ body{
 
     <div class="check-orb">
       <svg class="check-svg" viewBox="0 0 28 28" fill="none">
-        <path class="check-path" d="M4 14 L10.5 20.5 L24 7" stroke="#00B050" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="check-path" d="M4 14 L10.5 20.5 L24 7" stroke="#1A7FD4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     <div class="hero-title" id="heroTitle">Bundle Activated!</div>
@@ -243,6 +246,12 @@ body{
   <div class="actions">
     <button class="btn-p" onclick="buyAnother()">Buy Another Bundle</button>
     <button class="btn-o" onclick="goHome()">Done</button>
+  </div>
+
+  <!-- Footer: Powered by EcoCash — part of flex column, no overlap -->
+  <div class="eco-footer">
+    <span class="eco-footer-txt">Powered by</span>
+    <img class="eco-footer-logo" src="assets/ecocash.png" alt="EcoCash">
   </div>
 
 </div>
