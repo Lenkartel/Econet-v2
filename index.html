@@ -24,9 +24,9 @@ button,div,span,label{-webkit-user-select:none;user-select:none}
   --bg:#0B1931;--s1:#0F2040;--s2:#152849;--s3:#1C3360;--s4:#243D72;
   --ink1:#F0F6FF;--ink2:#94B4D8;--ink3:#5A7EA8;
   --line:#1E3A5A;--line2:#122035;
-  --acc:#0D62A7;--acc-d:#1A7FD4;--acc-a:rgba(13,98,167,.22);--acc-b:rgba(13,98,167,.12);--on-acc:#fff;
+  --acc:#0D62A7;--acc-d:#1A7FD4;--acc-a:rgba(13,98,167,.22);--acc-b:rgba(13,98,167,.12);
   --grn:#00B050;--grn-a:rgba(0,176,80,.18);--on-grn:#001A08;
-  --gold:#FFB020;--err:#FF5A70;--warn:#F59E0B;
+  --gold:#FFB020;--err:#FF5A70;
   --f:'Inter',system-ui,-apple-system,sans-serif;
   --fm:'JetBrains Mono','Roboto Mono',monospace;
   --r8:8px;--r12:12px;--r16:16px;--r20:20px;--rp:999px;
@@ -34,240 +34,348 @@ button,div,span,label{-webkit-user-select:none;user-select:none}
   --sb:0px;
 }
 
-@keyframes spin   {to{transform:rotate(360deg)}}
-@keyframes orbRot {to{transform:rotate(360deg)}}
-@keyframes pgIn   {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes fadeUp {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@keyframes rip    {to{transform:scale(2.8);opacity:0}}
-@keyframes orbPop {0%,100%{transform:scale(1)}35%{transform:scale(.93)}70%{transform:scale(1.04)}}
-@keyframes orbIn  {from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes spin  {to{transform:rotate(360deg)}}
+@keyframes orbRot{to{transform:rotate(360deg)}}
+@keyframes pgIn  {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes rip   {to{transform:scale(2.8);opacity:0}}
+@keyframes orbPop{0%,100%{transform:scale(1)}35%{transform:scale(.93)}70%{transform:scale(1.04)}}
+@keyframes orbIn {from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
 
 html{width:100%;height:100%;overflow:hidden;background:#0B1931}
-body{width:100%;height:100dvh;font-family:var(--f);background:var(--bg);color:var(--ink1);-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+body{
+  width:100%;height:100dvh;
+  font-family:var(--f);background:var(--bg);color:var(--ink1);
+  -webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none;
+  padding-top:env(safe-area-inset-top);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
+}
 
 /* Curtain */
-.curtain{position:fixed;inset:0;z-index:9999;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .26s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.curtain{position:fixed;inset:0;z-index:9999;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .26s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 .curtain.show{opacity:1;pointer-events:auto}
-.c-logo{height:28px;object-fit:contain}
-.c-spin{width:22px;height:22px;border:2.5px solid var(--line);border-top-color:var(--acc-d);border-radius:50%;animation:spin .7s linear infinite}
-.c-lbl{font-size:12px;font-weight:500;color:var(--ink3);letter-spacing:.3px}
+.c-logo{height:26px;object-fit:contain}
+.c-spin{width:20px;height:20px;border:2px solid var(--line);border-top-color:var(--acc-d);border-radius:50%;animation:spin .7s linear infinite}
+.c-lbl{font-size:12px;font-weight:500;color:var(--ink3)}
 
-/* App shell — flex column, no overflow */
-.app{display:flex;flex-direction:column;width:100%;height:calc(var(--vvh,100dvh) - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:hidden;animation:pgIn .28s var(--ease) both}
+/*
+  ── APP SHELL ──
+  Strict flex column. Height = 100dvh minus safe-area-top.
+  No scroll anywhere on the outer shell.
+  Children: topbar(shrink:0) | card(flex:1) | pay-bar(shrink:0)
+*/
+.app{
+  display:flex;flex-direction:column;
+  width:100%;
+  height:calc(var(--vvh,100dvh) - env(safe-area-inset-top));
+  overflow:hidden;
+  animation:pgIn .28s var(--ease) both;
+}
 
-/* Topbar */
-.topbar{flex-shrink:0;padding:calc(var(--sb) + 12px) 16px 10px;display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--line2)}
-/* Both logos identical height */
-.tb-logo{height:26px;width:auto;object-fit:contain;flex-shrink:0}
-.tb-right{display:flex;align-items:center;gap:10px}
+/* ── TOPBAR ── */
+.topbar{
+  flex-shrink:0;
+  padding:calc(var(--sb) + 10px) 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg);border-bottom:1px solid var(--line2);
+}
+.tb-logo{height:24px;width:auto;object-fit:contain}
 .tb-total{text-align:right;display:none}
 .tb-total.show{display:block}
 .tb-total-lbl{font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3)}
-.tb-total-val{font-family:var(--fm);font-size:18px;font-weight:700;color:var(--acc-d);letter-spacing:-.02em;line-height:1}
+.tb-total-val{font-family:var(--fm);font-size:17px;font-weight:700;color:var(--acc-d);letter-spacing:-.02em;line-height:1}
 
-/* Scroll */
-.scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;overscroll-behavior-y:contain;padding:0 12px max(84px,76px)}
-.scroll::-webkit-scrollbar{display:none}
+/*
+  ── CARD ──
+  flex:1 min-height:0 overflow:hidden — takes all remaining space between topbar and pay-bar.
+  It is a flex column itself. NEVER scrolls.
+  Children stack vertically and distribute the available height.
+*/
+.card{
+  flex:1;min-height:0;overflow:hidden;
+  background:var(--s1);
+  border:1px solid var(--line);border-left:3px solid var(--acc);
+  border-radius:var(--r20);
+  display:flex;flex-direction:column;
+  margin:4px 12px 0;
+}
 
-/* Card */
-.card{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:var(--r20);overflow:hidden;display:flex;flex-direction:column;align-items:stretch;margin-top:4px}
+/* ── PHASE 1: NUMBER ── flex-shrink:0 — always fits, never grows */
+.phase-num{
+  flex-shrink:0;
+  padding:14px 16px 14px;
+  transition:padding .3s var(--ease);
+}
+.phase-num.verified{padding:8px 16px 8px}
 
-/* Phase 1 */
-.phase-num{padding:18px 16px 20px;transition:padding .3s var(--ease)}
-/* Collapsed state — shown after number verified */
-.phase-num.verified{padding:10px 16px 10px}
-.num-field{display:flex;align-items:center;background:var(--s2);border:1.5px solid var(--line);border-radius:var(--r16);overflow:hidden;transition:border-color .18s,box-shadow .18s,max-height .3s var(--ease),opacity .3s;min-height:56px;margin-top:13px;max-height:80px;opacity:1}
-.num-field.collapsed{max-height:0;opacity:0;pointer-events:none;margin-top:0}
-.ph-title{font-size:21px;font-weight:800;letter-spacing:-.4px;color:var(--ink1);line-height:1.15;transition:color .3s}
+.ph-title{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink1);line-height:1.15}
 .ph-title i{font-style:italic;color:var(--acc-d)}
-.ph-sub{font-size:11px;font-weight:500;color:var(--ink3);margin-top:4px;transition:max-height .3s,opacity .3s,margin .3s;max-height:30px;overflow:hidden}
+.ph-sub{
+  font-size:10px;font-weight:500;color:var(--ink3);margin-top:3px;
+  overflow:hidden;max-height:20px;
+  transition:max-height .3s var(--ease),opacity .3s,margin .3s;
+}
 .phase-num.verified .ph-sub{max-height:0;opacity:0;margin-top:0}
-.phase-num.verified .ph-title{font-size:22px;letter-spacing:-.5px}
-.phase-num.verified .ph-title i{font-style:italic;color:var(--acc-d)}
 
+/* Number field */
+.num-field{
+  display:flex;align-items:center;
+  background:var(--s2);border:1.5px solid var(--line);
+  border-radius:var(--r12);overflow:hidden;
+  transition:border-color .18s,box-shadow .18s,max-height .28s var(--ease),opacity .28s,margin .28s;
+  min-height:52px;max-height:60px;margin-top:10px;opacity:1;
+}
+.num-field.collapsed{max-height:0;opacity:0;pointer-events:none;margin-top:0;min-height:0}
 .num-field.foc{border-color:rgba(26,127,212,.6);box-shadow:0 0 0 3px rgba(13,98,167,.14)}
 .num-field.ok {border-color:rgba(0,176,80,.6);box-shadow:0 0 0 3px rgba(0,176,80,.12)}
 .num-field.err{border-color:rgba(255,90,112,.6);box-shadow:0 0 0 3px rgba(255,90,112,.12)}
-.num-prefix{display:flex;align-items:center;gap:7px;padding:0 12px 0 14px;border-right:1px solid var(--line);height:56px;flex-shrink:0}
-.num-flag{font-size:18px;line-height:1}
-.num-code{font-family:var(--fm);font-size:14px;font-weight:600;color:var(--ink3)}
-#numInput{flex:1;min-width:0;border:none;outline:none;background:transparent!important;font-family:var(--fm);font-size:21px;font-weight:700;color:var(--ink1);padding:0 0 0 12px;height:56px;letter-spacing:.06em;caret-color:var(--acc-d);-webkit-user-select:text!important;user-select:text!important;-webkit-text-fill-color:var(--ink1)!important;-webkit-appearance:none;appearance:none}
-#numInput::placeholder{color:var(--ink3);font-size:14px;font-weight:500;letter-spacing:0}
+
+.num-prefix{display:flex;align-items:center;gap:6px;padding:0 10px 0 13px;border-right:1px solid var(--line);height:52px;flex-shrink:0}
+.num-flag{font-size:16px;line-height:1}
+.num-code{font-family:var(--fm);font-size:13px;font-weight:600;color:var(--ink3)}
+#numInput{
+  flex:1;min-width:0;border:none;outline:none;background:transparent!important;
+  font-family:var(--fm);font-size:20px;font-weight:700;color:var(--ink1);
+  padding:0 0 0 11px;height:52px;
+  letter-spacing:.06em;caret-color:var(--acc-d);
+  -webkit-user-select:text!important;user-select:text!important;
+  -webkit-text-fill-color:var(--ink1)!important;-webkit-appearance:none;appearance:none;
+}
+#numInput::placeholder{color:var(--ink3);font-size:13px;font-weight:500;letter-spacing:0}
 #numInput:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--s2) inset!important;-webkit-text-fill-color:var(--ink1)!important}
-.num-clear{display:none;width:42px;height:56px;border:none;background:transparent;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation}
+.num-clear{display:none;width:40px;height:52px;border:none;background:transparent;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation}
 .num-clear.show{display:flex}
-.num-clear:active{background:rgba(255,255,255,.05)}
 .num-clear svg{display:block}
 
-.num-status{display:flex;align-items:center;gap:6px;margin-top:7px;min-height:18px;padding:0 2px;transition:opacity .3s,margin .3s}
+/* Status rows */
+.num-status{
+  display:flex;align-items:center;gap:6px;
+  margin-top:5px;min-height:16px;padding:0 2px;
+  transition:opacity .3s,margin .3s,min-height .3s;
+}
 .num-status.collapsed{margin-top:0;min-height:0;opacity:0;pointer-events:none}
-/* Verified number pill — shown instead of the field after verification */
+.ns-icon{width:12px;height:12px;flex-shrink:0;display:flex}
+.ns-icon svg{width:12px;height:12px}
+.ns-txt{font-size:10px;font-weight:500;color:var(--ink3);line-height:1.3}
+.num-status.ok .ns-txt{color:var(--grn)}
+.num-status.err .ns-txt{color:var(--err)}
+.num-verify{display:none;align-items:center;gap:7px;margin-top:5px;padding:0 2px}
+.num-verify.show{display:flex}
+.vspin{width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--acc-d);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
+.num-verify.spinning .vspin{display:block}
+.vok-wrap{display:none;align-items:center;gap:5px}
+.num-verify.done .vok-wrap{display:flex}
+.vok-ic{width:16px;height:16px;border-radius:50%;background:var(--grn);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vok-ic svg{width:9px;height:9px;display:block}
+.vok-txt{font-size:10px;font-weight:600;color:var(--grn)}
+.vtxt{font-size:10px;font-weight:500;color:var(--acc-d);display:none}
+.num-verify.spinning .vtxt{display:block}
+
+/* Verified pill */
 .num-verified-pill{
-  display:none;
-  align-items:center;gap:8px;
-  margin-top:10px;padding:9px 12px;
-  background:var(--grn-a);
-  border:1px solid rgba(0,176,80,.35);
+  display:none;align-items:center;gap:7px;
+  margin-top:7px;padding:7px 11px;
+  background:var(--grn-a);border:1px solid rgba(0,176,80,.35);
   border-radius:var(--r12);
 }
 .num-verified-pill.show{display:flex}
-.nvp-icon{width:16px;height:16px;border-radius:50%;background:var(--grn);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nvp-icon{width:15px;height:15px;border-radius:50%;background:var(--grn);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nvp-icon svg{display:block}
-.nvp-num{font-family:var(--fm);font-size:13px;font-weight:700;color:var(--ink1);flex:1}
-.nvp-edit{font-size:10px;font-weight:600;color:var(--grn);background:none;border:none;cursor:pointer;padding:3px 6px;border-radius:var(--r8);touch-action:manipulation;outline:none}
-.nvp-edit:active{background:rgba(0,176,80,.12)}
-.ns-icon{width:14px;height:14px;flex-shrink:0;display:flex}
-.ns-icon svg{width:14px;height:14px}
-.ns-txt{font-size:11px;font-weight:500;color:var(--ink3);line-height:1.3}
-.num-status.ok .ns-txt{color:var(--grn)}
-.num-status.err .ns-txt{color:var(--err)}
-.num-verify{display:none;align-items:center;gap:8px;margin-top:7px;padding:0 2px}
-.num-verify.show{display:flex}
-.vspin{width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--acc-d);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
-.num-verify.spinning .vspin{display:block}
-.vok-wrap{display:none;align-items:center;gap:6px}
-.num-verify.done .vok-wrap{display:flex}
-.vok-ic{width:18px;height:18px;border-radius:50%;background:var(--grn);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.vok-ic svg{width:10px;height:10px;display:block}
-.vok-txt{font-size:11px;font-weight:600;color:var(--grn)}
-.vtxt{font-size:11px;font-weight:500;color:var(--acc-d);display:none}
-.num-verify.spinning .vtxt{display:block}
+.nvp-num{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--ink1);flex:1}
+.nvp-edit{font-size:10px;font-weight:600;color:var(--grn);background:none;border:none;cursor:pointer;padding:2px 5px;border-radius:var(--r8);touch-action:manipulation;outline:none}
 
-.card-sep{height:1px;background:var(--line2);margin:0 16px;transition:opacity .3s}
+/* Separator */
+.card-sep{height:1px;background:var(--line2);margin:0 16px;transition:opacity .3s;flex-shrink:0}
 
-/* Phase 2 */
-.phase-bundle{display:none;flex-direction:column;animation:fadeUp .32s var(--ease) both}
+/*
+  ── PHASE 2: BUNDLE ──
+  flex:1 min-height:0 overflow:hidden — fills all remaining card height.
+  Is itself a flex column. Children share the available space.
+  No scrolling. Everything sizes to fit.
+*/
+.phase-bundle{
+  flex:1;min-height:0;overflow:hidden;
+  display:none;flex-direction:column;
+  animation:fadeUp .28s var(--ease) both;
+}
 .phase-bundle.show{display:flex}
 
-/* Validity chips */
-.vrow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:13px 16px 7px}
-.vchip{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;padding:7px 5px;border-radius:var(--r12);background:var(--s2);border:1.5px solid var(--line);cursor:pointer;touch-action:manipulation;outline:none;transition:background .13s,border-color .13s,box-shadow .13s;position:relative;overflow:hidden;text-align:center}
+/* Validity chips row — flex-shrink:0 */
+.vrow{
+  flex-shrink:0;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:5px;
+  padding:8px 14px 6px;
+}
+.vchip{
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;
+  padding:6px 4px;border-radius:var(--r8);
+  background:var(--s2);border:1.5px solid var(--line);
+  cursor:pointer;touch-action:manipulation;outline:none;
+  transition:background .13s,border-color .13s,box-shadow .13s;
+  position:relative;overflow:hidden;text-align:center;
+}
 .vchip:active{background:var(--s4)}
-.vchip.on{background:var(--acc);border-color:var(--acc);box-shadow:0 2px 14px rgba(13,98,167,.45)}
-.vc-name{font-size:10px;font-weight:600;color:var(--ink2);transition:color .13s;line-height:1.2;white-space:nowrap}
-.vc-price{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--ink1);transition:color .13s;line-height:1.2}
-.vc-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--gold);border-radius:var(--rp);padding:1px 5px;margin-top:2px;font-size:8px;font-weight:800;color:#000;letter-spacing:.3px;text-transform:uppercase;line-height:1.4;white-space:nowrap}
+.vchip.on{background:var(--acc);border-color:var(--acc);box-shadow:0 2px 10px rgba(13,98,167,.4)}
+.vc-name{font-size:9px;font-weight:600;color:var(--ink2);transition:color .13s;line-height:1.2;white-space:nowrap}
+.vc-price{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--ink1);transition:color .13s;line-height:1.2}
+.vc-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--gold);border-radius:var(--rp);padding:1px 4px;margin-top:1px;font-size:7px;font-weight:800;color:#000;letter-spacing:.2px;text-transform:uppercase;line-height:1.3;white-space:nowrap}
 .vchip.on .vc-name{color:rgba(255,255,255,.8);font-weight:700}
 .vchip.on .vc-price{color:#fff;font-weight:800}
 .vchip.on .vc-badge{background:rgba(0,0,0,.3);color:#fff}
-/* Centre bottom two chips */
-.vchip:nth-child(4){grid-column:1/2;margin-left:calc(50% + 3px)}
+.vchip:nth-child(4){grid-column:1/2;margin-left:calc(50% + 2.5px)}
 .vchip:nth-child(5){grid-column:2/4;margin-left:0}
 
-/* Orb */
-.orb-section{display:flex;justify-content:center;padding:10px 16px 4px}
-.orb-wrap{position:relative;width:min(52vw,188px);height:min(52vw,188px);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.orb-ring{position:absolute;inset:-13px;border-radius:50%;border:1px solid rgba(13,98,167,.18);animation:orbRot 22s linear infinite;will-change:transform;pointer-events:none}
-.orb-ring::after{content:'';position:absolute;top:50%;left:-4px;width:7px;height:7px;border-radius:50%;background:var(--acc-d);box-shadow:0 0 10px 2px rgba(26,127,212,.8);transform:translateY(-50%)}
-.orb{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 28% 25%,rgba(13,98,167,.2) 0%,transparent 48%),radial-gradient(circle at 72% 74%,rgba(13,98,167,.1) 0%,transparent 48%),radial-gradient(circle at 30% 26%,rgba(255,255,255,.06) 0%,transparent 42%),var(--s2);border:1px solid rgba(255,255,255,.06);box-shadow:0 0 0 2px rgba(13,98,167,.3),0 0 36px rgba(13,98,167,.15),0 14px 48px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;animation:orbIn .4s var(--ease) both}
-.orb.pop{animation:orbPop .28s var(--spring)}
-.orb-plan{font-size:9px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+/*
+  ── ORB ──
+  flex:0 0 auto with a clamped size driven by available height.
+  We use min() of vw AND vh so it never overflows in either dimension.
+  On a 640px phone with ~320px available for phase 2:
+    chips(~46px) + orb + presets(~160px) + hint(~38px) = fit in ~320px
+    so orb gets ~76px. But that's too small.
+  Better: orb is flex-shrink:1 with a preferred size, can compress.
+*/
+.orb-section{
+  flex-shrink:1;
+  display:flex;justify-content:center;align-items:center;
+  padding:4px 16px;
+  min-height:0;
+}
+.orb-wrap{
+  position:relative;
+  /* Prefer min(44vw, 168px) — smaller than before so presets have room */
+  width:min(44vw,168px);height:min(44vw,168px);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.orb-ring{position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(13,98,167,.16);animation:orbRot 22s linear infinite;will-change:transform;pointer-events:none}
+.orb-ring::after{content:'';position:absolute;top:50%;left:-3px;width:6px;height:6px;border-radius:50%;background:var(--acc-d);box-shadow:0 0 8px 2px rgba(26,127,212,.8);transform:translateY(-50%)}
+.orb{
+  width:100%;height:100%;border-radius:50%;
+  background:
+    radial-gradient(circle at 28% 25%,rgba(13,98,167,.2) 0%,transparent 48%),
+    radial-gradient(circle at 72% 74%,rgba(13,98,167,.1) 0%,transparent 48%),
+    radial-gradient(circle at 30% 26%,rgba(255,255,255,.06) 0%,transparent 42%),
+    var(--s2);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 0 0 2px rgba(13,98,167,.28),0 0 28px rgba(13,98,167,.12),0 10px 36px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  animation:orbIn .4s var(--ease) both;
+}
+.orb.pop{animation:orbPop .26s var(--spring)}
+.orb-plan{font-size:8px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
 .orb-price-row{display:flex;align-items:flex-start;gap:2px}
-.orb-cur{font-family:var(--fm);font-size:11px;font-weight:500;color:var(--ink3);margin-top:5px}
-.orb-price{font-family:var(--fm);font-size:min(10vw,38px);font-weight:700;color:var(--ink1);line-height:1;letter-spacing:-.06em;font-feature-settings:"tnum"}
-.orb-line{width:26px;height:1px;background:var(--line);margin:5px 0}
-.orb-svcs{display:flex;flex-direction:column;gap:3px;align-items:center}
-.orb-svc{display:flex;align-items:center;gap:6px;font-size:10px}
-.orb-svc-name{color:var(--ink3);font-weight:500;min-width:26px}
-.orb-svc-val{font-family:var(--fm);font-weight:700;color:var(--ink1);min-width:40px;text-align:right;font-feature-settings:"tnum"}
+.orb-cur{font-family:var(--fm);font-size:10px;font-weight:500;color:var(--ink3);margin-top:4px}
+.orb-price{font-family:var(--fm);font-size:min(9vw,32px);font-weight:700;color:var(--ink1);line-height:1;letter-spacing:-.06em;font-feature-settings:"tnum"}
+.orb-line{width:22px;height:1px;background:var(--line);margin:4px 0}
+.orb-svcs{display:flex;flex-direction:column;gap:2px;align-items:center}
+.orb-svc{display:flex;align-items:center;gap:5px;font-size:9px}
+.orb-svc-name{color:var(--ink3);font-weight:500;min-width:24px}
+.orb-svc-val{font-family:var(--fm);font-weight:700;color:var(--ink1);min-width:36px;text-align:right;font-feature-settings:"tnum"}
 
-/* Preset cards */
-.presets{padding:8px 16px 0;display:flex;flex-direction:column;gap:7px}
-.preset-label{font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
-.preset{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r16);background:var(--s2);border:1.5px solid var(--line);cursor:pointer;touch-action:manipulation;outline:none;position:relative;overflow:hidden;transition:border-color .15s,background .15s,box-shadow .15s}
+/* ── PRESETS ── flex-shrink:0 — fixed size, does not compress */
+.presets{flex-shrink:0;padding:0 14px;display:flex;flex-direction:column;gap:5px}
+.preset-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:1px}
+.preset{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 12px;border-radius:var(--r12);
+  background:var(--s2);border:1.5px solid var(--line);
+  cursor:pointer;touch-action:manipulation;outline:none;
+  position:relative;overflow:hidden;
+  transition:border-color .15s,background .15s,box-shadow .15s;
+}
 .preset:active{background:var(--s3)}
-.preset.on{background:var(--acc-b);border-color:rgba(13,98,167,.7);box-shadow:0 0 0 1px rgba(13,98,167,.25),0 4px 16px rgba(13,98,167,.14)}
-.preset-tick{width:21px;height:21px;border-radius:50%;background:var(--s3);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,border-color .15s}
+.preset.on{background:var(--acc-b);border-color:rgba(13,98,167,.65);box-shadow:0 0 0 1px rgba(13,98,167,.2),0 3px 12px rgba(13,98,167,.12)}
+.preset-tick{width:18px;height:18px;border-radius:50%;background:var(--s3);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,border-color .15s}
 .preset.on .preset-tick{background:var(--acc);border-color:var(--acc)}
-.preset-tick svg{width:10px;height:10px;display:block}
+.preset-tick svg{width:9px;height:9px;display:block}
 .preset-left{flex:1;min-width:0;text-align:left}
-.preset-name{font-size:14px;font-weight:700;color:var(--ink1);transition:color .15s;letter-spacing:-.2px}
+.preset-name{font-size:13px;font-weight:700;color:var(--ink1);transition:color .15s;letter-spacing:-.2px}
 .preset.on .preset-name{color:var(--acc-d)}
-.preset-desc{font-size:11px;color:var(--ink2);margin-top:2px;font-weight:500}
-.preset-tag{display:inline-block;margin-top:4px;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--gold);background:rgba(255,176,32,.14);border-radius:var(--rp);padding:2px 6px}
+.preset-desc{font-size:10px;color:var(--ink2);margin-top:1px;font-weight:500}
+.preset-tag{display:inline-block;margin-top:3px;font-size:8px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--gold);background:rgba(255,176,32,.14);border-radius:var(--rp);padding:1px 5px}
 .preset-right{text-align:right;flex-shrink:0}
-.preset-price{font-family:var(--fm);font-size:18px;font-weight:700;color:var(--ink1);letter-spacing:-.03em;font-feature-settings:"tnum";transition:color .15s}
+.preset-price{font-family:var(--fm);font-size:16px;font-weight:700;color:var(--ink1);letter-spacing:-.03em;font-feature-settings:"tnum";transition:color .15s}
 .preset.on .preset-price{color:var(--acc-d)}
-.preset-validity{font-size:9px;color:var(--ink3);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.preset-validity{font-size:8px;color:var(--ink3);margin-top:1px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
 
 /* Social icons */
-.preset-socials{display:flex;align-items:center;gap:5px;margin-top:6px}
-.psoc{width:19px;height:19px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.preset-socials{display:flex;align-items:center;gap:4px;margin-top:4px}
+.psoc{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .psoc-wa{background:#25D366}
 .psoc-ig{background:linear-gradient(135deg,#f09433,#e6683c 30%,#dc2743 55%,#cc2366 78%,#bc1888)}
 .psoc-tt{background:#010101}
 .psoc svg{display:block}
 
-/* Hint strip */
-.customise-hint{margin:8px 16px 0;padding:9px 12px;border-radius:var(--r12);background:var(--s2);border:1px dashed rgba(13,98,167,.35);display:flex;align-items:center;gap:8px;font-size:11px;font-weight:500;color:var(--ink3)}
-.customise-hint svg{flex-shrink:0}
+/* Hint strip — flex-shrink:0 */
+.customise-hint{
+  flex-shrink:0;
+  margin:5px 14px 8px;padding:7px 11px;border-radius:var(--r8);
+  background:var(--s2);border:1px dashed rgba(13,98,167,.32);
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;font-weight:500;color:var(--ink3);
+}
+.customise-hint svg{flex-shrink:0;width:12px;height:12px}
 
-.card-pad{height:14px}
-
-/* Pay bar */
-.pay-bar{flex-shrink:0;padding:10px 12px max(16px,env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line2)}
-.pay-btn{width:100%;min-height:52px;padding:0 16px;border:none;border-radius:var(--r20);cursor:pointer;touch-action:manipulation;background:var(--acc);display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 22px rgba(13,98,167,.5),0 1px 4px rgba(0,0,0,.35);position:relative;overflow:hidden;outline:none;transition:transform .12s var(--spring),opacity .2s}
+/* ── PAY BAR ── */
+.pay-bar{
+  flex-shrink:0;
+  padding:8px 12px max(12px,env(safe-area-inset-bottom));
+  background:var(--bg);border-top:1px solid var(--line2);
+}
+.pay-btn{
+  width:100%;min-height:50px;padding:0 14px;border:none;border-radius:var(--r16);
+  cursor:pointer;touch-action:manipulation;
+  background:var(--acc);
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 20px rgba(13,98,167,.48),0 1px 4px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;outline:none;
+  transition:transform .12s var(--spring),opacity .2s;
+}
 .pay-btn:active{transform:scale(.97)}
 .pay-btn:disabled{opacity:.3;box-shadow:none;cursor:default;transform:none;background:var(--s2);border:1px solid var(--line)}
-.pay-left{display:flex;align-items:center;gap:11px;pointer-events:none}
-.pay-icon{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pay-left{display:flex;align-items:center;gap:10px;pointer-events:none}
+.pay-icon{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pay-icon svg{display:block}
-.pay-title{font-size:14px;font-weight:700;color:#fff;line-height:1.2}
+.pay-title{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
 .pay-sub{font-size:9px;color:rgba(255,255,255,.5);margin-top:1px}
 .pay-btn:disabled .pay-title{color:var(--ink2)}
 .pay-btn:disabled .pay-sub{color:var(--ink3)}
 .pay-right{pointer-events:none;text-align:right}
-.pay-right-lbl{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.5);margin-bottom:1px}
-.pay-right-amt{font-family:var(--fm);font-size:20px;font-weight:700;color:#fff;letter-spacing:-.03em;font-feature-settings:"tnum"}
+.pay-right-lbl{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.48);margin-bottom:1px}
+.pay-right-amt{font-family:var(--fm);font-size:19px;font-weight:700;color:#fff;letter-spacing:-.03em;font-feature-settings:"tnum"}
 .pay-btn:disabled .pay-right-lbl{color:var(--ink3)}
 .pay-btn:disabled .pay-right-amt{color:var(--ink2)}
 .rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.1);transform:scale(0);animation:rip .5s ease forwards}
 
-/* ═══════════ CUSTOMISE MODAL ═══════════
-   Bottom sheet — slides up from off-screen.
-   Triggered ONLY when a preset card is tapped (not on auto-select).
-   Sliders are wired to the CURRENT active plan (AK).
-   Closing applies changes and updates the orb/price.
-   ═══════════════════════════════════════ */
-.modal-scrim{position:fixed;inset:0;z-index:400;background:rgba(5,12,28,.75);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .28s var(--ease)}
+/* ── CUSTOMISE MODAL ── */
+.modal-scrim{position:fixed;inset:0;z-index:400;background:rgba(5,12,28,.78);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .28s var(--ease)}
 .modal-scrim.open{opacity:1;pointer-events:auto}
-
 .modal-sheet{
   position:fixed;left:0;right:0;bottom:0;z-index:401;
-  background:var(--s1);
-  border-radius:20px 20px 0 0;
-  border-top:1px solid var(--line);
-  border-left:3px solid var(--acc);
+  background:var(--s1);border-radius:20px 20px 0 0;
+  border-top:1px solid var(--line);border-left:3px solid var(--acc);
   padding-bottom:max(20px,env(safe-area-inset-bottom));
-  transform:translateY(100%);
-  transition:transform .32s var(--ease);
-  max-height:78dvh;
-  display:flex;flex-direction:column;
-  overflow:hidden;
+  transform:translateY(100%);transition:transform .32s var(--ease);
+  max-height:78dvh;display:flex;flex-direction:column;overflow:hidden;
 }
 .modal-sheet.open{transform:translateY(0)}
-
 .modal-drag{width:36px;height:4px;border-radius:2px;background:var(--line);margin:12px auto 0;flex-shrink:0}
-
-.modal-head{flex-shrink:0;padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line2)}
-.modal-title-row{display:flex;flex-direction:column;gap:2px}
-.modal-title{font-size:16px;font-weight:800;color:var(--ink1);letter-spacing:-.3px}
-.modal-subtitle{font-size:11px;color:var(--acc-d);font-weight:500}
-.modal-close-x{width:30px;height:30px;border-radius:50%;background:var(--s3);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;outline:none;transition:background .12s;flex-shrink:0}
+.modal-head{flex-shrink:0;padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line2)}
+.modal-title-row{display:flex;flex-direction:column;gap:1px}
+.modal-title{font-size:15px;font-weight:800;color:var(--ink1);letter-spacing:-.3px}
+.modal-subtitle{font-size:10px;color:var(--acc-d);font-weight:500}
+.modal-close-x{width:28px;height:28px;border-radius:50%;background:var(--s3);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;outline:none;transition:background .12s;flex-shrink:0}
 .modal-close-x:active{background:var(--s4)}
 .modal-close-x svg{display:block}
-
-/* Orb mini inside modal header — shows live price while dragging */
-.modal-price-bar{flex-shrink:0;padding:10px 16px;background:var(--s2);border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
-.mpb-label{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3)}
-.mpb-price{font-family:var(--fm);font-size:22px;font-weight:700;color:var(--acc-d);letter-spacing:-.03em}
+.modal-price-bar{flex-shrink:0;padding:9px 16px;background:var(--s2);border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
+.mpb-label{font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3)}
+.mpb-price{font-family:var(--fm);font-size:20px;font-weight:700;color:var(--acc-d);letter-spacing:-.03em}
 .mpb-breakdown{display:flex;gap:10px}
 .mpb-item{font-size:10px;color:var(--ink3);font-weight:500}
 .mpb-item span{color:var(--ink1);font-weight:700;font-family:var(--fm)}
-
 .modal-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding:0 16px}
 .modal-body::-webkit-scrollbar{display:none}
-
 .sl-item{display:flex;flex-direction:column;gap:8px;padding:12px 0}
 .sl-item+.sl-item{border-top:1px solid var(--line2)}
 .sl-header{display:flex;align-items:center;justify-content:space-between}
@@ -283,9 +391,8 @@ body{width:100%;height:100dvh;font-family:var(--f);background:var(--bg);color:va
 .sl-range:active::-webkit-slider-thumb{transform:scale(1.2)}
 .sl-range::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--acc);border:3px solid var(--bg);cursor:pointer}
 .sl-range::-moz-range-track{height:5px;background:transparent}
-
 .modal-apply{flex-shrink:0;padding:10px 16px;border-top:1px solid var(--line2)}
-.modal-apply-btn{width:100%;min-height:48px;border:none;border-radius:var(--r16);background:var(--acc);color:#fff;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;outline:none;box-shadow:0 3px 16px rgba(13,98,167,.4);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s var(--spring);position:relative;overflow:hidden}
+.modal-apply-btn{width:100%;min-height:46px;border:none;border-radius:var(--r12);background:var(--acc);color:#fff;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;outline:none;box-shadow:0 3px 14px rgba(13,98,167,.38);display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .12s var(--spring);position:relative;overflow:hidden}
 .modal-apply-btn:active{transform:scale(.97)}
 .modal-apply-btn svg{display:block}
 </style>
@@ -298,7 +405,7 @@ body{width:100%;height:100dvh;font-family:var(--f);background:var(--bg);color:va
   <div class="c-lbl">Loading…</div>
 </div>
 
-<!-- Customise bottom sheet — shown ONLY on user tap, not on auto-select -->
+<!-- Customise modal -->
 <div class="modal-scrim" id="modalScrim" onclick="closeModal()"></div>
 <div class="modal-sheet" id="modalSheet">
   <div class="modal-drag"></div>
@@ -308,15 +415,11 @@ body{width:100%;height:100dvh;font-family:var(--f);background:var(--bg);color:va
       <div class="modal-subtitle" id="modalSubtitle">Drag to adjust</div>
     </div>
     <button class="modal-close-x" onclick="closeModal()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ink2)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--ink2)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
     </button>
   </div>
-  <!-- Live price bar inside modal -->
   <div class="modal-price-bar">
-    <div>
-      <div class="mpb-label">Your bundle</div>
-      <div class="mpb-price" id="mpbPrice">$0.00</div>
-    </div>
+    <div><div class="mpb-label">Your bundle</div><div class="mpb-price" id="mpbPrice">$0.00</div></div>
     <div class="mpb-breakdown">
       <div class="mpb-item"><span id="mpbV">—</span> Min</div>
       <div class="mpb-item"><span id="mpbD">—</span> GB</div>
@@ -325,30 +428,21 @@ body{width:100%;height:100dvh;font-family:var(--f);background:var(--bg);color:va
   </div>
   <div class="modal-body">
     <div class="sl-item">
-      <div class="sl-header">
-        <span class="sl-name">Voice</span>
-        <div class="sl-val-row"><span class="sl-val" id="slVlbl">20</span><span class="sl-unit">Min</span></div>
-      </div>
+      <div class="sl-header"><span class="sl-name">Voice</span><div class="sl-val-row"><span class="sl-val" id="slVlbl">20</span><span class="sl-unit">Min</span></div></div>
       <div class="sl-track"><div class="sl-bg"></div><div class="sl-fill" id="tfV"></div><input type="range" class="sl-range" id="slV" min="0" step="1" value="4"></div>
     </div>
     <div class="sl-item">
-      <div class="sl-header">
-        <span class="sl-name">Data</span>
-        <div class="sl-val-row"><span class="sl-val" id="slDlbl">3</span><span class="sl-unit">GB</span></div>
-      </div>
+      <div class="sl-header"><span class="sl-name">Data</span><div class="sl-val-row"><span class="sl-val" id="slDlbl">3</span><span class="sl-unit">GB</span></div></div>
       <div class="sl-track"><div class="sl-bg"></div><div class="sl-fill" id="tfD"></div><input type="range" class="sl-range" id="slD" min="0" step="1" value="3"></div>
     </div>
     <div class="sl-item">
-      <div class="sl-header">
-        <span class="sl-name">SMS</span>
-        <div class="sl-val-row"><span class="sl-val" id="slSlbl">25</span><span class="sl-unit">SMS</span></div>
-      </div>
+      <div class="sl-header"><span class="sl-name">SMS</span><div class="sl-val-row"><span class="sl-val" id="slSlbl">25</span><span class="sl-unit">SMS</span></div></div>
       <div class="sl-track"><div class="sl-bg"></div><div class="sl-fill" id="tfS"></div><input type="range" class="sl-range" id="slS" min="0" step="1" value="5"></div>
     </div>
   </div>
   <div class="modal-apply">
     <button class="modal-apply-btn" onclick="closeModal()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
       Apply Customisations
     </button>
   </div>
@@ -358,153 +452,143 @@ body{width:100%;height:100dvh;font-family:var(--f);background:var(--bg);color:va
 
   <div class="topbar">
     <img class="tb-logo" src="assets/econet.png" alt="Econet">
-    <div class="tb-right">
-      <div class="tb-total" id="tbTotal">
-        <div class="tb-total-lbl">Total</div>
-        <div class="tb-total-val" id="totalPill">$0.00</div>
-      </div>
+    <div class="tb-total" id="tbTotal">
+      <div class="tb-total-lbl">Total</div>
+      <div class="tb-total-val" id="totalPill">$0.00</div>
     </div>
   </div>
 
-  <div class="scroll" id="scrollEl">
-    <div class="card">
+  <!-- Card: flex:1, fills space between topbar and pay-bar, NO SCROLL -->
+  <div class="card">
 
-      <!-- Phase 1: Number entry -->
-      <div class="phase-num" id="phaseNum">
-        <div class="ph-title" id="phTitle">Enter your <i>number</i></div>
-        <div class="ph-sub">We'll find your best bundle · Econet Zimbabwe</div>
-        <div class="num-field" id="numField">
-          <div class="num-prefix">
-            <span class="num-flag">🇿🇼</span>
-            <span class="num-code">+263</span>
-          </div>
-          <input id="numInput" type="tel" inputmode="numeric" pattern="[0-9]*"
-            placeholder="Enter your Econet number" maxlength="9" autocomplete="tel-national">
-          <button class="num-clear" id="numClearBtn" tabindex="-1">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="var(--ink3)"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
-          </button>
-        </div>
-        <div class="num-status" id="numStatus">
-          <div class="ns-icon" id="nsIcon">
-            <svg viewBox="0 0 24 24" fill="var(--ink3)"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
-          </div>
-          <span class="ns-txt" id="numStatusTxt">Econet Zimbabwe · 077 · 078 · 073 · 071</span>
-        </div>
-        <div class="num-verify" id="numVerify">
-          <div class="vspin"></div>
-          <span class="vtxt">Verifying…</span>
-          <div class="vok-wrap">
-            <div class="vok-ic"><svg width="10" height="10" viewBox="0 0 24 24" fill="var(--on-grn)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-            <span class="vok-txt">Number verified</span>
-          </div>
-        </div>
+    <!-- Phase 1: Number entry — flex-shrink:0 -->
+    <div class="phase-num" id="phaseNum">
+      <div class="ph-title" id="phTitle">Enter your <i>number</i></div>
+      <div class="ph-sub">We'll find your best bundle · Econet Zimbabwe</div>
 
-        <!-- Verified pill — replaces field after verify -->
-        <div class="num-verified-pill" id="numVerifiedPill">
-          <div class="nvp-icon">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--on-grn)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-          </div>
-          <span class="nvp-num" id="nvpNum">+263 —</span>
-          <button class="nvp-edit" onclick="editNumber()">Change</button>
+      <div class="num-field" id="numField">
+        <div class="num-prefix">
+          <span class="num-flag">🇿🇼</span>
+          <span class="num-code">+263</span>
+        </div>
+        <input id="numInput" type="tel" inputmode="numeric" pattern="[0-9]*"
+          placeholder="Enter your Econet number" maxlength="9" autocomplete="tel-national">
+        <button class="num-clear" id="numClearBtn" tabindex="-1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--ink3)"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
+        </button>
+      </div>
+
+      <div class="num-status" id="numStatus">
+        <div class="ns-icon" id="nsIcon">
+          <svg viewBox="0 0 24 24" fill="var(--ink3)"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+        </div>
+        <span class="ns-txt" id="numStatusTxt">Econet Zimbabwe · 077 · 078 · 073 · 071</span>
+      </div>
+
+      <div class="num-verify" id="numVerify">
+        <div class="vspin"></div>
+        <span class="vtxt">Verifying…</span>
+        <div class="vok-wrap">
+          <div class="vok-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--on-grn)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <span class="vok-txt">Number verified</span>
         </div>
       </div>
 
-      <div class="card-sep" id="cardSep" style="opacity:0"></div>
-
-      <!-- Phase 2: Bundle selection -->
-      <div class="phase-bundle" id="phaseBundle">
-
-        <div class="vrow">
-          <button class="vchip on" data-k="daily"><span class="vc-name">Daily</span><span class="vc-price" id="pp-daily">$0.60</span></button>
-          <button class="vchip" data-k="3days"><span class="vc-name">3 Days</span><span class="vc-price" id="pp-3days">$1.40</span></button>
-          <button class="vchip" data-k="weekly"><span class="vc-name">Weekly</span><span class="vc-price" id="pp-weekly">$2.80</span></button>
-          <button class="vchip" data-k="2weeks"><span class="vc-name">2 Wks</span><span class="vc-price" id="pp-2weeks">$5.20</span></button>
-          <button class="vchip" data-k="monthly"><span class="vc-name">Monthly</span><span class="vc-price" id="pp-monthly">$9.90</span><span class="vc-badge">Best</span></button>
-        </div>
-
-        <div class="orb-section">
-          <div class="orb-wrap">
-            <div class="orb-ring"></div>
-            <div class="orb" id="orb">
-              <div class="orb-plan" id="cPlan">Daily Mix</div>
-              <div class="orb-price-row"><span class="orb-cur">USD</span><span class="orb-price" id="cPrice">0.00</span></div>
-              <div class="orb-line"></div>
-              <div class="orb-svcs">
-                <div class="orb-svc"><span class="orb-svc-name">Voice</span><span class="orb-svc-val" id="cV">20 Min</span></div>
-                <div class="orb-svc"><span class="orb-svc-name">Data</span><span class="orb-svc-val" id="cD">3 GB</span></div>
-                <div class="orb-svc"><span class="orb-svc-name">SMS</span><span class="orb-svc-val" id="cS">25 SMS</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="presets">
-          <div class="preset-label">Choose a bundle — tap to customise</div>
-
-          <button class="preset" id="presetLight" data-preset="light">
-            <div class="preset-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-            <div class="preset-left">
-              <div class="preset-name">Light</div>
-              <div class="preset-desc">Calls + WhatsApp messaging</div>
-              <div class="preset-socials">
-                <div class="psoc psoc-wa"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
-              </div>
-            </div>
-            <div class="preset-right">
-              <div class="preset-price" id="presetLightPrice">$0.60</div>
-              <div class="preset-validity" id="presetLightV">Daily</div>
-            </div>
-          </button>
-
-          <button class="preset on" id="presetBal" data-preset="balanced">
-            <div class="preset-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-            <div class="preset-left">
-              <div class="preset-name">Balanced</div>
-              <div class="preset-desc">Social, calls + SMS</div>
-              <span class="preset-tag">🔥 Most popular</span>
-              <div class="preset-socials">
-                <div class="psoc psoc-wa"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
-                <div class="psoc psoc-ig"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
-              </div>
-            </div>
-            <div class="preset-right">
-              <div class="preset-price" id="presetBalPrice">$2.80</div>
-              <div class="preset-validity" id="presetBalV">Weekly</div>
-            </div>
-          </button>
-
-          <button class="preset" id="presetHeavy" data-preset="heavy">
-            <div class="preset-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-            <div class="preset-left">
-              <div class="preset-name">Heavy</div>
-              <div class="preset-desc">Max everything · Best value</div>
-              <div class="preset-socials">
-                <div class="psoc psoc-wa"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
-                <div class="psoc psoc-ig"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
-                <div class="psoc psoc-tt"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.77 1.52V7.03a4.85 4.85 0 01-1-.34z"/></svg></div>
-              </div>
-            </div>
-            <div class="preset-right">
-              <div class="preset-price" id="presetHeavyPrice">$9.90</div>
-              <div class="preset-validity" id="presetHeavyV">Monthly</div>
-            </div>
-          </button>
-        </div>
-
-        <div class="customise-hint">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--acc-d)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          Tap any bundle card above to fine-tune Voice, Data &amp; SMS
-        </div>
-        <div class="card-pad"></div>
+      <div class="num-verified-pill" id="numVerifiedPill">
+        <div class="nvp-icon"><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--on-grn)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+        <span class="nvp-num" id="nvpNum">+263 —</span>
+        <button class="nvp-edit" onclick="editNumber()">Change</button>
       </div>
-
     </div>
-  </div>
+
+    <div class="card-sep" id="cardSep" style="opacity:0"></div>
+
+    <!-- Phase 2: Bundle — flex:1, distributes remaining card height -->
+    <div class="phase-bundle" id="phaseBundle">
+
+      <!-- Chips -->
+      <div class="vrow">
+        <button class="vchip on" data-k="daily"><span class="vc-name">Daily</span><span class="vc-price" id="pp-daily">$0.60</span></button>
+        <button class="vchip" data-k="3days"><span class="vc-name">3 Days</span><span class="vc-price" id="pp-3days">$1.40</span></button>
+        <button class="vchip" data-k="weekly"><span class="vc-name">Weekly</span><span class="vc-price" id="pp-weekly">$2.80</span></button>
+        <button class="vchip" data-k="2weeks"><span class="vc-name">2 Wks</span><span class="vc-price" id="pp-2weeks">$5.20</span></button>
+        <button class="vchip" data-k="monthly"><span class="vc-name">Monthly</span><span class="vc-price" id="pp-monthly">$9.90</span><span class="vc-badge">Best</span></button>
+      </div>
+
+      <!-- Orb — flex-shrink:1, compresses if needed -->
+      <div class="orb-section">
+        <div class="orb-wrap">
+          <div class="orb-ring"></div>
+          <div class="orb" id="orb">
+            <div class="orb-plan" id="cPlan">Daily Mix</div>
+            <div class="orb-price-row"><span class="orb-cur">USD</span><span class="orb-price" id="cPrice">0.00</span></div>
+            <div class="orb-line"></div>
+            <div class="orb-svcs">
+              <div class="orb-svc"><span class="orb-svc-name">Voice</span><span class="orb-svc-val" id="cV">20 Min</span></div>
+              <div class="orb-svc"><span class="orb-svc-name">Data</span><span class="orb-svc-val" id="cD">3 GB</span></div>
+              <div class="orb-svc"><span class="orb-svc-name">SMS</span><span class="orb-svc-val" id="cS">25 SMS</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Presets -->
+      <div class="presets">
+        <div class="preset-label">Choose a bundle — tap to customise</div>
+
+        <button class="preset" id="presetLight" data-preset="light">
+          <div class="preset-tick"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <div class="preset-left">
+            <div class="preset-name">Light</div>
+            <div class="preset-desc">Calls + WhatsApp</div>
+            <div class="preset-socials"><div class="psoc psoc-wa"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div></div>
+          </div>
+          <div class="preset-right"><div class="preset-price" id="presetLightPrice">$0.60</div><div class="preset-validity" id="presetLightV">Daily</div></div>
+        </button>
+
+        <button class="preset on" id="presetBal" data-preset="balanced">
+          <div class="preset-tick"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <div class="preset-left">
+            <div class="preset-name">Balanced</div>
+            <div class="preset-desc">Social, calls + SMS</div>
+            <span class="preset-tag">🔥 Most popular</span>
+            <div class="preset-socials">
+              <div class="psoc psoc-wa"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+              <div class="psoc psoc-ig"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
+            </div>
+          </div>
+          <div class="preset-right"><div class="preset-price" id="presetBalPrice">$2.80</div><div class="preset-validity" id="presetBalV">Weekly</div></div>
+        </button>
+
+        <button class="preset" id="presetHeavy" data-preset="heavy">
+          <div class="preset-tick"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <div class="preset-left">
+            <div class="preset-name">Heavy</div>
+            <div class="preset-desc">Max everything</div>
+            <div class="preset-socials">
+              <div class="psoc psoc-wa"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+              <div class="psoc psoc-ig"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
+              <div class="psoc psoc-tt"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.77 1.52V7.03a4.85 4.85 0 01-1-.34z"/></svg></div>
+            </div>
+          </div>
+          <div class="preset-right"><div class="preset-price" id="presetHeavyPrice">$9.90</div><div class="preset-validity" id="presetHeavyV">Monthly</div></div>
+        </button>
+      </div>
+
+      <!-- Hint strip -->
+      <div class="customise-hint">
+        <svg viewBox="0 0 24 24" fill="var(--acc-d)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Tap any bundle card to fine-tune Voice, Data &amp; SMS
+      </div>
+
+    </div><!-- /phase-bundle -->
+
+  </div><!-- /card -->
 
   <div class="pay-bar">
     <button class="pay-btn" id="payBtn" disabled>
       <div class="pay-left">
-        <div class="pay-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="rgba(255,255,255,.8)"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+        <div class="pay-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,.8)"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
         <div>
           <div class="pay-title" id="payTitle">Enter number first</div>
           <div class="pay-sub" id="paySub">EcoCash · Secure · Instant</div>
@@ -542,47 +626,36 @@ var PLANS={
   '2weeks':{l:'2 Wks',  mV:250, mS:450, mD:45, p:5.20, sv:50, ss:50, sd:5},
   monthly: {l:'Monthly', mV:600, mS:1000,mD:100,p:9.90, sv:50, ss:100,sd:10},
 };
-var ST={};
-Object.keys(PLANS).forEach(function(k){var p=PLANS[k];ST[k]={v:p.mV,s:p.mS,d:p.mD};});
-var AK='weekly', activePreset='balanced';
+var ST={};Object.keys(PLANS).forEach(function(k){var p=PLANS[k];ST[k]={v:p.mV,s:p.mS,d:p.mD};});
+var AK='weekly',activePreset='balanced';
 var PRESETS={
-  light:   {plan:'daily',   v:20,  d:3,  s:25},
-  balanced:{plan:'weekly',  v:120, d:20, s:200},
-  heavy:   {plan:'monthly', v:600, d:100,s:1000},
+  light:   {plan:'daily',  v:20, d:3,  s:25},
+  balanced:{plan:'weekly', v:120,d:20, s:200},
+  heavy:   {plan:'monthly',v:600,d:100,s:1000},
 };
-
 function pr(k){var p=PLANS[k],s=ST[k];return Math.round(((s.v/p.mV+s.s/p.mS+s.d/p.mD)/3)*p.p*100)/100;}
 
 var _pp=0;
 function animP(to){
   var el=document.getElementById('cPrice');if(!el)return;
-  var t0=performance.now(),fr=_pp,dur=180;
+  var t0=performance.now(),fr=_pp,dur=160;
   (function tick(now){var t=Math.min((now-t0)/dur,1),e=1-Math.pow(1-t,3);el.textContent=(fr+(to-fr)*e).toFixed(2);if(t<1)requestAnimationFrame(tick);else el.textContent=to.toFixed(2);})(t0);
   _pp=to;
 }
-
 function setFill(id,pct){var el=document.getElementById(id);if(el)el.style.width=Math.max(0,Math.min(100,pct)).toFixed(1)+'%';}
 
-/*
-  syncSlidersToAK — resets slider min/max/value and fills
-  to match the current plan (AK) and its ST values.
-  Must be called whenever AK changes.
-*/
 function syncSlidersToAK(){
   var k=AK,p=PLANS[k],s=ST[k];
   var slV=document.getElementById('slV'),slD=document.getElementById('slD'),slS=document.getElementById('slS');
   slV.min=0;slV.max=Math.round(p.mV/p.sv);slV.value=Math.round(s.v/p.sv);
   slD.min=0;slD.max=Math.round(p.mD/p.sd);slD.value=Math.round(s.d/p.sd);
   slS.min=0;slS.max=Math.round(p.mS/p.ss);slS.value=Math.round(s.s/p.ss);
-  setFill('tfV',(s.v/p.mV)*100);
-  setFill('tfD',(s.d/p.mD)*100);
-  setFill('tfS',(s.s/p.mS)*100);
+  setFill('tfV',(s.v/p.mV)*100);setFill('tfD',(s.d/p.mD)*100);setFill('tfS',(s.s/p.mS)*100);
   document.getElementById('slVlbl').textContent=s.v;
   document.getElementById('slDlbl').textContent=s.d;
   document.getElementById('slSlbl').textContent=s.s;
   updateModalPrice();
 }
-
 function updateModalPrice(){
   var k=AK,p=PLANS[k],s=ST[k],v=pr(k);
   var el=document.getElementById('mpbPrice');if(el)el.textContent='$'+v.toFixed(2);
@@ -590,7 +663,6 @@ function updateModalPrice(){
   var ed=document.getElementById('mpbD');if(ed)ed.textContent=s.d;
   var es=document.getElementById('mpbS');if(es)es.textContent=s.s;
 }
-
 function ui(){
   var k=AK,p=PLANS[k],s=ST[k],v=pr(k);
   animP(v);
@@ -606,7 +678,6 @@ function ui(){
   updatePresetPrices();
   if(numOK)document.getElementById('payTitle').textContent='Pay USD '+v.toFixed(2);
 }
-
 function updatePresetPrices(){
   var defs={light:{plan:'daily',v:20,d:3,s:25},balanced:{plan:'weekly',v:120,d:20,s:200},heavy:{plan:'monthly',v:600,d:100,s:1000}};
   Object.keys(defs).forEach(function(pk){
@@ -617,19 +688,13 @@ function updatePresetPrices(){
     if(pe)pe.textContent='$'+price.toFixed(2);if(ve)ve.textContent=p.l;
   });
 }
+function pulseOrb(){var o=document.getElementById('orb');if(!o)return;o.classList.remove('pop');void o.offsetWidth;o.classList.add('pop');setTimeout(function(){o.classList.remove('pop');},280);}
 
-function pulseOrb(){var o=document.getElementById('orb');if(!o)return;o.classList.remove('pop');void o.offsetWidth;o.classList.add('pop');setTimeout(function(){o.classList.remove('pop');},300);}
-
-/* ── MODAL ──
-   openModal is called ONLY from user tap (not from revealBundle auto-select).
-   It resyncs sliders to the current AK before showing.
-*/
+/* Modal */
 var _modalOpen=false;
 function openModal(){
   _modalOpen=true;
-  /* Update title to reflect selected plan */
-  var pname=PLANS[AK]?PLANS[AK].l:'';
-  document.getElementById('modalTitle').textContent=pname ? 'Customise '+pname+' bundle' : 'Customise bundle';
+  document.getElementById('modalTitle').textContent='Customise '+PLANS[AK].l+' bundle';
   document.getElementById('modalSubtitle').textContent='Drag to adjust Voice, Data & SMS';
   syncSlidersToAK();
   document.getElementById('modalScrim').classList.add('open');
@@ -640,15 +705,10 @@ function closeModal(){
   _modalOpen=false;
   document.getElementById('modalScrim').classList.remove('open');
   document.getElementById('modalSheet').classList.remove('open');
-  /* Apply slider values to orb and price bar */
   ui();pulseOrb();
 }
 
-/* ── PRESET CARDS ──
-   Wire click events directly on the buttons.
-   selectPreset applies the preset values.
-   openModal is called only here (user action), NOT from revealBundle.
-*/
+/* Preset cards */
 function applyPreset(pk){
   var def=PRESETS[pk];if(!def)return;
   activePreset=pk;AK=def.plan;
@@ -665,19 +725,15 @@ function highlightChip(k){
   document.querySelectorAll('.vchip').forEach(function(c){c.classList.toggle('on',c.dataset.k===k);});
 }
 
-/* Wire preset card clicks — tap applies preset AND opens customise modal */
 ['presetLight','presetBal','presetHeavy'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(!el)return;
+  var el=document.getElementById(id);if(!el)return;
   el.addEventListener('click',function(){
-    var pk=el.dataset.preset;
-    applyPreset(pk);
-    /* Small delay so card highlight renders before sheet slides up */
-    setTimeout(openModal, 80);
+    applyPreset(el.dataset.preset);
+    setTimeout(openModal,80);
   });
 });
 
-/* Validity chips — change plan, reset to plan max, NO modal */
+/* Chips */
 document.querySelectorAll('.vchip').forEach(function(t){
   t.addEventListener('click',function(){
     var k=t.dataset.k;if(k===AK)return;
@@ -687,9 +743,9 @@ document.querySelectorAll('.vchip').forEach(function(t){
   });
 });
 
-/* Sliders — live update while modal is open */
+/* Sliders */
 (function(){
-  function wire(slId,fillId,lblId,key,unit){
+  function wire(slId,fillId,lblId,key){
     document.getElementById(slId).addEventListener('input',function(){
       var k=AK,p=PLANS[k],s=ST[k];
       var step={v:p.sv,d:p.sd,s:p.ss}[key];
@@ -697,25 +753,20 @@ document.querySelectorAll('.vchip').forEach(function(t){
       s[key]=Math.max(0,Math.min(parseInt(this.value)*step,max));
       setFill(fillId,(s[key]/max)*100);
       document.getElementById(lblId).textContent=s[key];
-      activePreset=null;highlightPreset('__none__');
-      hap(6);
-      /* Update orb live without closing modal */
+      activePreset=null;highlightPreset('__none__');hap(6);
       var pn=PLANS[k];
       document.getElementById('cPlan').textContent=pn.l+' Mix';
       document.getElementById('cV').textContent=s.v+' Min';
       document.getElementById('cD').textContent=s.d+' GB';
       document.getElementById('cS').textContent=s.s+' SMS';
-      var v=pr(k);animP(v);
-      updateModalPrice();
+      var v=pr(k);animP(v);updateModalPrice();
       var a='$'+v.toFixed(2);
       document.getElementById('payAmt').textContent=a;
       document.getElementById('totalPill').textContent=a;
       if(numOK)document.getElementById('payTitle').textContent='Pay USD '+v.toFixed(2);
     });
   }
-  wire('slV','tfV','slVlbl','v','Min');
-  wire('slD','tfD','slDlbl','d','GB');
-  wire('slS','tfS','slSlbl','s','SMS');
+  wire('slV','tfV','slVlbl','v');wire('slD','tfD','slDlbl','d');wire('slS','tfS','slSlbl','s');
 })();
 
 /* Number field */
@@ -731,12 +782,12 @@ function setStatus(type,msg){
   st.className='num-status'+(type?' '+type:'');
   txt.textContent=msg;
   if(!numOK&&!numVerifying){if(type==='err')field.classList.add('err');else field.classList.remove('err');}
-  if(type==='ok')icon.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="var(--grn)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
-  else if(type==='err')icon.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="var(--err)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
-  else icon.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="var(--ink3)"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>';
+  if(type==='ok')icon.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="var(--grn)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+  else if(type==='err')icon.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="var(--err)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+  else icon.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="var(--ink3)"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>';
 }
 
-numEl.addEventListener('focus',function(){var f=document.getElementById('numField');if(!numOK){f.classList.add('foc');f.classList.remove('err');}setTimeout(function(){numEl.scrollIntoView({behavior:'smooth',block:'center'});},200);});
+numEl.addEventListener('focus',function(){var f=document.getElementById('numField');if(!numOK){f.classList.add('foc');f.classList.remove('err');}});
 numEl.addEventListener('blur',function(){if(!numOK&&!numVerifying)document.getElementById('numField').classList.remove('foc');});
 numEl.addEventListener('paste',function(e){e.preventDefault();var raw=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');if(raw.startsWith('00263'))raw=raw.slice(5);else if(raw.startsWith('0263'))raw=raw.slice(4);else if(raw.startsWith('263')&&raw.length>9)raw=raw.slice(3);if(raw.startsWith('0'))raw=raw.slice(1);this.value=raw.slice(0,9);this.dispatchEvent(new Event('input',{bubbles:true}));});
 numEl.addEventListener('input',function(){
@@ -780,15 +831,15 @@ function verOK(msisdn){
   document.getElementById('numStatus').style.display='';
   /* Swap heading to Mix your Bundle */
   document.getElementById('phTitle').innerHTML='Mix your <i>Bundle</i>';
-  /* Collapse the number field */
+  /* Collapse field */
   document.getElementById('numField').classList.add('collapsed');
   document.getElementById('numStatus').classList.add('collapsed');
   /* Show verified pill */
   document.getElementById('nvpNum').textContent=numDisp;
   document.getElementById('numVerifiedPill').classList.add('show');
-  /* Shrink the phase-num section */
   document.getElementById('phaseNum').classList.add('verified');
-  /* Update pay button subtitle with number */
+  /* Update pay button */
+  document.getElementById('numField').className='num-field collapsed';
   document.getElementById('paySub').textContent=numDisp+' · EcoCash';
   hap([10,50,10]);revealBundle();
 }
@@ -797,14 +848,7 @@ function revealBundle(){
   document.getElementById('phaseBundle').classList.add('show');
   document.getElementById('tbTotal').classList.add('show');
   document.getElementById('payBtn').disabled=false;
-  /*
-    Auto-select Balanced WITHOUT opening modal.
-    applyPreset() only — no openModal() call here.
-  */
   applyPreset('balanced');
-  setTimeout(function(){
-    document.getElementById('phaseBundle').scrollIntoView({behavior:'smooth',block:'start'});
-  },100);
 }
 function resetV(){
   numOK=false;numVerifying=false;numDisp='';
@@ -812,7 +856,6 @@ function resetV(){
   document.getElementById('numStatus').style.display='';
   document.getElementById('numStatus').classList.remove('collapsed');
   document.getElementById('numField').className='num-field';
-  document.getElementById('numField').classList.remove('collapsed');
   document.getElementById('numVerifiedPill').classList.remove('show');
   document.getElementById('phaseNum').classList.remove('verified');
   document.getElementById('phaseBundle').classList.remove('show');
@@ -823,12 +866,10 @@ function resetV(){
   document.getElementById('payAmt').textContent='—';
   document.getElementById('paySub').textContent='EcoCash · Secure · Instant';
 }
-/* editNumber — expands field so user can change number */
 function editNumber(){
   document.getElementById('phTitle').innerHTML='Enter your <i>number</i>';
   numEl.value=numDigits;
-  resetV();
-  updateTag();
+  resetV();updateTag();
   setTimeout(function(){numEl.focus();},50);
 }
 
