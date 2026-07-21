@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"/>
+<meta name="theme-color" content="#F4F7FF"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="EcoCash Mix"/>
+<title>EcoCash Mix</title>
+<link rel="icon" href="assets/econet.png">
+<link rel="apple-touch-icon" href="assets/econet.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* HiDPI rendering */
+img{image-rendering:-webkit-optimize-contrast;-webkit-backface-visibility:hidden}
+svg{shape-rendering:geometricPrecision;text-rendering:geometricPrecision}
+*{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+input[type=range]{-webkit-user-select:none!important;user-select:none!important;touch-action:none}
+input:not([type=range]){-webkit-user-select:text!important;user-select:text!important}
+button,div,span,label{-webkit-user-select:none;user-select:none}
+
+:root{
+  /* ── LIGHT THEME ── */
+  --bg:#F4F7FF;          /* page background — off-white with blue tint */
+  --s1:#FFFFFF;          /* card surface — pure white */
+  --s2:#EEF2FA;          /* input / chip background */
+  --s3:#E2E8F6;          /* pressed / hover */
+  --s4:#D4DCEF;          /* deeper pressed */
+
+  --ink1:#0D1B3E;        /* primary text — deep navy */
+  --ink2:#3A567A;        /* secondary */
+  --ink3:#6E8CAE;        /* tertiary / hints */
+
+  --line:#D0DCEF;        /* borders */
+  --line2:#E8EDF8;       /* subtle dividers */
+
+  /* EcoCash blue — PRIMARY — vivid, not dull */
+  --acc:#0060DF;          /* vivid royal blue */
+  --acc-d:#1478FF;        /* lighter/hover */
+  --acc-dk:#0048B0;       /* pressed/shadow */
+  --acc-a:rgba(0,96,223,.12);
+  --acc-b:rgba(0,96,223,.07);
+  --acc-text:#fff;
+
+  /* Econet green — verified states */
+  --grn:#00A046;
+  --grn-d:#00C057;
+  --grn-a:rgba(0,160,70,.12);
+  --grn-b:rgba(0,160,70,.07);
+  --on-grn:#fff;
+
+  /* Semantic */
+  --gold:#E08800;        /* darker gold for light bg */
+  --gold-bg:rgba(255,176,0,.12);
+  --err:#D42B3A;
+
+  --f:'Inter',system-ui,-apple-system,sans-serif;
+  --fm:'JetBrains Mono','Roboto Mono',monospace;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;--rp:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  --sb:0px;
+  /* Shadows for light theme */
+  --sh1:0 1px 3px rgba(0,30,80,.08),0 1px 2px rgba(0,30,80,.06);
+  --sh2:0 4px 14px rgba(0,30,80,.1),0 1px 4px rgba(0,30,80,.06);
+  --sh-acc:0 4px 20px rgba(0,96,223,.32),0 1px 4px rgba(0,96,223,.2);
+}
+
+@keyframes spin   {to{transform:rotate(360deg)}}
+@keyframes orbRot {to{transform:rotate(360deg)}}
+@keyframes pgIn   {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fadeUp {from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes rip    {to{transform:scale(3);opacity:0}}
+@keyframes orbPop {0%,100%{transform:scale(1)}40%{transform:scale(.94)}75%{transform:scale(1.03)}}
+@keyframes orbIn  {from{transform:scale(.84);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes chipPop{0%,100%{transform:scale(1)}50%{transform:scale(.92)}}
+
+html{width:100%;height:100%;overflow:hidden;background:#F4F7FF}
+body{
+  width:100%;height:100dvh;
+  font-family:var(--f);background:var(--bg);color:var(--ink1);
+  -webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none;
+  padding-top:env(safe-area-inset-top);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
+}
+
+/* ── CURTAIN ── */
+.curtain{
+  position:fixed;inset:0;z-index:9999;background:#fff;
+  opacity:0;pointer-events:none;transition:opacity .22s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+}
+.curtain.show{opacity:1;pointer-events:auto}
+.c-logo{height:28px;object-fit:contain}
+.c-spin{width:20px;height:20px;border:2.5px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+.c-lbl{font-size:12px;font-weight:500;color:var(--ink3)}
+
+/* ── APP SHELL ── strict flex col, zero overflow */
+.app{
+  display:flex;flex-direction:column;
+  width:100%;
+  height:calc(var(--vvh,100dvh) - env(safe-area-inset-top));
+  overflow:hidden;
+  animation:pgIn .24s var(--ease) both;
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  flex-shrink:0;
+  padding:calc(var(--sb) + 10px) 16px 9px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--s1);
+  border-bottom:1px solid var(--line2);
+  box-shadow:var(--sh1);
+}
+.tb-logos{display:flex;align-items:center;gap:10px}
+/* Econet logo */
+.tb-econet{height:22px;width:auto;object-fit:contain}
+.tb-div{width:1px;height:18px;background:var(--line)}
+/* EcoCash logo */
+.tb-ecocash{height:20px;width:auto;object-fit:contain}
+/* Total pill */
+.tb-total{display:none;align-items:center;gap:6px}
+.tb-total.show{display:flex}
+.tb-total-lbl{font-size:9px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink3)}
+.tb-total-val{font-family:var(--fm);font-size:17px;font-weight:700;color:var(--acc);letter-spacing:-.02em}
+
+/* ── CARD — fills all space between topbar and pay-bar, NEVER scrolls ── */
+.card{
+  flex:1;min-height:0;overflow:hidden;
+  background:var(--s1);
+  border-top:none;
+  display:flex;flex-direction:column;
+  /* subtle inner shadow at top to show depth below topbar */
+}
+
+/* ── STEP INDICATOR ── shown only in step 2 (number entry) */
+.step-bar{
+  flex-shrink:0;
+  padding:10px 16px 4px;
+  display:flex;align-items:center;gap:6px;
+}
+.step-pip{width:28px;height:3px;border-radius:2px;background:var(--line);transition:background .3s}
+.step-pip.on{background:var(--acc)}
+.step-pip.done{background:var(--grn)}
+.step-lbl{font-size:10px;font-weight:600;color:var(--ink3);margin-left:2px}
+.step-lbl.on{color:var(--acc)}
+.step-lbl.done{color:var(--grn)}
+
+/* ══════════════════════════════════════
+   PHASE 1 — BUNDLE SELECTION
+   User picks plan FIRST before entering number.
+   No number required to browse / customise.
+   ══════════════════════════════════════ */
+.phase-bundle{
+  flex:1;min-height:0;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+/* ── validity chips ── */
+.vrow{
+  flex-shrink:0;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  padding:8px 14px 4px;
+}
+.vchip{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  padding:7px 4px;border-radius:var(--r12);
+  background:var(--s2);border:1.5px solid var(--line);
+  cursor:pointer;touch-action:manipulation;outline:none;
+  transition:background .12s,border-color .12s,box-shadow .12s,transform .1s;
+  position:relative;overflow:hidden;text-align:center;
+}
+.vchip:active{transform:scale(.94);background:var(--s3)}
+.vchip.on{
+  background:var(--acc);border-color:var(--acc);
+  box-shadow:var(--sh-acc);
+}
+.vc-name{font-size:9px;font-weight:600;color:var(--ink3);line-height:1.2;white-space:nowrap;transition:color .12s}
+.vc-price{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--ink1);line-height:1.2;transition:color .12s}
+.vc-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--gold);border-radius:var(--rp);
+  padding:1px 5px;margin-top:2px;
+  font-size:7px;font-weight:800;color:#fff;letter-spacing:.3px;text-transform:uppercase;line-height:1.4;
+}
+.vchip.on .vc-name{color:rgba(255,255,255,.8)}
+.vchip.on .vc-price{color:#fff;font-weight:800}
+.vchip.on .vc-badge{background:rgba(255,255,255,.25);color:#fff}
+.vchip:nth-child(4){grid-column:1/2;margin-left:calc(50% + 3px)}
+.vchip:nth-child(5){grid-column:2/4;margin-left:0}
+
+/* ── ORB — flex-shrink:1, compresses on small screens ── */
+.orb-section{
+  flex-shrink:1;min-height:0;
+  display:flex;justify-content:center;align-items:center;
+  /* padding must accommodate ring bleed (inset:-12px) on all sides */
+  padding:14px 20px;
+  /* clip at section level so ring never touches card border */
+  overflow:hidden;
+}
+.orb-wrap{
+  position:relative;
+  /* Slightly smaller so ring fits within the section padding */
+  width:min(44vw,160px);height:min(44vw,160px);
+  display:flex;align-items:center;justify-content:center;
+  /* No clip here — let section handle it */
+  flex-shrink:0;
+}
+.orb-ring{
+  position:absolute;inset:-12px;border-radius:50%;
+  border:1.5px solid rgba(0,96,223,.18);
+  animation:orbRot 20s linear infinite;pointer-events:none;
+  will-change:transform;
+}
+.orb-ring::after{
+  content:'';position:absolute;top:50%;left:-4px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--acc-d);
+  box-shadow:0 0 10px 3px rgba(20,120,255,.55);
+  transform:translateY(-50%);
+}
+.orb{
+  width:100%;height:100%;border-radius:50%;
+  background:
+    radial-gradient(circle at 30% 28%,rgba(0,96,223,.1) 0%,transparent 50%),
+    radial-gradient(circle at 70% 72%,rgba(0,160,70,.06) 0%,transparent 50%),
+    var(--s1);
+  border:1.5px solid var(--line);
+  box-shadow:
+    0 0 0 4px rgba(0,96,223,.08),
+    0 8px 32px rgba(0,30,80,.14),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  animation:orbIn .36s var(--ease) both;
+}
+.orb.pop{animation:orbPop .24s var(--spring)}
+.orb-plan{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);margin-bottom:2px}
+.orb-price-row{display:flex;align-items:flex-start;gap:2px}
+.orb-cur{font-family:var(--fm);font-size:10px;font-weight:600;color:var(--ink3);margin-top:4px}
+.orb-price{font-family:var(--fm);font-size:min(9vw,34px);font-weight:800;color:var(--acc);line-height:1;letter-spacing:-.04em;font-feature-settings:"tnum"}
+.orb-line{width:24px;height:1.5px;background:var(--line);margin:4px 0}
+.orb-svcs{display:flex;flex-direction:column;gap:2px;align-items:center}
+.orb-svc{display:flex;align-items:center;gap:5px;font-size:9px}
+.orb-svc-name{color:var(--ink3);font-weight:500;min-width:24px}
+.orb-svc-val{font-family:var(--fm);font-weight:700;color:var(--ink1);min-width:36px;text-align:right;font-feature-settings:"tnum"}
+
+/* ── PRESET CARDS ── flex-shrink:0 */
+.presets{
+  flex-shrink:0;
+  padding:0 12px;
+  display:flex;flex-direction:column;gap:5px;
+}
+.preset-label{
+  font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:2px;padding:0 2px;
+}
+.preset{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 12px;border-radius:var(--r16);
+  background:var(--s2);border:1.5px solid var(--line);
+  cursor:pointer;touch-action:manipulation;outline:none;
+  position:relative;overflow:hidden;
+  transition:border-color .14s,background .14s,box-shadow .14s,transform .1s;
+}
+.preset:active{transform:scale(.98);background:var(--s3)}
+.preset.on{
+  background:#fff;border-color:var(--acc);
+  box-shadow:0 0 0 2px var(--acc-a),var(--sh2);
+}
+.preset-tick{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--line);border:none;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .14s;
+}
+.preset.on .preset-tick{background:var(--acc)}
+.preset-tick svg{width:10px;height:10px;display:block}
+.preset-left{flex:1;min-width:0;text-align:left}
+.preset-name{font-size:13px;font-weight:700;color:var(--ink1);letter-spacing:-.2px;transition:color .14s}
+.preset.on .preset-name{color:var(--acc)}
+.preset-desc{font-size:10px;color:var(--ink2);margin-top:1px}
+.preset-tag{
+  display:inline-block;margin-top:3px;
+  font-size:8px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+  color:var(--gold);background:var(--gold-bg);border-radius:var(--rp);padding:1px 6px;
+}
+.preset-right{text-align:right;flex-shrink:0}
+.preset-price{font-family:var(--fm);font-size:16px;font-weight:700;color:var(--ink1);letter-spacing:-.03em;font-feature-settings:"tnum";transition:color .14s}
+.preset.on .preset-price{color:var(--acc)}
+.preset-validity{font-size:8px;color:var(--ink3);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+
+/* Social icons */
+.preset-socials{display:flex;align-items:center;gap:4px;margin-top:4px}
+.psoc{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.psoc-wa{background:#25D366}
+.psoc-ig{background:linear-gradient(135deg,#f09433,#e6683c 30%,#dc2743 55%,#cc2366 78%,#bc1888)}
+.psoc-tt{background:#010101}
+.psoc svg{display:block}
+
+/* Customise hint */
+.customise-hint{
+  flex-shrink:0;
+  margin:5px 12px 6px;
+  padding:7px 11px;border-radius:var(--r8);
+  background:var(--acc-a);border:1px solid var(--acc-b);
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;font-weight:500;color:var(--acc);
+}
+.customise-hint svg{flex-shrink:0;opacity:.7}
+
+/* ══════════════════════════════════════
+   PHASE 2 — NUMBER ENTRY
+   After selecting bundle, customer enters number.
+   ══════════════════════════════════════ */
+.phase-num{
+  flex:1;min-height:0;overflow:hidden;
+  display:none;flex-direction:column;
+  padding:12px 16px 10px;
+  animation:fadeUp .22s var(--ease) both;
+}
+.phase-num.show{display:flex}
+
+/* Back to bundle */
+.num-back{
+  display:flex;align-items:center;gap:5px;
+  background:none;border:none;cursor:pointer;
+  font-size:11px;font-weight:600;color:var(--acc);
+  padding:0 0 10px;touch-action:manipulation;outline:none;
+}
+.num-back svg{display:block}
+
+/* Bundle summary pill — shows chosen plan at top of number screen */
+.bundle-summary{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--acc);
+  border-radius:var(--r16);
+  padding:11px 14px;
+  margin-bottom:14px;
+  box-shadow:var(--sh-acc);
+}
+.bs-left{display:flex;flex-direction:column;gap:1px}
+.bs-label{font-size:9px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.bs-name{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.bs-detail{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px}
+.bs-price{font-family:var(--fm);font-size:26px;font-weight:800;color:#fff;letter-spacing:-.04em}
+
+/* Number heading */
+.ph-title{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink1);margin-bottom:4px}
+.ph-title i{font-style:italic;color:var(--acc)}
+.ph-sub{font-size:10px;font-weight:500;color:var(--ink3);margin-bottom:12px}
+
+/* Number field */
+.num-field{
+  display:flex;align-items:center;
+  background:var(--s1);border:1.5px solid var(--line);
+  border-radius:var(--r16);overflow:hidden;
+  box-shadow:var(--sh1);
+  transition:border-color .18s,box-shadow .18s;
+  min-height:56px;
+}
+.num-field.foc{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-a),var(--sh1)}
+.num-field.ok {border-color:var(--grn);box-shadow:0 0 0 3px var(--grn-a),var(--sh1)}
+.num-field.err{border-color:var(--err);box-shadow:0 0 0 3px rgba(212,43,58,.1),var(--sh1)}
+.num-prefix{
+  display:flex;align-items:center;gap:6px;
+  padding:0 11px 0 14px;
+  border-right:1.5px solid var(--line);height:56px;flex-shrink:0;
+  background:var(--s2);
+}
+.num-flag{font-size:18px;line-height:1}
+.num-code{font-family:var(--fm);font-size:13px;font-weight:700;color:var(--ink2)}
+#numInput{
+  flex:1;min-width:0;border:none;outline:none;background:transparent!important;
+  font-family:var(--fm);font-size:22px;font-weight:700;color:var(--ink1);
+  padding:0 0 0 12px;height:56px;
+  letter-spacing:.05em;caret-color:var(--acc);
+  -webkit-user-select:text!important;user-select:text!important;
+  -webkit-text-fill-color:var(--ink1)!important;-webkit-appearance:none;appearance:none;
+}
+#numInput::placeholder{color:var(--ink3);font-size:14px;font-weight:500;letter-spacing:0}
+.num-clear{
+  display:none;width:42px;height:56px;border:none;background:transparent;
+  cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;
+}
+.num-clear.show{display:flex}
+
+/* Status */
+.num-status{display:flex;align-items:center;gap:6px;margin-top:7px;min-height:17px;padding:0 2px}
+.ns-icon svg{width:13px;height:13px}
+.ns-txt{font-size:11px;font-weight:500;color:var(--ink3);line-height:1.3}
+.num-status.ok .ns-txt{color:var(--grn)}
+.num-status.err .ns-txt{color:var(--err)}
+.num-verify{display:none;align-items:center;gap:7px;margin-top:7px;padding:0 2px}
+.num-verify.show{display:flex}
+.vspin{width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:none}
+.num-verify.spinning .vspin{display:block}
+.vok-wrap{display:none;align-items:center;gap:6px}
+.num-verify.done .vok-wrap{display:flex}
+.vok-ic{width:17px;height:17px;border-radius:50%;background:var(--grn);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vok-ic svg{width:10px;height:10px;display:block}
+.vok-txt{font-size:11px;font-weight:600;color:var(--grn)}
+.vtxt{font-size:11px;font-weight:500;color:var(--acc);display:none}
+.num-verify.spinning .vtxt{display:block}
+
+/* Trust badges below field */
+.trust-row{
+  display:flex;align-items:center;gap:10px;
+  margin-top:12px;padding:9px 12px;
+  background:var(--grn-a);border:1px solid var(--grn-b);border-radius:var(--r12);
+}
+.trust-item{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--grn)}
+.trust-item svg{flex-shrink:0}
+
+/* ── PAY BAR ── */
+.pay-bar{
+  flex-shrink:0;
+  padding:8px 12px max(12px,env(safe-area-inset-bottom));
+  background:var(--s1);border-top:1px solid var(--line2);
+  box-shadow:0 -2px 12px rgba(0,30,80,.07);
+}
+.pay-btn{
+  width:100%;min-height:52px;padding:0 16px;border:none;border-radius:var(--r20);
+  cursor:pointer;touch-action:manipulation;
+  background:var(--acc);
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--sh-acc);
+  position:relative;overflow:hidden;outline:none;
+  transition:transform .12s var(--spring),opacity .2s;
+}
+.pay-btn:active{transform:scale(.97);background:var(--acc-dk)}
+.pay-btn:disabled{
+  opacity:.4;box-shadow:none;cursor:default;transform:none;
+  background:var(--s3);border:1.5px solid var(--line);
+}
+.pay-left{display:flex;align-items:center;gap:10px;pointer-events:none}
+.pay-icon{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pay-icon svg{display:block}
+.pay-title{font-size:14px;font-weight:700;color:#fff;line-height:1.2}
+.pay-sub{font-size:9px;color:rgba(255,255,255,.6);margin-top:1px}
+.pay-btn:disabled .pay-title{color:var(--ink3)}
+.pay-btn:disabled .pay-sub{color:var(--ink3)}
+.pay-right{pointer-events:none;text-align:right}
+.pay-right-lbl{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.55);margin-bottom:1px}
+.pay-right-amt{font-family:var(--fm);font-size:20px;font-weight:800;color:#fff;letter-spacing:-.03em;font-feature-settings:"tnum"}
+.pay-btn:disabled .pay-right-lbl{color:var(--ink3)}
+.pay-btn:disabled .pay-right-amt{color:var(--ink3)}
+
+/* Next button (goes from bundle to number screen) */
+.next-btn{
+  width:100%;min-height:52px;padding:0 16px;border:none;border-radius:var(--r20);
+  cursor:pointer;touch-action:manipulation;
+  background:var(--acc);
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--sh-acc);
+  position:relative;overflow:hidden;outline:none;
+  transition:transform .12s var(--spring);
+}
+.next-btn:active{transform:scale(.97);background:var(--acc-dk)}
+.next-left{display:flex;align-items:center;gap:10px;pointer-events:none}
+.next-icon{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.next-icon svg{display:block}
+.next-title{font-size:14px;font-weight:700;color:#fff}
+.next-sub{font-size:9px;color:rgba(255,255,255,.6);margin-top:1px}
+.next-amt{font-family:var(--fm);font-size:20px;font-weight:800;color:#fff;letter-spacing:-.03em;font-feature-settings:"tnum"}
+
+.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.18);transform:scale(0);animation:rip .5s ease forwards}
+
+/* ── CUSTOMISE MODAL — bottom sheet ── */
+.modal-scrim{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(13,27,62,.35);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .24s var(--ease);
+}
+.modal-scrim.open{opacity:1;pointer-events:auto}
+.modal-sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:401;
+  background:var(--s1);
+  border-radius:24px 24px 0 0;
+  border-top:2px solid var(--acc);
+  box-shadow:0 -8px 32px rgba(0,30,80,.15);
+  padding-bottom:max(20px,env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform .3s var(--ease);
+  max-height:78dvh;display:flex;flex-direction:column;overflow:hidden;
+}
+.modal-sheet.open{transform:translateY(0)}
+.modal-drag{width:36px;height:4px;border-radius:2px;background:var(--line);margin:12px auto 0;flex-shrink:0}
+.modal-head{
+  flex-shrink:0;padding:10px 16px 9px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line2);
+}
+.modal-title{font-size:15px;font-weight:800;color:var(--ink1);letter-spacing:-.3px}
+.modal-subtitle{font-size:10px;color:var(--acc);font-weight:500;margin-top:1px}
+.modal-close-x{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--s2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;touch-action:manipulation;outline:none;
+  transition:background .12s;
+}
+.modal-close-x:active{background:var(--s3)}
+.modal-price-bar{
+  flex-shrink:0;padding:9px 16px;
+  background:var(--acc-b);border-bottom:1px solid var(--acc-a);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.mpb-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--acc)}
+.mpb-price{font-family:var(--fm);font-size:22px;font-weight:800;color:var(--acc);letter-spacing:-.03em}
+.mpb-breakdown{display:flex;gap:10px}
+.mpb-item{font-size:10px;color:var(--ink3);font-weight:500}
+.mpb-item span{color:var(--ink1);font-weight:700;font-family:var(--fm)}
+.modal-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding:0 16px}
+.modal-body::-webkit-scrollbar{display:none}
+.sl-item{display:flex;flex-direction:column;gap:8px;padding:13px 0}
+.sl-item+.sl-item{border-top:1px solid var(--line2)}
+.sl-header{display:flex;align-items:center;justify-content:space-between}
+.sl-name{font-size:12px;font-weight:600;color:var(--ink2)}
+.sl-val-row{display:flex;align-items:baseline;gap:3px}
+.sl-val{font-family:var(--fm);font-size:17px;font-weight:700;color:var(--ink1)}
+.sl-unit{font-size:10px;color:var(--ink3);font-weight:500}
+.sl-track{position:relative;height:32px;display:flex;align-items:center}
+.sl-bg{position:absolute;left:0;right:0;height:5px;border-radius:3px;background:var(--s3)}
+.sl-fill{position:absolute;left:0;height:5px;border-radius:3px;background:var(--acc);width:0}
+.sl-range{
+  position:relative;z-index:2;-webkit-appearance:none;appearance:none;
+  width:100%;height:32px;background:transparent;outline:none;cursor:pointer;margin:0;padding:0;border:none;
+}
+.sl-range::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--acc);border:3px solid #fff;
+  box-shadow:0 2px 8px rgba(0,96,223,.4);cursor:pointer;
+  transition:transform .1s var(--spring);
+}
+.sl-range:active::-webkit-slider-thumb{transform:scale(1.2)}
+.sl-range::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--acc);border:3px solid #fff;cursor:pointer}
+.sl-range::-moz-range-track{height:5px;background:transparent}
+.modal-apply{flex-shrink:0;padding:10px 16px;border-top:1px solid var(--line2)}
+.modal-apply-btn{
+  width:100%;min-height:46px;border:none;border-radius:var(--r16);
+  background:var(--acc);color:#fff;font-family:var(--f);font-size:14px;font-weight:700;
+  cursor:pointer;touch-action:manipulation;outline:none;
+  box-shadow:var(--sh-acc);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:transform .12s var(--spring);position:relative;overflow:hidden;
+}
+.modal-apply-btn:active{transform:scale(.97)}
+</style>
+</head>
+<body>
+
+<div class="curtain" id="curtain">
+  <img class="c-logo" src="assets/econet.png" alt="Econet" style="height:26px">
+  <div class="c-spin"></div>
+  <div class="c-lbl">Loading…</div>
+</div>
+
+<!-- Customise modal -->
+<div class="modal-scrim" id="modalScrim" onclick="closeModal()"></div>
+<div class="modal-sheet" id="modalSheet">
+  <div class="modal-drag"></div>
+  <div class="modal-head">
+    <div>
+      <div class="modal-title" id="modalTitle">Customise bundle</div>
+      <div class="modal-subtitle">Drag to adjust Voice, Data &amp; SMS</div>
+    </div>
+    <button class="modal-close-x" onclick="closeModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--ink3)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+  <div class="modal-price-bar">
+    <div><div class="mpb-label">Current price</div><div class="mpb-price" id="mpbPrice">$0.00</div></div>
+    <div class="mpb-breakdown">
+      <div class="mpb-item"><span id="mpbV">—</span> Min</div>
+      <div class="mpb-item"><span id="mpbD">—</span> GB</div>
+      <div class="mpb-item"><span id="mpbS">—</span> SMS</div>
+    </div>
+  </div>
+  <div class="modal-body">
+    <div class="sl-item">
+      <div class="sl-header"><span class="sl-name">Voice</span><div class="sl-val-row"><span class="sl-val" id="slVlbl">20</span><span class="sl-unit">Min</span></div></div>
+      <div class="sl-track"><div class="sl-bg"></div><div class="sl-fill" id="tfV"></div><input type="range" class="sl-range" id="slV" min="0" step="1" value="4"></div>
+    </div>
+    <div class="sl-item">
+      <div class="sl-header"><span class="sl-name">Data</span><div class="sl-val-row"><span class="sl-val" id="slDlbl">3</span><span class="sl-unit">GB</span></div></div>
+      <div class="sl-track"><div class="sl-bg"></div><div class="sl-fill" id="tfD"></div><input type="range" class="sl-range" id="slD" min="0" step="1" value="3"></div>
+    </div>
+    <div class="sl-item">
+      <div class="sl-header"><span class="sl-name">SMS</span><div class="sl-val-row"><span class="sl-val" id="slSlbl">25</span><span class="sl-unit">SMS</span></div></div>
+      <div class="sl-track"><div class="sl-bg"></div><div class="sl-fill" id="tfS"></div><input type="range" class="sl-range" id="slS" min="0" step="1" value="5"></div>
+    </div>
+  </div>
+  <div class="modal-apply">
+    <button class="modal-apply-btn" onclick="closeModal()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      Apply Customisations
+    </button>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- Topbar: both logos -->
+  <div class="topbar">
+    <div class="tb-logos">
+      <img class="tb-econet" src="assets/econet.png" alt="Econet">
+      <div class="tb-div"></div>
+      <img class="tb-ecocash" src="assets/ecocash.png" alt="EcoCash">
+    </div>
+    <div class="tb-total" id="tbTotal">
+      <span class="tb-total-lbl">Total</span>
+      <span class="tb-total-val" id="totalPill">$0.00</span>
+    </div>
+  </div>
+
+  <!-- Page heading -->
+  <div style="flex-shrink:0;padding:14px 16px 8px;background:var(--bg)">
+    <div style="font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--ink1);line-height:1.15">Mix your <span style="color:var(--acc);font-style:italic">Bundle</span></div>
+    <div style="font-size:11px;font-weight:500;color:var(--ink3);margin-top:3px">Pick a plan · customise · pay with EcoCash</div>
+  </div>
+
+  <!-- Card: flex:1, strict no-scroll -->
+  <div class="card" id="mainCard">
+
+    <!-- ══ PHASE 1: BUNDLE SELECTION (shown first) ══ -->
+    <div class="phase-bundle" id="phaseBundle">
+
+      <div class="vrow">
+        <button class="vchip on" data-k="daily"><span class="vc-name">Daily</span><span class="vc-price" id="pp-daily">$0.60</span></button>
+        <button class="vchip" data-k="3days"><span class="vc-name">3 Days</span><span class="vc-price" id="pp-3days">$1.40</span></button>
+        <button class="vchip" data-k="weekly"><span class="vc-name">Weekly</span><span class="vc-price" id="pp-weekly">$2.80</span></button>
+        <button class="vchip" data-k="2weeks"><span class="vc-name">2 Wks</span><span class="vc-price" id="pp-2weeks">$5.20</span></button>
+        <button class="vchip" data-k="monthly"><span class="vc-name">Monthly</span><span class="vc-price" id="pp-monthly">$9.90</span><span class="vc-badge">Best</span></button>
+      </div>
+
+      <div class="orb-section">
+        <div class="orb-wrap">
+          <div class="orb-ring"></div>
+          <div class="orb" id="orb">
+            <div class="orb-plan" id="cPlan">Daily Mix</div>
+            <div class="orb-price-row"><span class="orb-cur">USD</span><span class="orb-price" id="cPrice">0.00</span></div>
+            <div class="orb-line"></div>
+            <div class="orb-svcs">
+              <div class="orb-svc"><span class="orb-svc-name">Voice</span><span class="orb-svc-val" id="cV">20 Min</span></div>
+              <div class="orb-svc"><span class="orb-svc-name">Data</span><span class="orb-svc-val" id="cD">3 GB</span></div>
+              <div class="orb-svc"><span class="orb-svc-name">SMS</span><span class="orb-svc-val" id="cS">25 SMS</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="presets">
+        <div class="preset-label">Choose a bundle · tap card to customise</div>
+
+        <button class="preset" id="presetLight" data-preset="light">
+          <div class="preset-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <div class="preset-left">
+            <div class="preset-name">Light</div>
+            <div class="preset-desc">Calls + WhatsApp messaging</div>
+            <div class="preset-socials"><div class="psoc psoc-wa"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div></div>
+          </div>
+          <div class="preset-right"><div class="preset-price" id="presetLightPrice">$0.60</div><div class="preset-validity" id="presetLightV">Daily</div></div>
+        </button>
+
+        <button class="preset on" id="presetBal" data-preset="balanced">
+          <div class="preset-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <div class="preset-left">
+            <div class="preset-name">Balanced</div>
+            <div class="preset-desc">Social, calls + SMS</div>
+            <span class="preset-tag">🔥 Most popular</span>
+            <div class="preset-socials">
+              <div class="psoc psoc-wa"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+              <div class="psoc psoc-ig"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
+            </div>
+          </div>
+          <div class="preset-right"><div class="preset-price" id="presetBalPrice">$2.80</div><div class="preset-validity" id="presetBalV">Weekly</div></div>
+        </button>
+
+        <button class="preset" id="presetHeavy" data-preset="heavy">
+          <div class="preset-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <div class="preset-left">
+            <div class="preset-name">Heavy</div>
+            <div class="preset-desc">Max everything · Best value</div>
+            <div class="preset-socials">
+              <div class="psoc psoc-wa"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div>
+              <div class="psoc psoc-ig"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>
+              <div class="psoc psoc-tt"><svg width="9" height="9" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.77 1.52V7.03a4.85 4.85 0 01-1-.34z"/></svg></div>
+            </div>
+          </div>
+          <div class="preset-right"><div class="preset-price" id="presetHeavyPrice">$9.90</div><div class="preset-validity" id="presetHeavyV">Monthly</div></div>
+        </button>
+      </div>
+
+      <div class="customise-hint">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--acc)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        Tap any bundle card above to fine-tune Voice, Data &amp; SMS
+      </div>
+
+    </div><!-- /phase-bundle -->
+
+    <!-- ══ PHASE 2: NUMBER ENTRY (shown after "Continue") ══ -->
+    <div class="phase-num" id="phaseNum">
+      <!-- back arrow -->
+      <button class="num-back" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--acc)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to bundles
+      </button>
+
+      <!-- chosen bundle summary -->
+      <div class="bundle-summary" id="bundleSummary">
+        <div class="bs-left">
+          <div class="bs-label">Your bundle</div>
+          <div class="bs-name" id="bsName">Balanced · Weekly</div>
+          <div class="bs-detail" id="bsDetail">120 Min · 20 GB · 200 SMS</div>
+        </div>
+        <div class="bs-price" id="bsPrice">$2.80</div>
+      </div>
+
+      <div class="ph-title" id="phTitle">Enter your <i>number</i></div>
+      <div class="ph-sub">We'll charge your EcoCash wallet · Econet Zimbabwe</div>
+
+      <div class="num-field" id="numField">
+        <div class="num-prefix">
+          <span class="num-flag">🇿🇼</span>
+          <span class="num-code">+263</span>
+        </div>
+        <input id="numInput" type="tel" inputmode="numeric" pattern="[0-9]*"
+          placeholder="Enter your Econet number" maxlength="9" autocomplete="tel-national">
+        <button class="num-clear" id="numClearBtn" tabindex="-1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--ink3)"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
+        </button>
+      </div>
+
+      <div class="num-status" id="numStatus">
+        <div class="ns-icon" id="nsIcon"><svg viewBox="0 0 24 24" fill="var(--ink3)"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></div>
+        <span class="ns-txt" id="numStatusTxt">Econet Zimbabwe · 077 · 078 · 073 · 071</span>
+      </div>
+
+      <div class="num-verify" id="numVerify">
+        <div class="vspin"></div>
+        <span class="vtxt">Verifying…</span>
+        <div class="vok-wrap">
+          <div class="vok-ic"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <span class="vok-txt">Number verified</span>
+        </div>
+      </div>
+
+      <!-- Trust row -->
+      <div class="trust-row">
+        <div class="trust-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--grn)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+          Secure
+        </div>
+        <div class="trust-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--grn)"><path d="M13 2.05v2.02c3.95.49 7 3.85 7 7.93 0 3.21-1.81 6-4.72 7.28L13 17v5h5l-1.22-1.22C19.91 19.07 22 15.76 22 12c0-5.18-3.95-9.45-9-9.95zM11 2.05C5.95 2.55 2 6.82 2 12c0 3.76 2.09 7.07 5.22 8.78L6 22h5v-5l-2.28 2.28C7.06 18.06 6 15.14 6 12c0-4.08 3.05-7.44 7-7.93V2.05z"/></svg>
+          Instant
+        </div>
+        <div class="trust-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--grn)"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+          EcoCash
+        </div>
+      </div>
+    </div><!-- /phase-num -->
+
+  </div><!-- /card -->
+
+  <!-- Pay bar — changes between screens -->
+  <div class="pay-bar" id="payBar">
+
+    <!-- Screen 1: Next button -->
+    <button class="next-btn" id="nextBtn" onclick="goToNumber()">
+      <div class="next-left">
+        <div class="next-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,.85)"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </div>
+        <div>
+          <div class="next-title">Continue · Enter number</div>
+          <div class="next-sub" id="nextSub">EcoCash · Secure · Instant</div>
+        </div>
+      </div>
+      <div class="next-amt" id="nextAmt">$0.00</div>
+    </button>
+
+    <!-- Screen 2: Pay button (hidden until number verified) -->
+    <button class="pay-btn" id="payBtn" disabled style="display:none">
+      <div class="pay-left">
+        <div class="pay-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,.85)"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+        <div>
+          <div class="pay-title" id="payTitle">Verify number first</div>
+          <div class="pay-sub" id="paySub">EcoCash · Secure · Instant</div>
+        </div>
+      </div>
+      <div class="pay-right">
+        <div class="pay-right-lbl">Total</div>
+        <div class="pay-right-amt" id="payAmt">—</div>
+      </div>
+    </button>
+
+  </div>
+
+</div><!-- /app -->
+
+<script>
+'use strict';
+
+/* Viewport */
+(function(){
+  function setVH(){var vp=window.visualViewport;var h=vp?(vp.height+vp.offsetTop):window.innerHeight;document.documentElement.style.setProperty('--vvh',h+'px');}
+  setVH();
+  if(window.visualViewport){window.visualViewport.addEventListener('resize',setVH,{passive:true});window.visualViewport.addEventListener('scroll',setVH,{passive:true});}
+  else window.addEventListener('resize',setVH,{passive:true});
+  function setSB(){var h=0;if(window.screen&&screen.availTop>0)h=screen.availTop;else if(window.visualViewport&&visualViewport.offsetTop>0)h=visualViewport.offsetTop;document.documentElement.style.setProperty('--sb',h+'px');}
+  setSB();window.addEventListener('resize',setSB,{passive:true});
+})();
+
+function hap(t){if(!navigator.vibrate)return;try{navigator.vibrate(t);}catch(e){}}
+
+/* ── Bundle data ── */
+var PLANS={
+  daily:   {l:'Daily',   mV:20,  mS:25,  mD:3,  p:0.60, sv:5,  ss:5,  sd:1},
+  '3days': {l:'3 Days',  mV:50,  mS:75,  mD:8,  p:1.40, sv:10, ss:25, sd:2},
+  weekly:  {l:'Weekly',  mV:120, mS:200, mD:20, p:2.80, sv:20, ss:50, sd:5},
+  '2weeks':{l:'2 Wks',  mV:250, mS:450, mD:45, p:5.20, sv:50, ss:50, sd:5},
+  monthly: {l:'Monthly', mV:600, mS:1000,mD:100,p:9.90, sv:50, ss:100,sd:10},
+};
+var ST={};Object.keys(PLANS).forEach(function(k){var p=PLANS[k];ST[k]={v:p.mV,s:p.mS,d:p.mD};});
+var AK='weekly',activePreset='balanced';
+var PRESETS={
+  light:   {plan:'daily',  v:20,  d:3,  s:25},
+  balanced:{plan:'weekly', v:120, d:20, s:200},
+  heavy:   {plan:'monthly',v:600, d:100,s:1000},
+};
+function pr(k){var p=PLANS[k],s=ST[k];return Math.round(((s.v/p.mV+s.s/p.mS+s.d/p.mD)/3)*p.p*100)/100;}
+
+var _pp=0;
+function animP(to){
+  var el=document.getElementById('cPrice');if(!el)return;
+  var t0=performance.now(),fr=_pp,dur=160;
+  (function tick(now){var t=Math.min((now-t0)/dur,1),e=1-Math.pow(1-t,3);el.textContent=(fr+(to-fr)*e).toFixed(2);if(t<1)requestAnimationFrame(tick);else el.textContent=to.toFixed(2);})(t0);
+  _pp=to;
+}
+function setFill(id,pct){var el=document.getElementById(id);if(el)el.style.width=Math.max(0,Math.min(100,pct)).toFixed(1)+'%';}
+
+function syncSlidersToAK(){
+  var k=AK,p=PLANS[k],s=ST[k];
+  var slV=document.getElementById('slV'),slD=document.getElementById('slD'),slS=document.getElementById('slS');
+  slV.min=0;slV.max=Math.round(p.mV/p.sv);slV.value=Math.round(s.v/p.sv);
+  slD.min=0;slD.max=Math.round(p.mD/p.sd);slD.value=Math.round(s.d/p.sd);
+  slS.min=0;slS.max=Math.round(p.mS/p.ss);slS.value=Math.round(s.s/p.ss);
+  setFill('tfV',(s.v/p.mV)*100);setFill('tfD',(s.d/p.mD)*100);setFill('tfS',(s.s/p.mS)*100);
+  document.getElementById('slVlbl').textContent=s.v;
+  document.getElementById('slDlbl').textContent=s.d;
+  document.getElementById('slSlbl').textContent=s.s;
+  updateModalPrice();
+}
+function updateModalPrice(){
+  var k=AK,s=ST[k],v=pr(k);
+  var ep=document.getElementById('mpbPrice');if(ep)ep.textContent='$'+v.toFixed(2);
+  var ev=document.getElementById('mpbV');if(ev)ev.textContent=s.v;
+  var ed=document.getElementById('mpbD');if(ed)ed.textContent=s.d;
+  var es=document.getElementById('mpbS');if(es)es.textContent=s.s;
+}
+function updateBundleSummary(){
+  var k=AK,p=PLANS[k],s=ST[k],v=pr(k);
+  document.getElementById('bsName').textContent=activePreset?(activePreset.charAt(0).toUpperCase()+activePreset.slice(1)+' · '+p.l):p.l;
+  document.getElementById('bsDetail').textContent=s.v+' Min · '+s.d+' GB · '+s.s+' SMS';
+  document.getElementById('bsPrice').textContent='$'+v.toFixed(2);
+}
+
+function ui(){
+  var k=AK,p=PLANS[k],s=ST[k],v=pr(k);
+  animP(v);
+  document.getElementById('cPlan').textContent=p.l+' Mix';
+  document.getElementById('cV').textContent=s.v+' Min';
+  document.getElementById('cD').textContent=s.d+' GB';
+  document.getElementById('cS').textContent=s.s+' SMS';
+  syncSlidersToAK();
+  var a='$'+v.toFixed(2);
+  document.getElementById('nextAmt').textContent=a;
+  document.getElementById('payAmt').textContent=a;
+  document.getElementById('totalPill').textContent=a;
+  Object.keys(PLANS).forEach(function(k2){var el=document.getElementById('pp-'+k2);if(el)el.textContent='$'+pr(k2).toFixed(2);});
+  updatePresetPrices();
+  if(numOK)document.getElementById('payTitle').textContent='Pay USD '+v.toFixed(2);
+}
+function updatePresetPrices(){
+  var defs={light:{plan:'daily',v:20,d:3,s:25},balanced:{plan:'weekly',v:120,d:20,s:200},heavy:{plan:'monthly',v:600,d:100,s:1000}};
+  Object.keys(defs).forEach(function(pk){
+    var def=defs[pk],p=PLANS[def.plan];
+    var price=Math.round(((def.v/p.mV+def.s/p.mS+def.d/p.mD)/3)*p.p*100)/100;
+    var ids={light:['presetLightPrice','presetLightV'],balanced:['presetBalPrice','presetBalV'],heavy:['presetHeavyPrice','presetHeavyV']};
+    var pe=document.getElementById(ids[pk][0]),ve=document.getElementById(ids[pk][1]);
+    if(pe)pe.textContent='$'+price.toFixed(2);if(ve)ve.textContent=p.l;
+  });
+}
+function pulseOrb(){var o=document.getElementById('orb');if(!o)return;o.classList.remove('pop');void o.offsetWidth;o.classList.add('pop');setTimeout(function(){o.classList.remove('pop');},260);}
+
+/* ── Screen navigation ── */
+var onNumScreen=false;
+function goToNumber(){
+  onNumScreen=true;
+  updateBundleSummary();
+  document.getElementById('phaseBundle').style.display='none';
+  document.getElementById('phaseNum').classList.add('show');
+  document.getElementById('nextBtn').style.display='none';
+  /* ensure pay button reflects current verified state */
+  document.getElementById('payBtn').style.display='flex';
+  if(!numOK){
+    document.getElementById('payBtn').disabled=true;
+    document.getElementById('payTitle').textContent='Verify number first';
+    document.getElementById('payAmt').textContent='—';
+  } else {
+    document.getElementById('payBtn').disabled=false;
+    document.getElementById('payTitle').textContent='Pay USD '+pr(AK).toFixed(2);
+    document.getElementById('paySub').textContent=numDisp+' · EcoCash';
+    document.getElementById('payAmt').textContent='$'+pr(AK).toFixed(2);
+  }
+  document.getElementById('tbTotal').classList.add('show');
+  setTimeout(function(){
+    var inp=document.getElementById('numInput');
+    if(inp&&!numOK)inp.focus();
+  },200);
+}
+function goBack(){
+  onNumScreen=false;
+  clearTimeout(vtimer);
+  document.getElementById('phaseNum').classList.remove('show');
+  document.getElementById('phaseBundle').style.display='';
+  document.getElementById('nextBtn').style.display='';
+  document.getElementById('payBtn').style.display='none';
+  document.getElementById('tbTotal').classList.remove('show');
+  /* update next button amount to reflect current bundle */
+  var v=pr(AK);
+  document.getElementById('nextAmt').textContent='$'+v.toFixed(2);
+  /* do NOT reset numOK here — number stays verified if user came back to change bundle */
+}
+
+/* ── Modal ── */
+var _modalOpen=false;
+function openModal(){
+  _modalOpen=true;
+  document.getElementById('modalTitle').textContent='Customise '+PLANS[AK].l+' bundle';
+  syncSlidersToAK();
+  document.getElementById('modalScrim').classList.add('open');
+  document.getElementById('modalSheet').classList.add('open');
+}
+function closeModal(){
+  if(!_modalOpen)return;
+  _modalOpen=false;
+  document.getElementById('modalScrim').classList.remove('open');
+  document.getElementById('modalSheet').classList.remove('open');
+  ui();pulseOrb();
+}
+
+/* ── Presets ── */
+function applyPreset(pk){
+  var def=PRESETS[pk];if(!def)return;
+  activePreset=pk;AK=def.plan;ST[AK]={v:def.v,d:def.d,s:def.s};
+  highlightPreset(pk);highlightChip(AK);
+  hap(8);ui();pulseOrb();
+}
+function highlightPreset(pk){
+  ['presetLight','presetBal','presetHeavy'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.classList.toggle('on',el.dataset.preset===pk);
+  });
+}
+function highlightChip(k){
+  document.querySelectorAll('.vchip').forEach(function(c){c.classList.toggle('on',c.dataset.k===k);});
+}
+
+['presetLight','presetBal','presetHeavy'].forEach(function(id){
+  var el=document.getElementById(id);if(!el)return;
+  el.addEventListener('click',function(){
+    applyPreset(el.dataset.preset);
+    setTimeout(openModal,80);
+  });
+});
+
+/* ── Chips ── */
+document.querySelectorAll('.vchip').forEach(function(t){
+  t.addEventListener('click',function(){
+    var k=t.dataset.k;if(k===AK)return;
+    AK=k;var p=PLANS[k];
+    /* reset this plan's custom values to max defaults */
+    ST[k]={v:p.mV,s:p.mS,d:p.mD};
+    highlightChip(k);activePreset=null;highlightPreset('__none__');
+    hap(8);ui();pulseOrb();
+  });
+});
+
+/* ── Sliders ── */
+(function(){
+  function wire(slId,fillId,lblId,key){
+    document.getElementById(slId).addEventListener('input',function(){
+      var k=AK,p=PLANS[k],s=ST[k];
+      var step={v:p.sv,d:p.sd,s:p.ss}[key];
+      var max={v:p.mV,d:p.mD,s:p.mS}[key];
+      s[key]=Math.max(0,Math.min(parseInt(this.value)*step,max));
+      /* update label + fill directly for instant feedback */
+      setFill(fillId,(s[key]/max)*100);
+      document.getElementById(lblId).textContent=s[key];
+      /* deselect preset since user is now custom */
+      activePreset=null;highlightPreset('__none__');
+      hap(6);
+      /* full ui() keeps orb, chip prices, preset prices all in sync */
+      ui();
+      /* keep modal price bar live */
+      updateModalPrice();
+    });
+  }
+  wire('slV','tfV','slVlbl','v');wire('slD','tfD','slDlbl','d');wire('slS','tfS','slSlbl','s');
+})();
+
+/* ── Number field ── */
+var NETS=['071','077','078','073'];
+var numDigits='',numOK=false,numVerifying=false,numDisp='';
+var numEl=document.getElementById('numInput');
+var numClearBtn=document.getElementById('numClearBtn');
+var vtimer=null;
+
+function setStatus(type,msg){
+  var st=document.getElementById('numStatus'),txt=document.getElementById('numStatusTxt');
+  var field=document.getElementById('numField'),icon=document.getElementById('nsIcon');
+  st.className='num-status'+(type?' '+type:'');
+  txt.textContent=msg;
+  if(!numOK&&!numVerifying){if(type==='err')field.classList.add('err');else field.classList.remove('err');}
+  if(type==='ok')icon.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="var(--grn)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+  else if(type==='err')icon.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="var(--err)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+  else icon.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="var(--ink3)"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>';
+}
+numEl.addEventListener('focus',function(){if(!numOK){document.getElementById('numField').classList.add('foc');document.getElementById('numField').classList.remove('err');}});
+numEl.addEventListener('blur',function(){if(!numOK&&!numVerifying)document.getElementById('numField').classList.remove('foc');});
+numEl.addEventListener('paste',function(e){e.preventDefault();var raw=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');if(raw.startsWith('00263'))raw=raw.slice(5);else if(raw.startsWith('0263'))raw=raw.slice(4);else if(raw.startsWith('263')&&raw.length>9)raw=raw.slice(3);if(raw.startsWith('0'))raw=raw.slice(1);this.value=raw.slice(0,9);this.dispatchEvent(new Event('input',{bubbles:true}));});
+numEl.addEventListener('input',function(){
+  var raw=this.value.replace(/\D/g,'');
+  if(raw.startsWith('00263'))raw=raw.slice(5);else if(raw.startsWith('0263'))raw=raw.slice(4);else if(raw.startsWith('263')&&raw.length>9)raw=raw.slice(3);
+  if(raw.startsWith('0'))raw=raw.slice(1);
+  raw=raw.slice(0,9);if(this.value!==raw)this.value=raw;
+  numDigits=raw;numClearBtn.classList.toggle('show',raw.length>0);
+  if(numOK||numVerifying)resetV();
+  updateTag();clearTimeout(vtimer);
+  if(raw.length===9&&NETS.some(function(p){return('0'+raw).startsWith(p);}))vtimer=setTimeout(doVerify,600);
+});
+numClearBtn.addEventListener('click',function(){numEl.value='';numDigits='';numClearBtn.classList.remove('show');resetV();updateTag();clearTimeout(vtimer);numEl.focus();});
+
+function updateTag(){
+  var d=numDigits,n0='0'+d;
+  var isE=NETS.some(function(p){return n0.startsWith(p);});
+  if(!d.length)setStatus('','Econet Zimbabwe · 077 · 078 · 073 · 071');
+  else if(d.length>=1&&d[0]!=='7')setStatus('err','Econet numbers start with 7 — try 077, 078, 073 or 071');
+  else if(n0.startsWith('07')&&d.length>=2&&!isE)setStatus('err','Not an Econet number — use 077, 078, 073 or 071');
+  else if(isE&&d.length<9)setStatus('','Econet · '+d.length+'/9 digits');
+  else if(isE&&d.length===9)setStatus('','Ready to verify…');
+  else setStatus('',d.length+'/9');
+}
+function doVerify(){
+  if(numDigits.length!==9||numOK||numVerifying)return;
+  var m='0'+numDigits;
+  if(!NETS.some(function(p){return m.startsWith(p);}))return;
+  numVerifying=true;
+  document.getElementById('numStatus').style.display='none';
+  document.getElementById('numVerify').className='num-verify show spinning';
+  document.getElementById('numField').className='num-field foc';
+  var done=false;function ok(){if(done)return;done=true;verOK(m);}
+  var to=setTimeout(ok,3000);
+  try{if(typeof EcoCashAPI!=='undefined'){EcoCashAPI.validateSubscriber(m).then(function(){clearTimeout(to);ok();}).catch(function(){clearTimeout(to);ok();});}else{clearTimeout(to);ok();}}catch(e){clearTimeout(to);ok();}
+}
+function verOK(msisdn){
+  numOK=true;numVerifying=false;numDisp='+263'+msisdn.replace(/^0/,'');
+  document.getElementById('numVerify').className='num-verify';
+  document.getElementById('numStatus').style.display='';
+  document.getElementById('numField').className='num-field ok';
+  setStatus('ok','✓ '+numDisp+' — verified');
+  var v=pr(AK);
+  document.getElementById('payTitle').textContent='Pay USD '+v.toFixed(2);
+  document.getElementById('paySub').textContent=numDisp+' · EcoCash';
+  document.getElementById('payBtn').disabled=false;
+  hap([10,50,10]);
+}
+function resetV(){
+  numOK=false;numVerifying=false;numDisp='';
+  document.getElementById('numVerify').className='num-verify';
+  document.getElementById('numStatus').style.display='';
+  document.getElementById('numField').className='num-field';
+  document.getElementById('payBtn').disabled=true;
+  document.getElementById('payTitle').textContent='Verify number first';
+  document.getElementById('payAmt').textContent='—';
+  document.getElementById('paySub').textContent='EcoCash · Secure · Instant';
+}
+
+/* ── Pay ── */
+document.getElementById('payBtn').addEventListener('click',function(){
+  if(!numOK)return;
+  var k=AK,s=ST[k],p=PLANS[k],v=pr(k);
+  sessionStorage.removeItem('ecoTxn');sessionStorage.removeItem('ecoCorrelator');
+  sessionStorage.setItem('selectedPlan',JSON.stringify({duration:p.l,voice:s.v,sms:s.s,data:s.d,amount:v.toFixed(2),planKey:k,preset:activePreset}));
+  sessionStorage.setItem('ecoRecipient',JSON.stringify({raw:'0'+numDigits,display:numDisp}));
+  hap([10,50,10]);
+  document.getElementById('curtain').classList.add('show');
+  setTimeout(function(){window.location.href='login.html';},900);
+});
+
+/* ── Ripple ── */
+document.querySelectorAll('.vchip,.next-btn,.pay-btn').forEach(function(b){
+  b.addEventListener('pointerdown',function(e){
+    var r=b.getBoundingClientRect(),sz=Math.max(r.width,r.height)*2;
+    var rip=document.createElement('span');rip.className='rip';
+    rip.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(e.clientX-r.left-sz/2)+'px;top:'+(e.clientY-r.top-sz/2)+'px;position:absolute;';
+    b.appendChild(rip);rip.addEventListener('animationend',function(){rip.remove();});
+  },{passive:true});
+});
+
+updatePresetPrices();
+applyPreset('balanced');
+if('serviceWorker'in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});
+</script>
+</body>
+</html>
